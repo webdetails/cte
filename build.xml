@@ -240,6 +240,13 @@
 
   <!-- Overriding resolve target so we can add resolve-dev -->
   
+  <target name="resolve" depends="subfloor.resolve" >
+    <copy todir="${runtimelib.dir}" overwrite='true'>
+    	<fileset dir="${lib.dir}">
+    		<include name="cpf-*.jar" />
+    	</fileset>
+    </copy>
+  </target>
 
   <target name="clean" depends="subfloor.clean" >
     <delete dir="${lib.dir}" />
