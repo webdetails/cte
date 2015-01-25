@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin name="cte" title="Pentaho Community Text Editor">
+
+	<lifecycle-listener class="pt.webdetails.cte.CteLifecycleListener" />
+	
+	<content-generator class="org.pentaho.cte.CteContentGenerator"/>
+
+    <content-types>
+
+        <static-paths>
+            <static-path url="/cte/resources" localFolder="resources"/>
+            <static-path url="/cte/tmp" localFolder="tmp"/>
+        </static-paths>
+        
+        <content-type type="html" mime-type="text/html">
+        	<title>Text Editor</title>
+	      	<operations>
+		        <operation>
+		          	<id>EDIT</id>
+                	<perspective>cte</perspective>
+		        </operation>
+		    </operations>
+    	</content-type>
+    	
+    	<content-type type="xml" mime-type="text/xml">
+        	<title>Text Editor</title>
+	      	<operations>
+		        <operation>
+		          	<id>EDIT</id>
+                	<perspective>cte</perspective>
+		        </operation>
+		    </operations>
+    	</content-type> 
+    	
+    	<content-type type="cdfde" mime-type="application/json">
+        	<title>Text Editor</title>
+	      	<operations>
+		        <operation>
+		          	<id>EDIT</id>
+                	<perspective>cte</perspective>
+		        </operation>
+		    </operations>
+    	</content-type>
+    	
+    	<content-type type="js" mime-type="text/javascript">
+        	<title>Text Editor</title>
+	      	<operations>
+		        <operation>
+		          	<id>EDIT</id>
+                	<perspective>cte</perspective>
+		        </operation>
+		    </operations>
+    	</content-type>
+    	
+    	<content-type type="css" mime-type="text/css">
+        	<title>Text Editor</title>
+	      	<operations>
+		        <operation>
+		          	<id>EDIT</id>
+                	<perspective>cte</perspective>
+		        </operation>
+		    </operations>
+    	</content-type>
+    	
+    	<content-type type="properties" mime-type="text/plain">
+        	<title>Text Editor</title>
+	      	<operations>
+		        <operation>
+		          	<id>EDIT</id>
+                	<perspective>cte</perspective>
+		        </operation>
+		    </operations>
+    	</content-type>
+
+    </content-types>
+
+
+    
+    <external-resources />
+
+</plugin>
