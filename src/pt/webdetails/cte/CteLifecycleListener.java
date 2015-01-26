@@ -18,10 +18,11 @@ package pt.webdetails.cte;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.platform.api.engine.IPlatformReadyListener;
 import org.pentaho.platform.api.engine.IPluginLifecycleListener;
 import org.pentaho.platform.api.engine.PluginLifecycleException;
 
-public class CteLifecycleListener implements IPluginLifecycleListener {
+public class CteLifecycleListener implements IPluginLifecycleListener, IPlatformReadyListener {
 
   static Log logger = LogFactory.getLog( CteLifecycleListener.class );
 
@@ -31,6 +32,10 @@ public class CteLifecycleListener implements IPluginLifecycleListener {
 
   public void loaded() throws PluginLifecycleException {
     logger.debug( "CteLifecycleListener.loaded()" );
+  }
+
+  public void ready() throws PluginLifecycleException {
+    logger.debug( "CteLifecycleListener.ready()" );
   }
 
   public void unLoaded() throws PluginLifecycleException {

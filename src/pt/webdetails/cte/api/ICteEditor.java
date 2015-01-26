@@ -24,4 +24,8 @@ public interface ICteEditor {
 
   InputStream getEditor( String path ) throws Exception;
 
+  InputStream getFile( String path ) throws Exception;
+
+  boolean saveFile( String path, InputStream fileContents ) throws Exception;
+
 }

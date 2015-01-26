@@ -48,4 +48,12 @@ public class DefaultCdaLeveragedEditor implements ICteEditor {
     }
     return null;
   }
+
+  @Override public InputStream getFile( String path ) throws Exception {
+    return null; /* CDA takes care of this */
+  }
+
+  @Override public boolean saveFile( String path, InputStream fileContents ) throws Exception {
+    return false; /* CDA takes care of this */
+  }
 }
