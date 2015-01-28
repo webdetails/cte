@@ -244,6 +244,7 @@
     <copy todir="${runtimelib.dir}" overwrite='true'>
     	<fileset dir="${lib.dir}">
     		<include name="cpf-*.jar" />
+        <include name="jericho-html-3.1.jar" />
     	</fileset>
     </copy>
   </target>

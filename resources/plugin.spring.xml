@@ -14,7 +14,8 @@
   <bean id="api" class="org.pentaho.platform.web.servlet.JAXRSPluginServlet"/>
   <bean id="cte.edit" class="pt.webdetails.cte.web.CteApi" />
   
-  <bean id="ICteEditor" class="pt.webdetails.cte.editor.DefaultCdaLeveragedEditor" />
+  <!--bean id="ICteEditor" class="pt.webdetails.cte.editor.DefaultCdaLeveragedEditor" /-->
+  <bean id="ICteEditor" class="pt.webdetails.cte.editor.ace.AceEditor" />
   <bean id="ICteEnvironment" class="pt.webdetails.cte.PentahoCteEnvironment" />
   
   <bean id="html.cte" class="pt.webdetails.cte.CteContentGenerator" />

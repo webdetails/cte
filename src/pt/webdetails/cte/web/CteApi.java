@@ -17,6 +17,7 @@
 package pt.webdetails.cte.web;
 
 import org.apache.commons.lang.StringUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.webdetails.cpf.messaging.JsonResult;
@@ -27,6 +28,7 @@ import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.api.ICteEditor;
 import pt.webdetails.cte.engine.CteEngine;
 
+import javax.activation.MimeType;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
@@ -43,8 +45,8 @@ import java.io.ByteArrayInputStream;
 
   @GET
   @Path( "/canEdit" )
-  @Produces( { MimeTypes.JSON } )
-  public JsonResult canEdit( @QueryParam( Constants.PARAM_PATH ) String path, @Context HttpServletRequest servletRequest,
+  @Produces( { MediaType.WILDCARD  } )
+  public String canEdit( @QueryParam( Constants.PARAM_PATH ) String path, @Context HttpServletRequest servletRequest,
       @Context HttpServletResponse servletResponse ) throws Exception {
 
     boolean canEdit = false;
@@ -62,7 +64,8 @@ import java.io.ByteArrayInputStream;
     } else {
       logger.error( "CteApi.canEdit(): file path is null" );
     }
-    return new JsonResult( canEdit, JsonHelper.toJson( canEdit ) );
+
+    return Boolean.toString( canEdit );
   }
 
 
