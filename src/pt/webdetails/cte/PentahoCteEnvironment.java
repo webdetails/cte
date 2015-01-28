@@ -75,7 +75,7 @@ public class PentahoCteEnvironment extends PentahoPluginEnvironment implements I
 
   @Override
   public IUrlProvider getUrlProvider() {
-    return null;
+    return super.getUrlProvider();
   }
 
   @Override

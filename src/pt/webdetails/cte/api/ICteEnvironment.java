@@ -16,6 +16,7 @@
 */
 package pt.webdetails.cte.api;
 
+import pt.webdetails.cpf.context.api.IUrlProvider;
 import pt.webdetails.cpf.exceptions.InitializationException;
 import pt.webdetails.cpf.repository.api.IRWAccess;
 import pt.webdetails.cpf.repository.api.IReadAccess;
@@ -53,4 +54,5 @@ public interface ICteEnvironment {
 
   IRWAccess getPluginSystemWriter( String path );
 
+  IUrlProvider getUrlProvider();
 }
