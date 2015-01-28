@@ -15,6 +15,7 @@
   <bean id="cte.edit" class="pt.webdetails.cte.web.CteApi" />
   
   <bean id="ICteEditor" class="pt.webdetails.cte.editor.DefaultCdaLeveragedEditor" />
+  <bean id="ICteEnvironment" class="pt.webdetails.cte.PentahoCteEnvironment" />
   
   <bean id="html.cte" class="pt.webdetails.cte.CteContentGenerator" />
   <bean id="xml.cte" class="pt.webdetails.cte.CteContentGenerator" />

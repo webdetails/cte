@@ -18,7 +18,7 @@ package pt.webdetails.cte;
 
 public class Constants {
 
-  public static final String PLUGIN_NAME = "cte";
+  public static final String PLUGIN_ID = "cte";
 
   public static final String PARAM_PATH = "path";
   public static final String PARAM_REQUEST = "request";

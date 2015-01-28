@@ -18,30 +18,46 @@ package pt.webdetails.cte.engine;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.webdetails.cpf.exceptions.InitializationException;
 import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.api.ICteEditor;
+import pt.webdetails.cte.api.ICteEnvironment;
 
 public class CteEngine {
 
   private static CteEngine instance;
-  private Logger logger = LoggerFactory.getLogger( CteEngine.class );
+  private static Logger logger = LoggerFactory.getLogger( CteEngine.class );
   private ICteEditor cteEditor;
+  private ICteEnvironment environment;
 
-  private CteEngine() {
+  private CteEngine() throws InitializationException {
 
-    CoreBeanFactory factory = new CoreBeanFactory( Constants.PLUGIN_NAME );
+    CoreBeanFactory factory = new CoreBeanFactory( Constants.PLUGIN_ID );
+
+    this.environment = (ICteEnvironment) factory.getBean( ICteEnvironment.class.getSimpleName() );
+
+    if ( environment == null ) {
+      logger.error( "ICteEditor has not been set; CteEngine will not function properly" );
+    }
+
+    environment.init();
 
     this.cteEditor = (ICteEditor) factory.getBean( ICteEditor.class.getSimpleName() );
 
     if ( cteEditor == null ) {
       logger.error( "ICteEditor has not been set; CteEngine will not function properly" );
     }
+
   }
 
   public static CteEngine getInstance() {
 
     if ( instance == null ) {
-      instance = new CteEngine();
+      try {
+        instance = new CteEngine();
+      } catch ( InitializationException e ) {
+        logger.error( e.getMessage(), e );
+      }
     }
 
     return instance;
@@ -53,5 +69,13 @@ public class CteEngine {
 
   protected void setCteEditor( ICteEditor cteEditor ) {
     this.cteEditor = cteEditor;
+  }
+
+  public ICteEnvironment getEnvironment() {
+    return environment;
+  }
+
+  public void setEnvironment( ICteEnvironment environment ) {
+    this.environment = environment;
   }
 }

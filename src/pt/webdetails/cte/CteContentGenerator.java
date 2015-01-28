@@ -15,8 +15,8 @@ package pt.webdetails.cte;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.pentaho.platform.engine.core.system.PentahoRequestContextHolder;
 import pt.webdetails.cpf.SimpleContentGenerator;
+import pt.webdetails.cte.engine.CteEngine;
 
 public class CteContentGenerator extends SimpleContentGenerator {
 
@@ -25,11 +25,10 @@ public class CteContentGenerator extends SimpleContentGenerator {
   @Override public void createContent() throws Exception {
     String path = getPathParameterAsString( Constants.PARAM_PATH, "" );
 
-    getResponse().sendRedirect(
-        PentahoRequestContextHolder.getRequestContext().getContextPath() + "plugin/cte/api/edit?path=" + path );
+    getResponse().sendRedirect( CteEngine.getInstance().getEnvironment().getPluginBaseUrl() + "api/edit?path=" + path );
   }
 
   @Override public String getPluginName() {
-    return Constants.PLUGIN_NAME;
+    return Constants.PLUGIN_ID;
   }
 }
