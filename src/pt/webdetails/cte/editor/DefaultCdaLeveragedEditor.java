@@ -32,7 +32,7 @@ public class DefaultCdaLeveragedEditor implements ICteEditor {
   private Logger logger = LoggerFactory.getLogger( DefaultCdaLeveragedEditor.class );
 
   @Override public boolean canEdit( String path ) {
-    return false;
+    return true; // TODO implement security logic
   }
 
   @Override public InputStream getEditor( String path ) throws Exception {

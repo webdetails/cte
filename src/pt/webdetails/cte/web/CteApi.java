@@ -19,6 +19,9 @@ package pt.webdetails.cte.web;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.webdetails.cpf.messaging.JsonResult;
+import pt.webdetails.cpf.utils.JsonHelper;
+import pt.webdetails.cpf.utils.MimeTypes;
 import pt.webdetails.cpf.utils.PluginIOUtils;
 import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.api.ICteEditor;
@@ -32,12 +35,40 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import java.io.ByteArrayInputStream;
 
 @Path( "/cte/api" ) public class CteApi {
 
   private Logger logger = LoggerFactory.getLogger( CteApi.class );
 
-  @GET @Path( "/edit" ) @Produces( { MediaType.WILDCARD } )
+  @GET
+  @Path( "/canEdit" )
+  @Produces( { MimeTypes.JSON } )
+  public JsonResult canEdit( @QueryParam( Constants.PARAM_PATH ) String path, @Context HttpServletRequest servletRequest,
+      @Context HttpServletResponse servletResponse ) throws Exception {
+
+    boolean canEdit = false;
+
+    if ( !StringUtils.isEmpty( path ) ) {
+
+      try {
+
+        canEdit = getCteEditor().canEdit( path );
+
+      } catch ( Exception e ) {
+        logger.error( e.getMessage(), e );
+        throw e;
+      }
+    } else {
+      logger.error( "CteApi.canEdit(): file path is null" );
+    }
+    return new JsonResult( canEdit, JsonHelper.toJson( canEdit ) );
+  }
+
+
+  @GET
+  @Path( "/edit" )
+  @Produces( { MediaType.WILDCARD } )
   public void edit( @QueryParam( Constants.PARAM_PATH ) String path, @Context HttpServletRequest servletRequest,
       @Context HttpServletResponse servletResponse ) throws Exception {
 
@@ -52,6 +83,36 @@ import javax.ws.rs.core.MediaType;
       }
     } else {
       logger.error( "CteApi.edit(): file path is null" );
+    }
+  }
+
+  @GET
+  @Path( "/getFile" )
+  @Produces( { MediaType.WILDCARD } )
+  public void getFile( @QueryParam( Constants.PARAM_PATH ) String path, @Context HttpServletRequest servletRequest,
+      @Context HttpServletResponse servletResponse ) throws Exception {
+
+    if( !getCteEditor().canEdit( path ) ){
+      logger.error( "CteApi.getFile(): not allowed to edit file at " + path );
+      // TODO send back HTTP 403 FORBIDDEN
+      String response = "Not allowed";
+      PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), new ByteArrayInputStream( response.getBytes(
+          CteEngine.getInstance().getEnvironment().getSystemEncoding() ) ) );
+      return;
+    }
+
+    if ( !StringUtils.isEmpty( path ) ) {
+
+      try {
+        PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getCteEditor().getFile( path ) );
+
+      } catch ( Exception e ) {
+        logger.error( e.getMessage(), e );
+        throw e;
+      }
+
+    } else {
+      logger.error( "CteApi.getFile(): file path is null" );
     }
   }
 
