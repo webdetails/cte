@@ -54,10 +54,17 @@
     <script language="javascript" type="text/javascript" src="ace/src/theme-twilight.js"></script>
     <script language="javascript" type="text/javascript" src="ace/src/theme-eclipse.js"></script-->
     <script language="javascript">
+
       var editor = new CodeEditor();
+      // stores URL parameters
       var params = {};
-      var filename = null;
+      // stores currently opened file name
+      var fileName = null;
+      // true if 'change' event was triggered, except when file is beeing loaded
       var isDirty = false;
+      // if true isDirty will be set to true when 'change' events are triggered in the editor
+      var pageLoaded = false;
+
       var listeners = {
         onStatusUpdate: null,
         onSave: null,
@@ -86,7 +93,7 @@
 
       var save = function() {
         editor.saveFile(
-          filename,
+          fileName,
           editor.getContents(),
           function(result) {
             var msg = "";
@@ -118,7 +125,7 @@
       };
 
       var updateStatus = function() {
-       var info = filename + (editor.isReadOnly() ? ' (readonly)' : '') + (isDirty ? '*' : '');
+       var info = fileName + (editor.isReadOnly() ? ' (readonly)' : '') + (isDirty ? '*' : '');
         $('#infoArea').text(info);
         if(typeof(listeners.onStatusUpdate) == 'function') {
           listeners.onStatusUpdate(isDirty);
@@ -180,9 +187,8 @@
 </div>
     <script>
       window.onload = function() {
-        pageLoaded = true;
         params = getUrlParams();
-        filename = params.path;
+        fileName = params.path;
         
         if(params.editorOnly) {
           $('#btnArea').css('display', 'none');
@@ -207,7 +213,7 @@
           $('#editArea').width(window.innerWidth - (window.innerWidth * 0.25) - 15);
         }
         
-        if(filename == null) {
+        if(fileName == null) {
           return;
         }
             
@@ -219,32 +225,26 @@
         
         if(params.mode) {
           editor.setMode(params.mode);
-        } else {
-          /*var dotPos = filename.lastIndexOf('.');
-          if(dotPos > -1 && dotPos < filename.length - 1) {
-            var ext = filename.substring(dotPos + 1);
-            editor.setMode(ext);
-          }*/
-          editor.setMode(filename.split('.').pop());
         }
 
-        editor.loadFile(filename);
+        // More info, see aceWrapper.js
+        editor.loadFile();
         updateStatus();
 
         editor.onChange(function(e) {
-          setDirty(true);
+          //console.log(e.data.action);
+          if(pageLoaded) {
+            setDirty(true);
+          }
         });
       
         /********************
          **** FileTree ******
          ********************/
-        var explore_endpoint = "/pentaho/plugin/pentaho-cdf-dd/api/resources/explore";
-        var extension = filename.split('.').pop();
-
         $('#browse_div').fileTree({
           root: "/",
-          //script: explore_endpoint + "?fileExtensions=" + extension + "&showHiddenFiles=true" + (filename != "" ? "&dashboardPath=" + filename : ""),
-          script: explore_endpoint + "?showHiddenFiles=true" + (filename != "" ? "&dashboardPath=" + filename : ""),
+          //script: "/pentaho/plugin/pentaho-cdf-dd/api/resources/explore?fileExtensions=" + extension + "&showHiddenFiles=true" + (fileName != "" ? "&dashboardPath=" + fileName : ""),
+          script: "/pentaho/plugin/pentaho-cdf-dd/api/resources/explore?showHiddenFiles=true" + (fileName != "" ? "&dashboardPath=" + fileName : ""),
           expandSpeed: 1000,
           collapseSpeed: 1000,
           multiFolder: true,
@@ -253,12 +253,10 @@
               $(".selectedFolder").attr("class", "");
             }
             $(obj).attr("class", "selectedFolder");
-            //selectedFolder = folder;
-            //$("#fileInput").val(""); //?
           }
         },
         function(file) {
-          filename = "/" + file;
+          fileName = "/" + file;
 
           if(!isDirty
             || (isDirty && confirm("You have unsaved changes, discard them?"))) {
@@ -266,34 +264,11 @@
             $(".selectedFile").attr("class", "");
             $("a[rel='" + file + "']").attr("class", "selectedFile");
 
-            editor.loadFile(filename);
-            extension = filename.split('.').pop();
-            editor.setMode(extension);
-            setDirty(false);
+            editor.loadFile();
             updateStatus();
           }
           
         });
-
-        /********************
-         **** jsTree ********
-         ******************** /
-        $('#jstree_div').jstree({
-          'core' : {
-            'data' : {
-              'type': 'POST',
-              'url' : explore_endpoint + "?fileExtensions=" + extension + "&showHiddenFiles=true" + (filename != "" ? "&dashboardPath=" + filename : ""),
-              'data' : function (node) {
-                  return { 'id' : node.id };
-              }
-            }
-          }
-        });
-        $('#jstree_div').on("changed.jstree", function (e, data) {
-          debugger;
-          console.log(data.selected);
-        });
-        */
       };
 
       window.onresize = function() {
