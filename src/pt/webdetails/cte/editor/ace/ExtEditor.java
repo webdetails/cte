@@ -39,7 +39,7 @@ public class ExtEditor extends ProcessedHtmlPage {
     pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "EXT_EDITOR", quote( baseApi, "edit" ) ) );
     pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "CAN_EDIT_URL", quote( baseApi, "canEdit") ) );
     pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "GET_FILE_URL", quote( baseApi, "getFile" ) ) );
-    pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "SAVE_FILE_URL", quote( baseApi, "writeFile" ) ) );
+    pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "SAVE_FILE_URL", quote( baseApi, "save" ) ) );
     pairs.add(
       new Pair<String, String>(
         UI_BACKEND_PREFIX + "LANG_PATH",
