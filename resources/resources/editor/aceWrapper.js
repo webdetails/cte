@@ -25,14 +25,25 @@ var CodeEditor = function() {
   modeMap :
   { //highlight modes
     'css': 'css',
+    'cdfde': 'javascript',
+    'cdv': 'javascript',
     'javascript': 'javascript',
     'js': 'javascript',
-    'xml': 'xml',
-    'cda': 'xml',
-    'cdv': 'javascript',
+    'json': 'javascript',
     'html': 'html',
     'sql': 'text',
-    'mdx': 'text'
+    'txt': 'text',
+    'properties': 'text',
+    'md': 'text',
+    'mdx': 'text',
+    'cda': 'xml',
+    'ktr': 'xml',
+    'xcdf': 'xml',
+    'xaction': 'xml',
+    'xjpivot': 'xml',
+    'xml': 'xml',
+    'wcdf': 'xml'
+
   },
 
   mode: 'javascript',
@@ -48,8 +59,12 @@ var CodeEditor = function() {
 
   },
   
-  loadFile: function(fileName) {
+  loadFile: function() {
     var myself = this;
+
+    pageLoaded = false;
+    setDirty(false);
+
     //check edit permission
     $.get(ExternalEditor.CAN_EDIT_URL, {path: fileName},
       function(result) {
@@ -58,12 +73,22 @@ var CodeEditor = function() {
         //TODO: can read?..get permissions?...
 
         //load file contents
-        $.get(ExternalEditor.GET_FILE_URL, {path: fileName},
-          function(response) {
-            //myself.setContents(response.result); //TODO response.result if response.status==ok
+        $.get(ExternalEditor.GET_FILE_URL, {path: fileName})
+          .done(function(response) {
+
             myself.setContents(response);
-          }
-        );
+
+            pageLoaded = true;
+
+            // use fileName extension to set mode
+            editor.setMode(fileName.split('.').pop());
+          })
+          .fail(function(response) {
+            myself.setContents("");
+            fileName = "";
+            updateStatus();
+            alert("Error loading file: " + response.error().statusText);
+          });
       });
   },
 
