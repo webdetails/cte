@@ -12,17 +12,19 @@
   
   <!-- JAX-RS beans -->
   <bean id="api" class="org.pentaho.platform.web.servlet.JAXRSPluginServlet"/>
-  <bean id="cte.edit" class="pt.webdetails.cte.web.CteApi" />
+  <bean id="cteApi" class="pt.webdetails.cte.web.CteApi" />
   
   <!--bean id="ICteEditor" class="pt.webdetails.cte.editor.DefaultCdaLeveragedEditor" /-->
   <bean id="ICteEditor" class="pt.webdetails.cte.editor.ace.AceEditor" />
   <bean id="ICteEnvironment" class="pt.webdetails.cte.PentahoCteEnvironment" />
   
-  <bean id="html.cte" class="pt.webdetails.cte.CteContentGenerator" />
-  <bean id="xml.cte" class="pt.webdetails.cte.CteContentGenerator" />
-  <bean id="cdfde.cte" class="pt.webdetails.cte.CteContentGenerator" />
-  <bean id="js.cte" class="pt.webdetails.cte.CteContentGenerator" />
-  <bean id="css.cte" class="pt.webdetails.cte.CteContentGenerator" />
-  <bean id="properties.cte" class="pt.webdetails.cte.CteContentGenerator" />
+  <bean class="pt.webdetails.cte.CteContentGenerator" id="cte.edit" />
+  
+  <bean class="pt.webdetails.cte.CteContentGenerator" id="properties" />
+  <bean class="pt.webdetails.cte.CteContentGenerator" id="cdfde" />
+  <bean class="pt.webdetails.cte.CteContentGenerator" id="html" />
+  <bean class="pt.webdetails.cte.CteContentGenerator" id="css" />
+  <bean class="pt.webdetails.cte.CteContentGenerator" id="xml" />
+  <bean class="pt.webdetails.cte.CteContentGenerator" id="js" />
   
 </beans>

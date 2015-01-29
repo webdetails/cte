@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  * Updates URLs so a page can be serviced outside its location.
  * Also allows to inject simple javascript assignments.
  */
-public abstract class ProcessedHtmlPage extends BaseService {
+public abstract class ProcessedHtmlPage {
 
   private static Log log = LogFactory.getLog( ProcessedHtmlPage.class );
   protected static final Pattern URL_PROTOCOL = Pattern.compile( "^\\w*\\:" );

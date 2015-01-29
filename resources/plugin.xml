@@ -3,9 +3,9 @@
 
 	<lifecycle-listener class="pt.webdetails.cte.CteLifecycleListener" />
 	
-	<content-generator class="org.pentaho.cte.CteContentGenerator"/>
+	<content-generator class="org.pentaho.cte.CteContentGenerator" />
 
-    <content-types>
+	<content-types>
 
         <static-paths>
             <static-path url="/cte/resources" localFolder="resources"/>
@@ -13,61 +13,61 @@
         </static-paths>
         
         <content-type type="html" mime-type="text/html">
-        	<title>Text Editor</title>
+        	<title>HTML</title>
 	      	<operations>
 		        <operation>
 		          	<id>EDIT</id>
-                	<perspective>cte</perspective>
+		          	<perspective>cte.edit</perspective>
 		        </operation>
 		    </operations>
     	</content-type>
     	
     	<content-type type="xml" mime-type="text/xml">
-        	<title>Text Editor</title>
+        	<title>XML</title>
 	      	<operations>
 		        <operation>
 		          	<id>EDIT</id>
-                	<perspective>cte</perspective>
+                	<perspective>cte.edit</perspective>
 		        </operation>
 		    </operations>
     	</content-type> 
     	
     	<content-type type="cdfde" mime-type="application/json">
-        	<title>Text Editor</title>
+        	<title>CDFDE</title>
 	      	<operations>
 		        <operation>
 		          	<id>EDIT</id>
-                	<perspective>cte</perspective>
+                	<perspective>cte.edit</perspective>
 		        </operation>
 		    </operations>
     	</content-type>
     	
     	<content-type type="js" mime-type="text/javascript">
-        	<title>Text Editor</title>
+        	<title>JS</title>
 	      	<operations>
 		        <operation>
 		          	<id>EDIT</id>
-                	<perspective>cte</perspective>
+                	<perspective>cte.edit</perspective>
 		        </operation>
 		    </operations>
     	</content-type>
     	
     	<content-type type="css" mime-type="text/css">
-        	<title>Text Editor</title>
+        	<title>CSS</title>
 	      	<operations>
 		        <operation>
 		          	<id>EDIT</id>
-                	<perspective>cte</perspective>
+                	<perspective>cte.edit</perspective>
 		        </operation>
 		    </operations>
     	</content-type>
     	
     	<content-type type="properties" mime-type="text/plain">
-        	<title>Text Editor</title>
+        	<title>Properties</title>
 	      	<operations>
 		        <operation>
 		          	<id>EDIT</id>
-                	<perspective>cte</perspective>
+                	<perspective>cte.edit</perspective>
 		        </operation>
 		    </operations>
     	</content-type>

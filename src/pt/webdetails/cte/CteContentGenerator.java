@@ -25,10 +25,22 @@ public class CteContentGenerator extends SimpleContentGenerator {
   @Override public void createContent() throws Exception {
     String path = getPathParameterAsString( Constants.PARAM_PATH, "" );
 
-    getResponse().sendRedirect( CteEngine.getInstance().getEnvironment().getPluginBaseUrl() + "api/edit?path=" + path );
+    if( isCallForEditor() ) {
+
+      getResponse()
+          .sendRedirect( CteEngine.getInstance().getEnvironment().getPluginBaseUrl() + "api/edit?path=" + path );
+
+    } else {
+      // back into the standard platform file handling with you...
+      getResponse().sendRedirect( getRequest().getRequestURL().toString().replace( "/generatedContent", "/content" ) );
+    }
   }
 
   @Override public String getPluginName() {
     return Constants.PLUGIN_ID;
+  }
+
+  private boolean isCallForEditor(){
+    return getRequest().getRequestURI().endsWith( Constants.PLUGIN_EDITOR_PERSPECTIVE_ID );
   }
 }
