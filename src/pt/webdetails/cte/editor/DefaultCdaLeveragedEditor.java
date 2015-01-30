@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.webdetails.cpf.InterPluginCall;
 import pt.webdetails.cpf.Util;
+import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.api.ICteEditor;
 import pt.webdetails.cte.engine.CteEngine;
@@ -78,6 +79,10 @@ public class DefaultCdaLeveragedEditor implements ICteEditor {
   @Override
   public boolean saveFile( String path, InputStream fileContents ) throws Exception {
     return false; /* CDA takes care of this */
+  }
+
+  @Override public IBasicFile[] getTree( String dir, String fileExtensions, boolean showHiddenFiles, boolean userIsAdmin ) {
+    return null; /* CDA takes care of this */
   }
 
   private String doCDAInterPluginCall( String method, Map<String, Object> params ){

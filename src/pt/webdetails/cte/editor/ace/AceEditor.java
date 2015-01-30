@@ -3,6 +3,7 @@ package pt.webdetails.cte.editor.ace;
 import org.apache.commons.lang.StringUtils;
 import pt.webdetails.cpf.PluginEnvironment;
 import pt.webdetails.cpf.repository.api.FileAccess;
+import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cpf.repository.api.IUserContentAccess;
 import pt.webdetails.cte.api.ICteEditor;
 import pt.webdetails.cte.api.ICteEnvironment;
@@ -11,6 +12,8 @@ import pt.webdetails.cte.engine.CteEngine;
 import javax.ws.rs.WebApplicationException;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AceEditor implements ICteEditor{
 
@@ -78,6 +81,41 @@ public class AceEditor implements ICteEditor{
     }
 
     return false;
+  }
+
+
+  @Override
+  public IBasicFile[] getTree( String dir, String fileExtensions, boolean showHiddenFiles, boolean userIsAdmin ) {
+
+    ArrayList<String> extensionsList = new ArrayList<String>();
+    String[] extensions = StringUtils.split( fileExtensions, "." );
+
+    if ( extensions != null ) {
+      for ( String extension : extensions ) {
+        extensionsList.add( extension );
+      }
+    }
+
+    GenericBasicFileFilter fileFilter =
+        new GenericBasicFileFilter( null, extensionsList.toArray( new String[ extensionsList.size() ] ), true );
+
+    GenericFileAndDirectoryFilter fileAndDirFilter = new GenericFileAndDirectoryFilter( fileFilter );
+
+    // folder filtering ( see settings.xml ) will only occur for non-admin users
+    if( !userIsAdmin ) {
+        // TODO
+        //fileAndDirFilter.setDirectories( CdeSettings.getFilePickerHiddenFolderPaths( CdeSettings.FolderType.REPO ) );
+        //fileAndDirFilter.setFilterType( GenericFileAndDirectoryFilter.FilterType.FILTER_OUT ); // act as a black-list
+    }
+
+    IUserContentAccess access = getEnvironment().getUserContentAccess( null );
+    List<IBasicFile> fileList = access.listFiles( dir, fileAndDirFilter, 1, true, showHiddenFiles );
+
+    if ( fileList != null && fileList.size() > 0 ) {
+      return fileList.toArray( new IBasicFile[ fileList.size() ] );
+    }
+
+    return new IBasicFile[] { };
   }
 
   private ICteEnvironment getEnvironment(){

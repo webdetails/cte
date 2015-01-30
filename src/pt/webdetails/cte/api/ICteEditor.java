@@ -16,6 +16,8 @@
 */
 package pt.webdetails.cte.api;
 
+import pt.webdetails.cpf.repository.api.IBasicFile;
+
 import java.io.InputStream;
 
 public interface ICteEditor {
@@ -67,5 +69,8 @@ public interface ICteEditor {
    * @return true is properly saved, false otherwise
    */
   boolean saveFile( String path, InputStream content ) throws Exception;
+
+
+  IBasicFile[] getTree( String dir, final String fileExtensions, boolean showHiddenFiles, boolean userIsAdmin );
 
 }

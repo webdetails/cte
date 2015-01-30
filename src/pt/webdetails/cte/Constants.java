@@ -28,11 +28,19 @@ public class Constants {
   public static final String ENDPOINT_BLANK_EDITOR = "blank";
   public static final String ENDPOINT_GET_FILE = "getFile";
   public static final String ENDPOINT_SAVE_FILE = "saveFile";
+  public static final String ENDPOINT_TREE_EXPLORE = "tree";
 
   public static final String PLUGIN_EDITOR_PERSPECTIVE_ID = "cte.edit";
 
   public static final String PARAM_PATH = "path";
   public static final String PARAM_DATA = "data";
   public static final String PARAM_REQUEST = "request";
+  public static final String PARAM_DIR = "dir";
+  public static final String PARAM_OUTPUT_TYPE = "outputType";
+  public static final String PARAM_DASHBOARD_PATH = "dashboardPath";
+  public static final String PARAM_FILE_EXTENSIONS = "fileExtensions";
+  public static final String PARAM_ACCESS = "access";
+  public static final String PARAM_SHOW_HIDDEN_FILES = "showHiddenFiles";
+
 
 }

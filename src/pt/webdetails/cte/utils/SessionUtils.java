@@ -19,10 +19,15 @@ package pt.webdetails.cte.utils;
 import org.pentaho.platform.api.engine.IUserRoleListService;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.engine.security.SecurityHelper;
 
 import java.util.List;
 
 public class SessionUtils {
+
+  public static boolean userInSessionIsAdmin() {
+    return SecurityHelper.getInstance().isPentahoAdministrator( PentahoSessionHolder.getSession() );
+  }
 
   public static String getUserInSession() {
     return PentahoSessionHolder.getSession().getName();

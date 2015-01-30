@@ -17,18 +17,23 @@
 package pt.webdetails.cte.web;
 
 import org.apache.commons.lang.StringUtils;
+import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.webdetails.cpf.repository.util.RepositoryHelper;
+import pt.webdetails.cpf.utils.MimeTypes;
 import pt.webdetails.cpf.utils.PluginIOUtils;
 import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.api.ICteEditor;
 import pt.webdetails.cte.engine.CteEngine;
+import pt.webdetails.cte.utils.SessionUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 @Path( "/cte/api/" ) public class CteApi {
 
@@ -121,14 +126,6 @@ import java.io.ByteArrayInputStream;
     return String.valueOf( success );
   }
 
-  private ICteEditor getCteEditor() {
-    return getEngine().getCteEditor();
-  }
-
-  private CteEngine getEngine() {
-    return CteEngine.getInstance();
-  }
-
   /**
    * Centralized method for all security and file path validations
    *
@@ -161,6 +158,32 @@ import java.io.ByteArrayInputStream;
     return canRead;
   }
 
+  @POST
+  @Path( Constants.ENDPOINT_TREE_EXPLORE )
+  @Produces( MimeTypes.PLAIN_TEXT )
+  public String tree(
+      @FormParam( Constants.PARAM_DIR ) @DefaultValue( "/" ) String folder,
+      @FormParam( Constants.PARAM_OUTPUT_TYPE ) String outputType,
+      @QueryParam( Constants.PARAM_DASHBOARD_PATH ) @DefaultValue( StringUtils.EMPTY ) String dashboardPath,
+      @QueryParam( Constants.PARAM_FILE_EXTENSIONS ) String fileExtensions,
+      @QueryParam( Constants.PARAM_ACCESS ) String access,
+      @QueryParam( Constants.PARAM_SHOW_HIDDEN_FILES ) @DefaultValue( "false" ) boolean showHiddenFiles )
+      throws IOException {
+
+    if ( !StringUtils.isEmpty( outputType ) && outputType.equals( "json" ) ) {
+      try {
+        return RepositoryHelper.toJSON( folder,
+            getCteEditor().getTree( folder, fileExtensions, showHiddenFiles, SessionUtils.userInSessionIsAdmin() ) );
+      } catch ( JSONException e ) {
+        logger.error( "tree" + folder, e );
+        return "Error getting files in folder " + folder;
+      }
+    } else {
+      return RepositoryHelper.toJQueryFileTree( folder,
+          getCteEditor().getTree( folder, fileExtensions, showHiddenFiles, SessionUtils.userInSessionIsAdmin() ) );
+    }
+  }
+
   /**
    * Centralized method for all security and file path validations
    *
@@ -191,5 +214,13 @@ import java.io.ByteArrayInputStream;
     }
 
     return canEdit;
+  }
+
+  private ICteEditor getCteEditor() {
+    return getEngine().getCteEditor();
+  }
+
+  private CteEngine getEngine() {
+    return CteEngine.getInstance();
   }
 }
