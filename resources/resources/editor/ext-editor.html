@@ -38,6 +38,7 @@
     <title>Editor</title>
 
     <link rel="stylesheet" href="../static/fileTree/css/jqueryFileTree.css" type="text/css">
+    <link rel="stylesheet" href="../static/fileTree/css/filetree_ctools_ext.css" type="text/css">
 
     <!--link rel="stylesheet" href="../static/jstree/themes/default/style.css" type="text/css"-->
 
@@ -59,7 +60,7 @@
       // stores URL parameters
       var params = {};
       // stores currently opened file name
-      var fileName = null;
+      var fileName = "";
       // true if 'change' event was triggered, except when file is beeing loaded
       var isDirty = false;
       // if true isDirty will be set to true when 'change' events are triggered in the editor
@@ -68,44 +69,65 @@
       var listeners = {
         onStatusUpdate: null,
         onSave: null,
-        notify: null
+        notify: function(msg, type) { console.log(type + " : " + msg); }
       };
-      
-      var getUrlParams = function() {
-        
-        var url = document.location.href;
-        var output = {};
-        var index = url.indexOf('?');
-        if(index < 0) {
-          return null;
-        } else {
-          // First we get the part of the url with the parameters in it (i.e. after the '?'), and partition
-          // it into individual 'var=value' pieces. Then we split those pieces and add them to the output object
-          args = url.slice(index + 1).split('&');
-          for(i = 0; i < args.length; i++) {
-            pair = args[i].split('=');
-            output[pair[0]] = unescape(pair[1]);
+
+      var load = function(filename) {
+
+        editor.loadFile(
+          filename,
+          function(response, loadedFileName) {
+
+            pageLoaded = false;
+
+            fileName = loadedFileName;
+
+            editor.setContents(response);
+
+            pageLoaded = true;
+
+            setDirty(false);
+
+            // use filename extension to set mode
+            editor.setMode(loadedFileName.split('.').pop());
+
+            notify('File ' + loadedFileName + ' loaded.');
+
+            updateStatus();
+          },
+          function(response) {
+            //editor.setContents("");
+            //fileName = "";
+            //updateStatus();
+            if(response) {
+              if(typeof response.error == "function") {
+                notify("Error loading file: " + response.error().statusText);
+              } else {
+                notify(response);
+              }
+            }
           }
-          return output;
-        }
+        );
       };
-        
 
       var save = function() {
+
         editor.saveFile(
-          fileName,
-          editor.getContents(),
-          function(result) {
+          fileName, // $('#infoArea').val(),
+          function(response) {
             var msg = "";
-            if(result.success) {
+            if(response && response.toString() === "true") {
+              //fileName = $('#infoArea').val();
+              pageLoaded = true;
               setDirty(false);
-              notify(result.result + ' saved ok.');
+              //updateStatus();
+              notify(fileName + ' saved ok.');
             } else {
-              notify('error saving file: ' + result.result, 'error');
+              notify('Error saving file: ' + fileName, 'error');
             }
           },
-          function(data) {
-            notify(data, 'error');
+          function(response) {
+            notify(response, 'error');
           }
         );
       };
@@ -120,13 +142,21 @@
           type = notifyType.INFO;
         }
         if(typeof(listeners.notify) == 'function') {
-          listeners.notify(msg,type);
+          listeners.notify(msg, type);
         }
       };
 
       var updateStatus = function() {
-       var info = fileName + (editor.isReadOnly() ? ' (readonly)' : '') + (isDirty ? '*' : '');
-        $('#infoArea').text(info);
+
+        var info = fileName + (editor.isReadOnly() && pageLoaded ? ' (readonly)' : '');
+        // manage enable/disable save button
+        if(isDirty && !editor.isReadOnly() ) {
+          $("#saveBtn").prop("disabled", false).css("cursor", "pointer").fadeTo(500, 1);
+          info += '*';
+        } else {
+          $("#saveBtn").prop("disabled", true).css("cursor", "default").fadeTo(500, 0.2);
+        }
+        $('#infoArea').text(info); // $('#infoArea').val(info);
         if(typeof(listeners.onStatusUpdate) == 'function') {
           listeners.onStatusUpdate(isDirty);
         }
@@ -169,7 +199,8 @@
           <td>
             <div id="btnArea">
               <button id="saveBtn" onclick ="save()" style=""> Save </button>
-              <span id="infoArea"/>
+              <span id="infoArea" style="min-width: 200px;"/>
+              <!--input type="text" id="infoArea"/-->
             </div>
           </td>
         </tr>
@@ -187,8 +218,15 @@
 </div>
     <script>
       window.onload = function() {
-        params = getUrlParams();
-        fileName = params.path;
+        // read url query parameters
+        var queryParam,
+            queryParams = window.location.search.substring(1),
+            myRegex = /([^&=]+)=?([^&]*)/g;
+
+        while((queryParam = myRegex.exec(queryParams)) !== null) {
+          params[decodeURIComponent(queryParam[1])] = decodeURIComponent(queryParam[2]);
+        }
+
         
         if(params.editorOnly) {
           $('#btnArea').css('display', 'none');
@@ -212,10 +250,6 @@
           $('#browse_div').width(window.innerWidth - (window.innerWidth * 0.75) - 15);
           $('#editArea').width(window.innerWidth - (window.innerWidth * 0.25) - 15);
         }
-        
-        if(fileName == null) {
-          return;
-        }
             
         editor.initEditor('editArea');
 
@@ -227,16 +261,28 @@
           editor.setMode(params.mode);
         }
 
-        // More info, see aceWrapper.js
-        editor.loadFile();
-        updateStatus();
-
         editor.onChange(function(e) {
           //console.log(e.data.action);
           if(pageLoaded) {
             setDirty(true);
           }
         });
+
+        // defaults settings
+        $("#saveBtn").prop("disabled", true).css("cursor", "default").fadeTo(500, 0.2);
+        editor.setReadOnly(true);
+        if(params.path) {
+          //fileName = params.path;
+          // More info, see aceWrapper.js
+          load(params.path);//editor.loadFile();
+          //updateStatus();
+        } else {
+          fileName = "";//"Unsaved";
+          //pageLoaded = true;
+          //setDirty(true);
+          updateStatus();
+        }
+
       
         /********************
          **** FileTree ******
@@ -256,16 +302,13 @@
           }
         },
         function(file) {
-          fileName = "/" + file;
-
           if(!isDirty
             || (isDirty && confirm("You have unsaved changes, discard them?"))) {
 
             $(".selectedFile").attr("class", "");
             $("a[rel='" + file + "']").attr("class", "selectedFile");
 
-            editor.loadFile();
-            updateStatus();
+            load("/" + file);
           }
           
         });

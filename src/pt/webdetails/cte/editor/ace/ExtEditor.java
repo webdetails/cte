@@ -39,6 +39,7 @@ public class ExtEditor extends ProcessedHtmlPage {
     ArrayList<Pair<String, String>> pairs = new ArrayList<Pair<String,String>>();
     pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "EXT_EDITOR", quote( baseApi, Constants.ENDPOINT_EDITOR ) ) );
     pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "CAN_EDIT_URL", quote( baseApi, Constants.ENDPOINT_CAN_EDIT ) ) );
+    pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "CAN_READ_URL", quote( baseApi, Constants.ENDPOINT_CAN_READ ) ) );
     pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "GET_FILE_URL", quote( baseApi, Constants.ENDPOINT_GET_FILE ) ) );
     pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "SAVE_FILE_URL", quote( baseApi, Constants.ENDPOINT_SAVE_FILE ) ) );
     pairs.add(

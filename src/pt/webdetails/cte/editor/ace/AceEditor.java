@@ -61,7 +61,7 @@ public class AceEditor implements ICteEditor{
   public InputStream getFile( String path ) throws Exception {
     IUserContentAccess access = getEnvironment().getUserContentAccess( null );
 
-    if ( canEdit( path ) ) {
+    if ( canRead( path ) ) {
       return access.getFileInputStream( path );
     } else {
       return null;

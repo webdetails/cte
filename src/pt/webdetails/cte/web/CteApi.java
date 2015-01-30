@@ -45,7 +45,7 @@ import java.io.ByteArrayInputStream;
   @Path( Constants.ENDPOINT_CAN_READ )
   @Produces( { MediaType.WILDCARD } )
   public String canRead( @QueryParam( Constants.PARAM_PATH ) String path ) throws Exception {
-    return Boolean.toString( isFileEditAllowed( path ) );
+    return Boolean.toString( isFileReadAllowed( path ) );
   }
 
   @GET

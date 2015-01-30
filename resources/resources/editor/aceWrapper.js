@@ -59,37 +59,67 @@ var CodeEditor = function() {
 
   },
   
-  loadFile: function() {
+  loadFile: function(filename, callback, errorCallback) {
     var myself = this;
 
-    pageLoaded = false;
-    setDirty(false);
+    //check read permissions
+    $.get(ExternalEditor.CAN_READ_URL, {path: filename}, function(response) {
+        if(response && response.toString() === "true") {
+
+          $.get(ExternalEditor.CAN_EDIT_URL, {path: filename}, function(response) {
+            if(response && response.toString() === "true") {
+              myself.setReadOnly(false);
+            } else {
+              myself.setReadOnly(true);
+            }
+
+            $.get(ExternalEditor.GET_FILE_URL, {path: filename}, function(response) {
+              callback(response, filename);
+            })
+              .fail(function(response) {
+                errorCallback(response);
+              });
+          })
+            .fail(function(response) {
+              errorCallback(response);
+            });
+          
+        } else {
+          errorCallback("Sorry, you don't have permissions to read " + filename);
+        }
+    })
+      .fail(function(response) {
+        errorCallback(response);
+      });
+
+  /*
 
     //check edit permission
-    $.get(ExternalEditor.CAN_EDIT_URL, {path: fileName},
+    $.get(ExternalEditor.CAN_EDIT_URL, {path: filename},
       function(result) {
+        debugger;
         var readonly = !(result == "true");
         myself.setReadOnly(readonly);
         //TODO: can read?..get permissions?...
 
         //load file contents
-        $.get(ExternalEditor.GET_FILE_URL, {path: fileName})
-          .done(function(response) {
+        //$.get(ExternalEditor.GET_FILE_URL, {path: filename}).done(callback, filename).fail(errorCallback);
+        $.ajax({
+          url: ExternalEditor.GET_FILE_URL,
+          type: "GET",
+          //contentType: "application/json",
+          //dataType: "json",
+          data: {path: filename},
+          success: function(response) {
+            callback(response, filename);
+          },
+          error: function(response) {
+            errorCallback(response);
+          }
+        });
 
-            myself.setContents(response);
-
-            pageLoaded = true;
-
-            // use fileName extension to set mode
-            editor.setMode(fileName.split('.').pop());
-          })
-          .fail(function(response) {
-            myself.setContents("");
-            fileName = "";
-            updateStatus();
-            alert("Error loading file: " + response.error().statusText);
-          });
       });
+    */
   },
 
   setContents: function(contents) {
@@ -101,22 +131,22 @@ var CodeEditor = function() {
     //this.editor.navigateFileStart();
   },
 
-  saveFile: function(fileName, contents, callback, errorCallback) {
+  saveFile: function(filename, callback, errorCallback) {
+    if(this.isReadOnly()) {
+      errorCallback("Sorry, you don't have permissions to edit " + filename);
+      return;
+    }
     $.ajax({
       url: ExternalEditor.SAVE_FILE_URL,
       type: "POST",
       //contentType: "application/json",
       dataType: "json",
-      data: {path: fileName, data: contents},
-      success: function(data){
-        if(typeof callback == 'function') {
-          callback(data);
-        }
+      data: {path: filename, data: this.getContents()},
+      success: function(response) {
+        callback(response);
       },
-      error: function(data){
-        if(typeof errorCallback == 'function') {
-          errorCallback(data);
-        }
+      error: function(response) {
+        errorCallback(response);
       }
     });
   },
