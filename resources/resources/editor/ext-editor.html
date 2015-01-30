@@ -27,6 +27,14 @@
         border: 1px solid #bbb;
         left: 10px;
       }
+      #infoAreaWarnings{
+        padding-left: 10px;
+        padding-right: 10px;
+        position: relative;
+        font-size: 14px;
+        font-weight: bold;
+        color: red;
+      }
 
       body{
         color: #444;
@@ -149,15 +157,16 @@
 
       var updateStatus = function() {
 
-        var info = fileName + (editor.isReadOnly() && pageLoaded ? ' (readonly)' : '');
+        var infoWarning = (editor.isReadOnly() && pageLoaded ? ' (readonly)' : '');
         // manage enable/disable save button
         if(isDirty && !editor.isReadOnly() ) {
           $("#saveBtn").prop("disabled", false).css("cursor", "pointer").fadeTo(500, 1);
-          info += '*';
+          infoWarning += '*';
         } else {
           $("#saveBtn").prop("disabled", true).css("cursor", "default").fadeTo(500, 0.2);
         }
-        $('#infoArea').text(info); // $('#infoArea').val(info);
+        $('#infoArea').text(fileName);
+        $('#infoAreaWarnings').text(infoWarning);
         if(typeof(listeners.onStatusUpdate) == 'function') {
           listeners.onStatusUpdate(isDirty);
         }
@@ -200,8 +209,8 @@
           <td>
             <div id="btnArea">
               <button id="saveBtn" onclick ="save()" style=""> Save </button>
-              <span id="infoArea" style="min-width: 200px;"/>
-              <!--input type="text" id="infoArea"/-->
+              <span id="infoArea" style="min-width: 200px;"></span>
+              <span id="infoAreaWarnings"></span>
             </div>
           </td>
         </tr>
@@ -215,8 +224,7 @@
         </tr>
       </tbody>
     </table>
-        
-</div>
+
     <script>
       window.onload = function() {
         // read url query parameters
