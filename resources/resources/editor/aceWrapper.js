@@ -31,7 +31,7 @@ var CodeEditor = function() {
     'js': 'javascript',
     'json': 'javascript',
     'html': 'html',
-    'sql': 'text',
+    'sql': 'sql',
     'txt': 'text',
     'properties': 'text',
     'md': 'text',
