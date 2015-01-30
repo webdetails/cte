@@ -20,9 +20,18 @@ public class Constants {
 
   public static final String PLUGIN_ID = "cte";
 
+  public static final String PLUGIN_WELCOME_FILE = "welcome.txt";
+
+  public static final String ENDPOINT_CAN_EDIT = "canEdit";
+  public static final String ENDPOINT_EDITOR = "edit";
+  public static final String ENDPOINT_BLANK_EDITOR = "blank";
+  public static final String ENDPOINT_GET_FILE = "getFile";
+  public static final String ENDPOINT_SAVE_FILE = "saveFile";
+
   public static final String PLUGIN_EDITOR_PERSPECTIVE_ID = "cte.edit";
 
   public static final String PARAM_PATH = "path";
+  public static final String PARAM_DATA = "data";
   public static final String PARAM_REQUEST = "request";
 
 }

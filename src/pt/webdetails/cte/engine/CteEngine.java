@@ -19,9 +19,13 @@ package pt.webdetails.cte.engine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.webdetails.cpf.exceptions.InitializationException;
+import pt.webdetails.cpf.repository.api.IRWAccess;
+import pt.webdetails.cpf.repository.api.IReadAccess;
 import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.api.ICteEditor;
 import pt.webdetails.cte.api.ICteEnvironment;
+
+import java.io.IOException;
 
 public class CteEngine {
 
@@ -48,6 +52,7 @@ public class CteEngine {
       logger.error( "ICteEditor has not been set; CteEngine will not function properly" );
     }
 
+    ensureBasicDir();
   }
 
   public static CteEngine getInstance() {
@@ -61,6 +66,26 @@ public class CteEngine {
     }
 
     return instance;
+  }
+
+  public void ensureBasicDir(){
+
+    IRWAccess pluginRepoAccess = getEnvironment().getPluginRepositoryWriter( null );
+
+    if ( !pluginRepoAccess.fileExists( Constants.PLUGIN_WELCOME_FILE ) ) {
+      IReadAccess pluginSystemAccess = getEnvironment().getPluginSystemReader( null );
+
+      if ( pluginSystemAccess.fileExists( "resources/" + Constants.PLUGIN_WELCOME_FILE ) ) {
+
+        try {
+          pluginRepoAccess.saveFile( Constants.PLUGIN_WELCOME_FILE,
+              pluginSystemAccess.getFileInputStream( "resources/" + Constants.PLUGIN_WELCOME_FILE ) );
+
+        } catch ( IOException e ) {
+          logger.error( e.getMessage(), e );
+        }
+      }
+    }
   }
 
   public ICteEditor getCteEditor() {

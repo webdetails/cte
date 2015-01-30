@@ -20,12 +20,44 @@ import java.io.InputStream;
 
 public interface ICteEditor {
 
+  /**
+   * Centralized method for all security and file path validations
+   *
+   * @param path - path to file
+   * @return boolean - true if can edit, false otherwise
+   */
   boolean canEdit( String path );
 
+  /**
+   * Blank editor ( no file )
+   *
+   * @return blank editor
+   */
+  InputStream getEditor() throws Exception;
+
+  /**
+   * return editor for the content of a file
+   *
+   * @param path - file path
+   * @return editor for the content of a file
+   */
   InputStream getEditor( String path ) throws Exception;
 
+  /**
+   * returns the content of a file
+   *
+   * @param path - file path
+   * @return the content of a file
+   */
   InputStream getFile( String path ) throws Exception;
 
-  boolean saveFile( String path, InputStream fileContents ) throws Exception;
+  /**
+   * saves the content onto the file path
+   *
+   * @param path - file path
+   * @param content - file content
+   * @return true is properly saved, false otherwise
+   */
+  boolean saveFile( String path, InputStream content ) throws Exception;
 
 }

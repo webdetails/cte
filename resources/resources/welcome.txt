@@ -1,0 +1,5 @@
+Welcome to Community Text Editor!
+
+To get started, simply select a file from the tree and start editing its content.
+
+Enjoy the freedom!

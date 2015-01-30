@@ -24,25 +24,113 @@ import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.api.ICteEditor;
 import pt.webdetails.cte.engine.CteEngine;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayInputStream;
 
-@Path( "/cte/api" ) public class CteApi {
+@Path( "/cte/api/" ) public class CteApi {
 
   private Logger logger = LoggerFactory.getLogger( CteApi.class );
 
   @GET
-  @Path( "/canEdit" )
-  @Produces( { MediaType.WILDCARD  } )
-  public String canEdit( @QueryParam( Constants.PARAM_PATH ) String path, @Context HttpServletRequest servletRequest,
+  @Path( Constants.ENDPOINT_CAN_EDIT )
+  @Produces( { MediaType.WILDCARD } )
+  public String canEdit( @QueryParam( Constants.PARAM_PATH ) String path ) throws Exception {
+    return Boolean.toString( isFileEditAllowed( path ) );
+  }
+
+  @GET
+  @Path( Constants.ENDPOINT_BLANK_EDITOR )
+  @Produces( { MediaType.WILDCARD } )
+  public void blank( @Context HttpServletResponse servletResponse ) throws Exception {
+
+    try {
+      PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getCteEditor().getEditor() );
+
+    } catch ( Exception e ) {
+      logger.error( e.getMessage(), e );
+      throw e;
+    }
+  }
+
+  @GET
+  @Path( Constants.ENDPOINT_EDITOR )
+  @Produces( { MediaType.WILDCARD } )
+  public void edit( @QueryParam( Constants.PARAM_PATH ) String path,
       @Context HttpServletResponse servletResponse ) throws Exception {
+
+    if ( isFileEditAllowed( path ) ) {
+
+      try {
+        PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getCteEditor().getEditor( path ) );
+
+      } catch ( Exception e ) {
+        logger.error( e.getMessage(), e );
+        throw e;
+      }
+    }
+  }
+
+  @GET
+  @Path( Constants.ENDPOINT_GET_FILE )
+  @Produces( { MediaType.WILDCARD } )
+  public void getFile( @QueryParam( Constants.PARAM_PATH ) String path,
+      @Context HttpServletResponse servletResponse ) throws Exception {
+
+    if ( isFileEditAllowed( path ) ) {
+
+      try {
+        PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getCteEditor().getFile( path ) );
+
+      } catch ( Exception e ) {
+        logger.error( e.getMessage(), e );
+        throw e;
+      }
+    }
+  }
+
+  @POST
+  @Path( Constants.ENDPOINT_SAVE_FILE )
+  @Produces( { MediaType.WILDCARD } )
+  public String saveFile( @FormParam( Constants.PARAM_PATH ) String path,
+      @FormParam( Constants.PARAM_DATA ) @DefaultValue( StringUtils.EMPTY ) String data ) throws Exception {
+
+    boolean success = false;
+
+    if ( isFileEditAllowed( path ) ) {
+
+      try {
+        success = getCteEditor().saveFile( path,
+            new ByteArrayInputStream( data.getBytes( getEngine().getEnvironment().getSystemEncoding() ) ) );
+
+      } catch ( Exception e ) {
+        logger.error( e.getMessage(), e );
+        throw e;
+      }
+    }
+
+    return String.valueOf( success );
+  }
+
+  private ICteEditor getCteEditor() {
+    return getEngine().getCteEditor();
+  }
+
+  private CteEngine getEngine() {
+    return CteEngine.getInstance();
+  }
+
+  /**
+   * Centralized method for all security and file path validations
+   *
+   * @param path - path to file
+   * @return boolean - true if can edit, false otherwise
+   */
+  private boolean isFileEditAllowed( String path ) {
+
+    // TODO implement HTTP 403 FORBIDDEN
 
     boolean canEdit = false;
 
@@ -52,73 +140,17 @@ import java.io.ByteArrayInputStream;
 
         canEdit = getCteEditor().canEdit( path );
 
-      } catch ( Exception e ) {
-        logger.error( e.getMessage(), e );
-        throw e;
-      }
-    } else {
-      logger.error( "CteApi.canEdit(): file path is null" );
-    }
-
-    return Boolean.toString( canEdit );
-  }
-
-
-  @GET
-  @Path( "/edit" )
-  @Produces( { MediaType.WILDCARD } )
-  public void edit( @QueryParam( Constants.PARAM_PATH ) String path, @Context HttpServletRequest servletRequest,
-      @Context HttpServletResponse servletResponse ) throws Exception {
-
-    if ( !StringUtils.isEmpty( path ) ) {
-
-      try {
-        PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getCteEditor().getEditor( path ) );
+        if ( !canEdit ) {
+          logger.error( "CteApi.isFileEditAllowed(): not allowed to edit file at " + path );
+        }
 
       } catch ( Exception e ) {
         logger.error( e.getMessage(), e );
-        throw e;
       }
     } else {
-      logger.error( "CteApi.edit(): file path is null" );
-    }
-  }
-
-  @GET
-  @Path( "/getFile" )
-  @Produces( { MediaType.WILDCARD } )
-  public void getFile( @QueryParam( Constants.PARAM_PATH ) String path, @Context HttpServletRequest servletRequest,
-      @Context HttpServletResponse servletResponse ) throws Exception {
-
-    if( !getCteEditor().canEdit( path ) ){
-      logger.error( "CteApi.getFile(): not allowed to edit file at " + path );
-      // TODO send back HTTP 403 FORBIDDEN
-      String response = "Not allowed";
-      PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), new ByteArrayInputStream( response.getBytes(
-          CteEngine.getInstance().getEnvironment().getSystemEncoding() ) ) );
-      return;
+      logger.error( "CteApi.isFileEditAllowed(): file path is null" );
     }
 
-    if ( !StringUtils.isEmpty( path ) ) {
-
-      try {
-        PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getCteEditor().getFile( path ) );
-
-      } catch ( Exception e ) {
-        logger.error( e.getMessage(), e );
-        throw e;
-      }
-
-    } else {
-      logger.error( "CteApi.getFile(): file path is null" );
-    }
-  }
-
-  private ICteEditor getCteEditor() {
-    return getEngine().getCteEditor();
-  }
-
-  private CteEngine getEngine() {
-    return CteEngine.getInstance();
+    return canEdit;
   }
 }

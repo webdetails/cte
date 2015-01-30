@@ -19,7 +19,10 @@ package pt.webdetails.cte.editor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.webdetails.cpf.InterPluginCall;
+import pt.webdetails.cpf.Util;
+import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.api.ICteEditor;
+import pt.webdetails.cte.engine.CteEngine;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -31,17 +34,30 @@ public class DefaultCdaLeveragedEditor implements ICteEditor {
 
   private Logger logger = LoggerFactory.getLogger( DefaultCdaLeveragedEditor.class );
 
-  @Override public boolean canEdit( String path ) {
-    return true; // TODO implement security logic
-  }
-
-  @Override public InputStream getEditor( String path ) throws Exception {
+  @Override
+  public boolean canEdit( String path ) {
 
     Map<String, Object> params = new HashMap<String, Object>();
 
     params.put( "path", path );
-    InterPluginCall ipc = new InterPluginCall( InterPluginCall.CDA, "getExtEditor", params );
-    String reply = ipc.call();
+    String reply = doCDAInterPluginCall( "canEdit", params );
+
+    return reply != null && reply.contains( "true" );
+  }
+
+  @Override
+  public InputStream getEditor() throws Exception {
+    return getEditor( Util.joinPath( CteEngine.getInstance().getEnvironment().getPluginRepositoryDir(),
+        Constants.PLUGIN_WELCOME_FILE ) );
+  }
+
+  @Override
+  public InputStream getEditor( String path ) throws Exception {
+
+    Map<String, Object> params = new HashMap<String, Object>();
+
+    params.put( "path", path );
+    String reply = doCDAInterPluginCall( "getExtEditor", params );
 
     if ( reply != null ) {
       return new ByteArrayInputStream( reply.getBytes( Charset.defaultCharset() ) );
@@ -49,11 +65,18 @@ public class DefaultCdaLeveragedEditor implements ICteEditor {
     return null;
   }
 
-  @Override public InputStream getFile( String path ) throws Exception {
+  @Override
+  public InputStream getFile( String path ) throws Exception {
     return null; /* CDA takes care of this */
   }
 
-  @Override public boolean saveFile( String path, InputStream fileContents ) throws Exception {
+  @Override
+  public boolean saveFile( String path, InputStream fileContents ) throws Exception {
     return false; /* CDA takes care of this */
+  }
+
+  private String doCDAInterPluginCall( String method, Map<String, Object> params ){
+    InterPluginCall ipc = new InterPluginCall( InterPluginCall.CDA, method, params );
+    return ipc.call();
   }
 }

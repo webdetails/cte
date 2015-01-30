@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin name="cte" title="Pentaho Community Text Editor">
+	
+	<overlays>
+		<overlay id="startup.cte" resourcebundle="content/cte/resources/lang/messages">
+			<menubar id="toolsmenu">
+	        	<menuitem id="cte" label="${launcher.cte}" command="mantleXulHandler.openUrl('${launcher.cte}','${launcher.cte.tooltip}','plugin/cte/api/edit?path=/public/cte/welcome.txt')"/>
+	      	</menubar>
+	    </overlay>
+	</overlays>
+
 
 	<lifecycle-listener class="pt.webdetails.cte.CteLifecycleListener" />
 	

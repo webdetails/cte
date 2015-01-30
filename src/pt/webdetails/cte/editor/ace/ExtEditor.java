@@ -7,6 +7,7 @@ import pt.webdetails.cpf.packager.origin.PathOrigin;
 import pt.webdetails.cpf.packager.origin.StaticSystemOrigin;
 import pt.webdetails.cpf.repository.api.IContentAccessFactory;
 import pt.webdetails.cpf.utils.Pair;
+import pt.webdetails.cte.Constants;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,10 +37,10 @@ public class ExtEditor extends ProcessedHtmlPage {
   protected Iterable<Pair<String, String>> getBackendAssignments( IUrlProvider urlProvider ) {
     String baseApi =  urlProvider.getPluginBaseUrl();
     ArrayList<Pair<String, String>> pairs = new ArrayList<Pair<String,String>>();
-    pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "EXT_EDITOR", quote( baseApi, "edit" ) ) );
-    pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "CAN_EDIT_URL", quote( baseApi, "canEdit") ) );
-    pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "GET_FILE_URL", quote( baseApi, "getFile" ) ) );
-    pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "SAVE_FILE_URL", quote( baseApi, "save" ) ) );
+    pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "EXT_EDITOR", quote( baseApi, Constants.ENDPOINT_EDITOR ) ) );
+    pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "CAN_EDIT_URL", quote( baseApi, Constants.ENDPOINT_CAN_EDIT ) ) );
+    pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "GET_FILE_URL", quote( baseApi, Constants.ENDPOINT_GET_FILE ) ) );
+    pairs.add( new Pair<String, String>( UI_BACKEND_PREFIX + "SAVE_FILE_URL", quote( baseApi, Constants.ENDPOINT_SAVE_FILE ) ) );
     pairs.add(
       new Pair<String, String>(
         UI_BACKEND_PREFIX + "LANG_PATH",
