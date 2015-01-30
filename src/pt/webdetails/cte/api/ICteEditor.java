@@ -29,6 +29,14 @@ public interface ICteEditor {
   boolean canEdit( String path );
 
   /**
+   * Checks to see if a given file is accessible
+   *
+   * @param path - path to file
+   * @return boolean - true if is accessible, false otherwise
+   */
+  boolean canRead( String path );
+
+  /**
    * Blank editor ( no file )
    *
    * @return blank editor

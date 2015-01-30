@@ -23,6 +23,7 @@ public class Constants {
   public static final String PLUGIN_WELCOME_FILE = "welcome.txt";
 
   public static final String ENDPOINT_CAN_EDIT = "canEdit";
+  public static final String ENDPOINT_CAN_READ = "canRead";
   public static final String ENDPOINT_EDITOR = "edit";
   public static final String ENDPOINT_BLANK_EDITOR = "blank";
   public static final String ENDPOINT_GET_FILE = "getFile";

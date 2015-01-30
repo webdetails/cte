@@ -31,10 +31,17 @@ public class AceEditor implements ICteEditor{
   }
 
   @Override
+  public boolean canRead( String path ) {
+    IUserContentAccess access = getEnvironment().getUserContentAccess( null );
+
+    return !StringUtils.isEmpty( path ) && access.fileExists( path ) && access.hasAccess( path, FileAccess.READ );
+  }
+
+  @Override
   public boolean canEdit( String path ) {
     IUserContentAccess access = getEnvironment().getUserContentAccess( null );
 
-    return !StringUtils.isEmpty( path ) && access.fileExists( path ) && access.hasAccess( path, FileAccess.WRITE );
+    return canRead( path ) && access.hasAccess( path, FileAccess.WRITE );
   }
 
   @Override

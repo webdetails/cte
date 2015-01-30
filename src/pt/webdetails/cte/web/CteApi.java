@@ -42,6 +42,13 @@ import java.io.ByteArrayInputStream;
   }
 
   @GET
+  @Path( Constants.ENDPOINT_CAN_READ )
+  @Produces( { MediaType.WILDCARD } )
+  public String canRead( @QueryParam( Constants.PARAM_PATH ) String path ) throws Exception {
+    return Boolean.toString( isFileEditAllowed( path ) );
+  }
+
+  @GET
   @Path( Constants.ENDPOINT_BLANK_EDITOR )
   @Produces( { MediaType.WILDCARD } )
   public void blank( @Context HttpServletResponse servletResponse ) throws Exception {
@@ -61,7 +68,7 @@ import java.io.ByteArrayInputStream;
   public void edit( @QueryParam( Constants.PARAM_PATH ) String path,
       @Context HttpServletResponse servletResponse ) throws Exception {
 
-    if ( isFileEditAllowed( path ) ) {
+    if ( isFileReadAllowed( path ) ) {
 
       try {
         PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getCteEditor().getEditor( path ) );
@@ -79,7 +86,7 @@ import java.io.ByteArrayInputStream;
   public void getFile( @QueryParam( Constants.PARAM_PATH ) String path,
       @Context HttpServletResponse servletResponse ) throws Exception {
 
-    if ( isFileEditAllowed( path ) ) {
+    if ( isFileReadAllowed( path ) ) {
 
       try {
         PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getCteEditor().getFile( path ) );
@@ -120,6 +127,38 @@ import java.io.ByteArrayInputStream;
 
   private CteEngine getEngine() {
     return CteEngine.getInstance();
+  }
+
+  /**
+   * Centralized method for all security and file path validations
+   *
+   * @param path - path to file
+   * @return boolean - true if can edit, false otherwise
+   */
+  private boolean isFileReadAllowed( String path ) {
+
+    // TODO implement HTTP 403 FORBIDDEN
+
+    boolean canRead = false;
+
+    if ( !StringUtils.isEmpty( path ) ) {
+
+      try {
+
+        canRead = getCteEditor().canRead( path );
+
+        if ( !canRead ) {
+          logger.error( "CteApi.isFileReadAllowed(): not allowed to edit file at " + path );
+        }
+
+      } catch ( Exception e ) {
+        logger.error( e.getMessage(), e );
+      }
+    } else {
+      logger.error( "CteApi.isFileReadAllowed(): file path is null" );
+    }
+
+    return canRead;
   }
 
   /**

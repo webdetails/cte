@@ -35,6 +35,11 @@ public class DefaultCdaLeveragedEditor implements ICteEditor {
   private Logger logger = LoggerFactory.getLogger( DefaultCdaLeveragedEditor.class );
 
   @Override
+  public boolean canRead( String path ) {
+    return true; /* CDA takes care of this */
+  }
+
+  @Override
   public boolean canEdit( String path ) {
 
     Map<String, Object> params = new HashMap<String, Object>();
