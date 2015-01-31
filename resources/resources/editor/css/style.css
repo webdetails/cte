@@ -1,0 +1,67 @@
+/*!
+ * Copyright 2002 - 2015 Webdetails, a Pentaho company.  All rights reserved.
+ *
+ * This software was developed by Webdetails and is provided under the terms
+ * of the Mozilla Public License, Version 2.0, or any later version. You may not use
+ * this file except in compliance with the license. If you need a copy of the license,
+ * please go to  http://mozilla.org/MPL/2.0/. The Initial Developer is Webdetails.
+ *
+ * Software distributed under the Mozilla Public License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to
+ * the license for the specific language governing your rights and limitations.
+ */
+
+#saveBtn{
+  width: auto;
+  border: solid 2px #bbb;
+  height: 25px;
+  font-size: 12px;
+  padding: 3px 10px;
+  background-color: #eaedee;
+  color: #444;
+}
+
+#saveBtn:hover{
+  background-color: #bbb;
+  color: #444;
+}
+
+#infoArea, #infoAreaWarnings{
+  padding-left: 10px;
+  padding-right: 10px;
+  position: relative;
+}
+#infoArea {
+  font-size: 13px;
+  font-weight: bold;
+  color: #444;
+  border: 1px solid #bbb;
+  left: 10px;
+}
+#infoArea.disabled{
+  border: none;
+  background: transparent;
+}
+
+#infoAreaWarnings{
+  font-size: 14px;
+  font-weight: bold;
+  color: red;
+}
+
+#editArea, #treeDiv{
+  border: thin #bfdce5 solid;
+}
+
+body{
+  color: #444;
+  background-color: #eaedee;
+  background: -webkit-linear-gradient(#EAEDEE, #F9FAFA); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(#EAEDEE, #F9FAFA); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(#EAEDEE, #F9FAFA); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(#EAEDEE, #F9FAFA); /* Standard syntax */
+}
+
+td{
+  vertical-align: middle;
+}

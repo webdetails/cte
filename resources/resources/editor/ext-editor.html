@@ -1,65 +1,39 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <style>
-      #saveBtn{
-        width: auto;
-        border: solid 2px #bbb;
-        height: 25px;
-        font-size: 12px;
-        padding: 3px 10px;
-        background-color: #eaedee;
-        color: #444;
-      }
-
-      #saveBtn:hover{
-        background-color: #bbb;
-        color: #444;
-      }
-
-      #infoArea{
-        padding-left: 10px;
-        padding-right: 10px;
-        position: relative;
-        font-size: 13px;
-        font-weight: bold;
-        color: #444;
-        border: 1px solid #bbb;
-        left: 10px;
-      }
-      #infoAreaWarnings{
-        padding-left: 10px;
-        padding-right: 10px;
-        position: relative;
-        font-size: 14px;
-        font-weight: bold;
-        color: red;
-      }
-
-      body{
-        color: #444;
-        background-color: #eaedee;
-      }
-    
-    </style>
     <meta charset="UTF-8"/>
     <title>Editor</title>
 
-    <link rel="stylesheet" href="../static/fileTree/css/jqueryFileTree.css" type="text/css">
-    <link rel="stylesheet" href="../static/fileTree/css/filetree_ctools_ext.css" type="text/css">
+    <link rel="stylesheet" href="./css/style.css" type="text/css">
 
-    <!--link rel="stylesheet" href="../static/jstree/themes/default/style.css" type="text/css"-->
+    <link rel="stylesheet" href="./js/fileTree/css/jqueryFileTree.css" type="text/css">
 
-    <script language="javascript" type="text/javascript" src="../static/jquery.js"></script>
-    <script language="javascript" type="text/javascript" src="../static/fileTree/js/jqueryFileTree.js"></script>
-    <!--script language="javascript" type="text/javascript" src="../static/jstree/jstree.js"></script-->
-    <script language="javascript" type="text/javascript" src="aceWrapper.js"></script>
-    <script language="javascript" type="text/javascript" src="ace/src/ace.js"></script>
-    <script language="javascript" type="text/javascript" src="ace/src/mode-javascript.js"></script>
-    <script language="javascript" type="text/javascript" src="ace/src/mode-css.js"></script>
-    <script language="javascript" type="text/javascript" src="ace/src/mode-xml.js"></script>
-    <script language="javascript" type="text/javascript" src="ace/src/mode-html.js"></script>
-    <script language="javascript" type="text/javascript" src="ace/src/mode-sql.js"></script>
+    <link rel="stylesheet" href="./js/fileTree/css/filetree_ctools_ext.css" type="text/css">
+
+    <script language="javascript" type="text/javascript" src="./js/lib/jquery.js"></script>
+
+    <script language="javascript" type="text/javascript" src="./js/fileTree/js/jqueryFileTree.js"></script>
+
+    <script language="javascript" type="text/javascript" src="./js/aceWrapper.js"></script>
+
+    <script language="javascript" type="text/javascript" src="./js/lib/ace/src/ace.js"></script>
+
+    <script language="javascript" type="text/javascript" src="./js/lib/ace/src/mode-coffee.js"></script>
+    <script language="javascript" type="text/javascript" src="./js/lib/ace/src/mode-css.js"></script>
+    <script language="javascript" type="text/javascript" src="./js/lib/ace/src/mode-html.js"></script>
+    <script language="javascript" type="text/javascript" src="./js/lib/ace/src/mode-javascript.js"></script>
+    <script language="javascript" type="text/javascript" src="./js/lib/ace/src/mode-json.js"></script>
+    <script language="javascript" type="text/javascript" src="./js/lib/ace/src/mode-jsp.js"></script>
+    <script language="javascript" type="text/javascript" src="./js/lib/ace/src/mode-less.js"></script>
+    <script language="javascript" type="text/javascript" src="./js/lib/ace/src/mode-pgsql.js"></script>
+    <script language="javascript" type="text/javascript" src="./js/lib/ace/src/mode-properties.js"></script>
+    <script language="javascript" type="text/javascript" src="./js/lib/ace/src/mode-sql.js"></script>
+    <script language="javascript" type="text/javascript" src="./js/lib/ace/src/mode-svg.js"></script>
+    <script language="javascript" type="text/javascript" src="./js/lib/ace/src/mode-text.js"></script>
+    <script language="javascript" type="text/javascript" src="./js/lib/ace/src/mode-xml.js"></script>
+    <script language="javascript" type="text/javascript" src="./js/lib/ace/src/mode-xquery.js"></script>
+
+    <script language="javascript" type="text/javascript" src="./js/lib/ace/src/theme-textmate.js"></script>
     <!--script language="javascript" type="text/javascript" src="ace/src/theme-monokai.js"></script>
     <script language="javascript" type="text/javascript" src="ace/src/theme-twilight.js"></script>
     <script language="javascript" type="text/javascript" src="ace/src/theme-eclipse.js"></script-->
@@ -130,7 +104,7 @@
               pageLoaded = true;
               setDirty(false);
               //updateStatus();
-              notify(fileName + ' saved ok.');
+              notify(fileName + ' saved.');
             } else {
               notify('Error saving file: ' + fileName, 'error');
             }
@@ -156,17 +130,27 @@
       };
 
       var updateStatus = function() {
-
         var infoWarning = (editor.isReadOnly() && pageLoaded ? ' (readonly)' : '');
         // manage enable/disable save button
+        var saveBtn = $("#saveBtn");
         if(isDirty && !editor.isReadOnly() ) {
-          $("#saveBtn").prop("disabled", false).css("cursor", "pointer").fadeTo(500, 1);
+          saveBtn.prop("disabled", false).css("cursor", "pointer").fadeTo(500, 1);
+
           infoWarning += '*';
         } else {
-          $("#saveBtn").prop("disabled", true).css("cursor", "default").fadeTo(500, 0.2);
+          saveBtn.prop("disabled", true).css("cursor", "default").fadeTo(500, 0.2);
         }
-        $('#infoArea').text(fileName);
+
+        var infoArea = $('#infoArea');
+        if(fileName && fileName.length > 0) {
+          infoArea.removeClass("disabled");
+        } else {
+          infoArea.addClass("disabled");
+        }
+        infoArea.text(fileName);
+
         $('#infoAreaWarnings').text(infoWarning);
+
         if(typeof(listeners.onStatusUpdate) == 'function') {
           listeners.onStatusUpdate(isDirty);
         }
@@ -216,7 +200,7 @@
         </tr>
         <tr>
           <td style="vertical-align: top; padding-right: 10px;">
-            <div id="browse_div" class="urltargetfolderexplorer" style="width: 300px; float: left; height: 600px; margin-top: 12px;"></div>
+            <div id="treeDiv" class="urltargetfolderexplorer" style="width: 300px; float: left; height: 600px; margin-top: 12px;"></div>
           </td>
           <td style="vertical-align: top;">
             <pre style="height: 600px; width: 900px;" id="editArea"></pre>
@@ -246,18 +230,18 @@
         if(params.height) {
           $('#editArea').height(params.height);
         } else {
-          $('#browse_div').height(window.innerHeight - (params.editorOnly ? 20 : 75));
-          $('#editArea').height(window.innerHeight - (params.editorOnly ? 20 : 75));
+          $('#treeDiv').height(window.innerHeight - (params.editorOnly ? 20 : 80));
+          $('#editArea').height(window.innerHeight - (params.editorOnly ? 20 : 80));
         }
         
         if(params.width) {
           $('#editArea').width(params.width);
         } else{
           //$('#editArea').width(window.innerWidth - 30);
-          //$('#browse_div').width($('#browse_div').parent().width() - 10);
+          //$('#treeDiv').width($('#treeDiv').parent().width() - 10);
           //$('#editArea').width($('#editArea').parent().width() - 10);
-          $('#browse_div').width(window.innerWidth - (window.innerWidth * 0.75) - 15);
-          $('#editArea').width(window.innerWidth - (window.innerWidth * 0.25) - 15);
+          $('#treeDiv').width(window.innerWidth - (window.innerWidth * 0.75) - 25);
+          $('#editArea').width(window.innerWidth - (window.innerWidth * 0.25) - 25);
         }
             
         editor.initEditor('editArea');
@@ -296,13 +280,13 @@
         /********************
          **** FileTree ******
          ********************/
-        $('#browse_div').fileTree({
+        $('#treeDiv').fileTree({
           root: "/",
           //script: "/pentaho/plugin/pentaho-cdf-dd/api/resources/explore?fileExtensions=" + extension + "&showHiddenFiles=true" + (fileName != "" ? "&dashboardPath=" + fileName : ""),
           script: "/pentaho/plugin/cte/api/tree?showHiddenFiles=true",
-          expandSpeed: 1000,
-          collapseSpeed: 1000,
-          multiFolder: true,
+          expandSpeed: 500,
+          collapseSpeed: 500,
+          multiFolder: false,
           folderClick: function(obj, folder) {
             if($(".selectedFolder").length > 0) {
               $(".selectedFolder").attr("class", "");
@@ -324,13 +308,13 @@
       };
 
       window.onresize = function() {
-        $('#browse_div').height(window.innerHeight - (params.editorOnly ? 20 : 75));
-        $('#editArea').height(window.innerHeight - (params.editorOnly ? 20 : 75));
+        $('#treeDiv').height(window.innerHeight - (params.editorOnly ? 20 : 80));
+        $('#editArea').height(window.innerHeight - (params.editorOnly ? 20 : 80));
 
-        //$('#browse_div').width($('#browse_div').parent().width() - 10);
+        //$('#treeDiv').width($('#treeDiv').parent().width() - 10);
         //$('#editArea').width($('#editArea').parent().width() - 10);
-        $('#browse_div').width(window.innerWidth - (window.innerWidth * 0.75) - 15);
-        $('#editArea').width(window.innerWidth - (window.innerWidth * 0.25) - 15);
+        $('#treeDiv').width(window.innerWidth - (window.innerWidth * 0.75) - 25);
+        $('#editArea').width(window.innerWidth - (window.innerWidth * 0.25) - 25);
 
       };
     </script>
