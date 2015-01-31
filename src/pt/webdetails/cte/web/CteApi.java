@@ -102,8 +102,8 @@ import java.io.ByteArrayInputStream;
     }
   }
 
-  @POST @Path( Constants.ENDPOINT_TREE_EXPLORE ) @Produces( MimeTypes.PLAIN_TEXT )
-  public String tree( @FormParam( Constants.PARAM_DIR ) @DefaultValue( "/" ) String dir,
+  @GET @Path( Constants.ENDPOINT_TREE_EXPLORE ) @Produces( MimeTypes.PLAIN_TEXT )
+  public String tree( @QueryParam( Constants.PARAM_DIR ) @DefaultValue( "/" ) String dir,
       @QueryParam( Constants.PARAM_FILE_EXTENSIONS ) @DefaultValue( StringUtils.EMPTY )
       String commaSeparatedAllowedExtensions,
       @QueryParam( Constants.PARAM_SHOW_HIDDEN_FILES ) @DefaultValue( "false" ) boolean showHiddenFiles )
