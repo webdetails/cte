@@ -1,3 +1,16 @@
+/*!
+ * Copyright 2002 - 2015 Webdetails, a Pentaho company.  All rights reserved.
+ *
+ * This software was developed by Webdetails and is provided under the terms
+ * of the Mozilla Public License, Version 2.0, or any later version. You may not use
+ * this file except in compliance with the license. If you need a copy of the license,
+ * please go to  http://mozilla.org/MPL/2.0/. The Initial Developer is Webdetails.
+ *
+ * Software distributed under the Mozilla Public License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to
+ * the license for the specific language governing your rights and limitations.
+ */
+
 //URLs filled by backend
 var ExternalEditor = {
   EXT_EDITOR: null,
@@ -5,8 +18,8 @@ var ExternalEditor = {
   GET_FILE_URL: null,
   SAVE_FILE_URL: null,
   STATUS: {
-   OK: "ok",
-   ERROR: "error"
+    OK: "ok",
+    ERROR: "error"
   },
   EXT_EDITOR: null,
 };
@@ -21,42 +34,50 @@ var CodeEditor = function() {
   },
   MODE_BASE : 'ace/mode/',
   DEFAULT_MODE: 'text',
+  DEFAULT_THEME_PATH : 'ace/theme/textmate',
 
-  modeMap :
+  modeMap:
   { //highlight modes
+    'coffee': 'coffee',
     'css': 'css',
-    'cdfde': 'javascript',
+    'html': 'html',
     'cdv': 'javascript',
     'javascript': 'javascript',
     'js': 'javascript',
-    'json': 'javascript',
-    'html': 'html',
+    'cdfde': 'json',
+    'json': 'json',
+    'jsp': 'jsp',
+    'less': 'less',
+    'pgsql': 'pgsql',
+    'properties': 'properties',  
     'sql': 'sql',
-    'txt': 'text',
-    'properties': 'text',
+    'svg': 'svg',
+    'kdb': 'text',
     'md': 'text',
     'mdx': 'text',
+    'txt': 'text',
     'cda': 'xml',
     'ktr': 'xml',
-    'xcdf': 'xml',
     'xaction': 'xml',
+    'xcdf': 'xml',
     'xjpivot': 'xml',
     'xml': 'xml',
-    'wcdf': 'xml'
-
+    'wcdf': 'xml',
+    'xq':'xquery',
+    'xqy':'xquery',
+    'xquery':'xquery'
   },
 
   mode: 'javascript',
-  theme: 'ace/theme/textmate',
   editor: null,
   editorId: null,
 
   initEditor: function(editorId) {
-  this.editor = ace.edit(editorId); 
-  this.editorId = editorId;
-  this.setMode(null);
-  this.setTheme(null);
-
+    this.editor = ace.edit(editorId); 
+    this.editorId = editorId;
+    this.setMode(null);
+    //this.setTheme(null);
+    this.setTheme(this.DEFAULT_THEME_PATH);
   },
   
   loadFile: function(filename, callback, errorCallback) {
@@ -91,35 +112,6 @@ var CodeEditor = function() {
       .fail(function(response) {
         errorCallback(response);
       });
-
-  /*
-
-    //check edit permission
-    $.get(ExternalEditor.CAN_EDIT_URL, {path: filename},
-      function(result) {
-        debugger;
-        var readonly = !(result == "true");
-        myself.setReadOnly(readonly);
-        //TODO: can read?..get permissions?...
-
-        //load file contents
-        //$.get(ExternalEditor.GET_FILE_URL, {path: filename}).done(callback, filename).fail(errorCallback);
-        $.ajax({
-          url: ExternalEditor.GET_FILE_URL,
-          type: "GET",
-          //contentType: "application/json",
-          //dataType: "json",
-          data: {path: filename},
-          success: function(response) {
-            callback(response, filename);
-          },
-          error: function(response) {
-            errorCallback(response);
-          }
-        });
-
-      });
-    */
   },
 
   setContents: function(contents) {
@@ -156,22 +148,33 @@ var CodeEditor = function() {
   },
   
   setMode: function(mode) {
+    if(this.editor == null) { return; }
+
     this.mode = this.modeMap[mode];
 
+    var HLMode;
     if(this.mode == null) {
-      this.mode = this.DEFAULT_MODE;
+      HLMode = ace.require(this.MODE_BASE + this.DEFAULT_MODE).Mode;
+    } else {
+      HLMode = ace.require(this.MODE_BASE + this.mode).Mode;
     }
+    this.editor.getSession().setMode(new HLMode());
+  },
 
-    if(this.editor != null) {
-      if(this.mode != null) {
-        var HLMode = ace.require(this.MODE_BASE + this.mode).Mode;
-        this.editor.getSession().setMode(new HLMode());
-      }
-    }
+  getMode: function() {
+    //return this.editor.getSession().$modeId;
+    //return this.editor.getOption('mode');
+    return this.mode;
   },
   
-  setTheme: function(themePath) {
-    this.editor.setTheme((themePath == null || themePath == undefined) ? this.theme : themePath);
+  setTheme: function(theme) {
+    this.editor.setTheme((theme == null || theme == undefined)
+      ? this.DEFAULT_THEME_PATH
+      : theme);
+  },
+
+  getTheme: function() {
+    return this.editor.getOption('theme');
   },
   
   setReadOnly: function(readOnly) {
