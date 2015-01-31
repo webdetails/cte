@@ -21,6 +21,7 @@
 
     <dependency org="${pentaho.group}" name="pentaho-platform-api" rev="${dependency.pentaho.revision}" transitive="false"  changing="true" />
     <dependency org="${pentaho.group}" name="pentaho-platform-core" rev="${dependency.pentaho.revision}" transitive="false" changing="true" />
+    <dependency org="${pentaho.group}" name="pentaho-platform-repository" rev="${dependency.pentaho.revision}" transitive="false" changing="true" />
 
     <dependency org="commons-collections" name="commons-collections" rev="3.2" transitive="false"/>
     <dependency org="commons-logging" name="commons-logging" rev="1.1.1" />

@@ -70,7 +70,15 @@ public interface ICteEditor {
    */
   boolean saveFile( String path, InputStream content ) throws Exception;
 
-
-  IBasicFile[] getTree( String dir, final String fileExtensions, boolean showHiddenFiles, boolean userIsAdmin );
+  /**
+   * returns a file tree below the provided dir
+   *
+   * @param dir - dir path
+   * @param allowedExtensions - list of allowed file extensions under the tree
+   * @param showHiddenFiles - if true then hidden files will be included
+   * @param userIsAdmin - true if user is administrator
+   * @return IBasicFile[] - tree under the given dir path
+   */
+  IBasicFile[] getTree( String dir, String[] allowedExtensions, boolean showHiddenFiles, boolean userIsAdmin ) throws Exception;
 
 }

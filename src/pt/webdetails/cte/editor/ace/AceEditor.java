@@ -2,6 +2,7 @@ package pt.webdetails.cte.editor.ace;
 
 import org.apache.commons.lang.StringUtils;
 import pt.webdetails.cpf.PluginEnvironment;
+import pt.webdetails.cpf.Util;
 import pt.webdetails.cpf.repository.api.FileAccess;
 import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cpf.repository.api.IUserContentAccess;
@@ -13,21 +14,44 @@ import javax.ws.rs.WebApplicationException;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.ListIterator;
 
 public class AceEditor implements ICteEditor{
 
   private String extEditor;
+  private List<String> blacklistedFolders;
+  private List<String> blacklistedFileExtensions;
 
-  public AceEditor() {}
+  private boolean bypassBlacklists = false; // super-admin hidden flag
+
+  public AceEditor() {
+    this( new ArrayList<String>(), new ArrayList<String>()  );
+  }
+
+  public AceEditor( List<String> blacklistedFolders , List<String> blacklistedFileExtensions ) {
+
+    this.blacklistedFolders = blacklistedFolders != null ? blacklistedFolders : new ArrayList<String>();
+
+    if( blacklistedFileExtensions != null ){
+
+      ListIterator<String> iterator = blacklistedFileExtensions.listIterator();
+      while ( iterator.hasNext() ) {
+        iterator.set( iterator.next().toLowerCase() );
+      }
+    }
+
+    this.blacklistedFileExtensions = blacklistedFileExtensions != null ?
+        blacklistedFileExtensions : new ArrayList<String>();
+  }
 
   private String getExtEditor() throws Exception {
 
-    // sanitize calls; output is always the same ( ext-editor.html )
+    // sanitized calls; output is always the same ( ext-editor.html )
 
     if( extEditor == null ){
       extEditor = new ExtEditor( getEnvironment().getUrlProvider(), PluginEnvironment.repository() ).getExtEditor();
-      //return new ExtEditor( PluginEnvironment.env().getUrlProvider(), CteEngine.getInstance().getEnvironment().getRepo() );
     }
 
     return extEditor;
@@ -85,37 +109,129 @@ public class AceEditor implements ICteEditor{
 
 
   @Override
-  public IBasicFile[] getTree( String dir, String fileExtensions, boolean showHiddenFiles, boolean userIsAdmin ) {
+  public IBasicFile[] getTree( String dir, String[] allowedExtensions, boolean showHiddenFiles, boolean userIsAdmin ) throws Exception {
 
-    ArrayList<String> extensionsList = new ArrayList<String>();
-    String[] extensions = StringUtils.split( fileExtensions, "." );
+    if( allowedExtensions != null && allowedExtensions.length > 0 ) {
 
-    if ( extensions != null ) {
-      for ( String extension : extensions ) {
-        extensionsList.add( extension );
+      return getFilteredTree( dir, allowedExtensions, showHiddenFiles, userIsAdmin );
+
+    } else {
+
+      return getStandardTree( dir, showHiddenFiles, userIsAdmin );
+
+    }
+  }
+
+  private IBasicFile[] getFilteredTree( String dir, String[] allowedExtensions,
+      boolean showHiddenFiles, boolean userIsAdmin ) throws Exception {
+
+    List<String> allowedExtensionsList = Arrays.asList( allowedExtensions );
+
+    IBasicFile[] files = getStandardTree( dir, showHiddenFiles, userIsAdmin );
+
+    List<IBasicFile> filteredFileList = new ArrayList<IBasicFile>();
+
+    for( IBasicFile file : files ) {
+
+      if( !StringUtils.isEmpty( file.getExtension() )
+          && allowedExtensionsList.contains( file.getExtension().toLowerCase() )  ) {
+        filteredFileList.add( file );
       }
     }
 
-    GenericBasicFileFilter fileFilter =
-        new GenericBasicFileFilter( null, extensionsList.toArray( new String[ extensionsList.size() ] ), true );
+    return filteredFileList.toArray( new IBasicFile[]{} );
+  }
 
-    GenericFileAndDirectoryFilter fileAndDirFilter = new GenericFileAndDirectoryFilter( fileFilter );
+  private IBasicFile[] getStandardTree( String dir, boolean showHiddenFiles, boolean userIsAdmin ) throws Exception {
 
-    // folder filtering ( see settings.xml ) will only occur for non-admin users
-    if( !userIsAdmin ) {
-        // TODO
-        //fileAndDirFilter.setDirectories( CdeSettings.getFilePickerHiddenFolderPaths( CdeSettings.FolderType.REPO ) );
-        //fileAndDirFilter.setFilterType( GenericFileAndDirectoryFilter.FilterType.FILTER_OUT ); // act as a black-list
+    IBasicFile[] files = new IBasicFile[] {};
+
+    AceEditorFilter fileAndDirFilter = null;
+
+    if( bypassBlacklists && userIsAdmin ){
+
+      // Not to be trifled with
+
+      // this is a super-admin hidden feature, where all blacklists are bypassed; user in session will
+      // have access to system folders and any and all files that may contain sensitive information
+
+      fileAndDirFilter = new AceEditorFilter( null, null, null, GenericBasicFileFilter.FilterType.FILTER_IN );
+
+    } else {
+
+      // act as a blacklist
+      fileAndDirFilter = new AceEditorFilter( null, getBlacklistedFileExtensions().toArray( new String[] { } ),
+          getBlacklistedFolders().toArray( new String[] { } ), GenericBasicFileFilter.FilterType.FILTER_OUT );
     }
 
     IUserContentAccess access = getEnvironment().getUserContentAccess( null );
     List<IBasicFile> fileList = access.listFiles( dir, fileAndDirFilter, 1, true, showHiddenFiles );
 
     if ( fileList != null && fileList.size() > 0 ) {
-      return fileList.toArray( new IBasicFile[ fileList.size() ] );
+
+      List<IBasicFile> filteredFileList = new ArrayList<IBasicFile>();
+
+      for( IBasicFile file : fileList ) {
+
+        if( !isInBlacklistedFolder( file.getPath(), userIsAdmin ) && canRead( file.getPath() ) ) {
+            filteredFileList.add( file );
+        }
+      }
+
+      files = filteredFileList.toArray( new IBasicFile[ filteredFileList.size() ] );
     }
 
-    return new IBasicFile[] { };
+    return files;
+  }
+
+  private boolean isInBlacklistedFolder( String path, boolean userIsAdmin  ) {
+
+    if( bypassBlacklists && userIsAdmin ){
+
+      // Not to be trifled with
+
+      // this is a super-admin hidden feature, where all blacklists are bypassed; user in session will
+      // have access to system folders and any and all files that may contain sensitive information
+
+      return false;
+    }
+
+
+    boolean isInBlacklistedFolder = false;
+
+    if( !path.startsWith( Util.SEPARATOR ) ){
+      path = Util.SEPARATOR + path;
+    }
+
+    for( String blacklistedFolder : getBlacklistedFolders() ) {
+      isInBlacklistedFolder |= path.startsWith( blacklistedFolder );
+    }
+
+    return isInBlacklistedFolder;
+  }
+
+  public List<String> getBlacklistedFolders() {
+    return blacklistedFolders;
+  }
+
+  public void setBlacklistedFolders( List<String> blacklistedFolders ) {
+    this.blacklistedFolders = blacklistedFolders;
+  }
+
+  public List<String> getBlacklistedFileExtensions() {
+    return blacklistedFileExtensions;
+  }
+
+  public void setBlacklistedFileExtensions( List<String> blacklistedFileExtensions ) {
+    this.blacklistedFileExtensions = blacklistedFileExtensions;
+  }
+
+  public boolean isBypassBlacklists() {
+    return bypassBlacklists;
+  }
+
+  public void setBypassBlacklists( boolean bypassBlacklists ) {
+    this.bypassBlacklists = bypassBlacklists;
   }
 
   private ICteEnvironment getEnvironment(){

@@ -16,6 +16,7 @@
 */
 package pt.webdetails.cte.editor;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.webdetails.cpf.InterPluginCall;
@@ -37,18 +38,22 @@ public class DefaultCdaLeveragedEditor implements ICteEditor {
 
   @Override
   public boolean canRead( String path ) {
-    return true; /* CDA takes care of this */
+    return !StringUtils.isEmpty( path ); /* CDA takes care of this */
   }
 
   @Override
   public boolean canEdit( String path ) {
+
+    if ( StringUtils.isEmpty( path ) ){
+      return false;
+    }
 
     Map<String, Object> params = new HashMap<String, Object>();
 
     params.put( "path", path );
     String reply = doCDAInterPluginCall( "canEdit", params );
 
-    return reply != null && reply.contains( "true" );
+    return reply != null && reply.toLowerCase().contains( "true" );
   }
 
   @Override
@@ -81,8 +86,9 @@ public class DefaultCdaLeveragedEditor implements ICteEditor {
     return false; /* CDA takes care of this */
   }
 
-  @Override public IBasicFile[] getTree( String dir, String fileExtensions, boolean showHiddenFiles, boolean userIsAdmin ) {
-    return null; /* CDA takes care of this */
+  @Override
+  public IBasicFile[] getTree( String dir, String[] allowedExtensions, boolean showHiddenFiles, boolean userIsAdmin ) throws Exception{
+    return null; /* CDA leveraged ACE editor doesn't provide us with a file tree... */
   }
 
   private String doCDAInterPluginCall( String method, Map<String, Object> params ){

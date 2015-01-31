@@ -22,7 +22,9 @@ import pt.webdetails.cpf.repository.api.IRWAccess;
 import pt.webdetails.cpf.repository.api.IReadAccess;
 import pt.webdetails.cpf.repository.api.IUserContentAccess;
 
+import java.io.Serializable;
 import java.util.Locale;
+import java.util.Map;
 
 public interface ICteEnvironment {
 
@@ -55,4 +57,6 @@ public interface ICteEnvironment {
   IRWAccess getPluginSystemWriter( String path );
 
   IUrlProvider getUrlProvider();
+
+  Map<String, Serializable> getRepoFileMetadata( String path ) throws Exception;
 }

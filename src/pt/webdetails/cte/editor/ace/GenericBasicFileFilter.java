@@ -20,71 +20,90 @@ import pt.webdetails.cpf.repository.api.IBasicFileFilter;
 
 public class GenericBasicFileFilter implements IBasicFileFilter {
 
+  /**
+   * type of file filtering
+   * <p/>
+   * FILTER_IN - matches only ( act as a whitelist )
+   * <p/>
+   * FILTER_OUT - no matches only ( act as a blacklist )
+   * <p/>
+   */
+  public static enum FilterType {
+    FILTER_IN, FILTER_OUT
+  }
+
+  /**
+   * type of file filtering; default is FILTER_IN
+   */
+  private FilterType filterType;
+
   private String fileName;
   private String[] fileExtensions;
-  private boolean acceptDirectories;
 
-  public GenericBasicFileFilter( String fileName, String fileExtension ) {
-    this( fileName, fileExtension, false );
+  public GenericBasicFileFilter( String fileName, FilterType filterType ) {
+    this( fileName, new String[] { }, filterType );
   }
 
-  public GenericBasicFileFilter( String fileName, String fileExtension, boolean acceptDirectories ) {
-    this( fileName, !StringUtils.isEmpty( fileExtension ) ? new String[] { cleanDot( fileExtension ) } : null,
-      acceptDirectories );
+  public GenericBasicFileFilter( String[] fileExtensions, FilterType filterType ) {
+    this( null, fileExtensions, filterType );
   }
 
-  public GenericBasicFileFilter( String fileName, String[] fileExtensions ) {
-    this( fileName, fileExtensions, false );
-  }
-
-  public GenericBasicFileFilter( String fileName, String[] fileExtensions, boolean acceptDirectories ) {
+  public GenericBasicFileFilter( String fileName, String[] fileExtensions, FilterType filterType ) {
     this.fileName = fileName;
-    this.fileExtensions = fileExtensions;
-    this.acceptDirectories = acceptDirectories;
+    this.fileExtensions = fileExtensions != null ? fileExtensions : new String[] { };
+    this.filterType = filterType != null ? filterType : FilterType.FILTER_IN /* default */;
   }
 
-  @Override
-  public boolean accept( IBasicFile file ) {
+  @Override public boolean accept( IBasicFile file ) {
 
-    boolean fileNameOK = false;
-    boolean fileExtensionOK = false;
+    // first, the basic validations
+    if ( file == null ) {
+      return false; // this shouldn't even happen..
+    } else if ( file.isDirectory() ) {
+      return true; // we don't look at directories
+    } else if ( StringUtils.isEmpty( file.getName() ) ) {
+      return false; // this shouldn't even happen..
+    }
 
-    if ( file != null && file.getName() != null ) {
+    // now, onwards to the file validation
 
-      if ( acceptDirectories && file.isDirectory() ) {
-        return true;
-      }
+    boolean doNameFiltering = !StringUtils.isEmpty( fileName );
+    boolean doExtensionFiltering = fileExtensions != null && fileExtensions.length > 0;
 
-      // file name is equal ?
-      if ( !StringUtils.isEmpty( fileName ) ) {
+    boolean nameMatched = false;
+    boolean extensionMatched = false;
 
-        String fileBaseName = FilenameUtils.getBaseName( file.getName() );
+    // file name is equal ?
+    if ( doNameFiltering ) {
 
-        fileNameOK = fileName.equalsIgnoreCase( fileBaseName )
-          || ( !fileBaseName.startsWith( "." ) && fileBaseName.endsWith( "." + fileName ) );
+      String name = FilenameUtils.getBaseName( file.getName() );
 
-        //ex: component.xml
-        //ex: sample.component.xml
-      } else {
-        fileNameOK = true; //filename was not placed as filter
-      }
+      //ex: component.xml, sample.component.xml
+      nameMatched = fileName.equalsIgnoreCase( name ) || ( !name.startsWith( "." ) && name.endsWith( "." + fileName ) );
+    }
 
-      if ( fileExtensions != null && fileExtensions.length > 0 ) {
-        // is file extension one of the allowed extensions ?
-        for ( String fileExtension : fileExtensions ) {
-          if ( !StringUtils.isEmpty( fileExtension ) ) {
-            fileExtensionOK = cleanDot( fileExtension ).equalsIgnoreCase( cleanDot( file.getExtension() ) );
-            if ( fileExtensionOK ) {
-              break; //found a match
-            }
-          }
+    if ( doExtensionFiltering ) {
+
+      // is file extension one of the provided filter extensions ?
+      for ( String extension : fileExtensions ) {
+        if ( !StringUtils.isEmpty( extension ) ) {
+          extensionMatched |= cleanDot( extension ).equalsIgnoreCase( cleanDot( file.getExtension() ) );
         }
-      } else {
-        fileExtensionOK = true; //file extension was not placed as filter
       }
     }
 
-    return fileNameOK && fileExtensionOK;
+    boolean acceptName = true;
+    boolean acceptExtension = true;
+
+    if ( doNameFiltering ) {
+      acceptName = filterType == FilterType.FILTER_IN ? nameMatched : /* FILTER_OUT */ !nameMatched;
+    }
+
+    if ( doExtensionFiltering ) {
+      acceptExtension = filterType == FilterType.FILTER_IN ? extensionMatched : /* FILTER_OUT */ !extensionMatched;
+    }
+
+    return acceptName && acceptExtension;
   }
 
   private static String cleanDot( String extension ) {
@@ -107,11 +126,11 @@ public class GenericBasicFileFilter implements IBasicFileFilter {
     this.fileExtensions = fileExtensions;
   }
 
-  public boolean isAcceptDirectories() {
-    return acceptDirectories;
+  public FilterType getFilterType() {
+    return filterType;
   }
 
-  public void setAcceptDirectories( boolean acceptDirectories ) {
-    this.acceptDirectories = acceptDirectories;
+  public void setFilterType( FilterType filterType ) {
+    this.filterType = filterType;
   }
 }

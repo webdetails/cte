@@ -30,176 +30,107 @@ import pt.webdetails.cte.utils.SessionUtils;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 
-@Path( "/cte/api/" ) public class CteApi {
+@Path( Constants.PLUGIN_ID + "/api/" ) public class CteApi {
 
   private Logger logger = LoggerFactory.getLogger( CteApi.class );
 
-  @GET
-  @Path( Constants.ENDPOINT_CAN_EDIT )
-  @Produces( { MediaType.WILDCARD } )
-  public String canEdit( @QueryParam( Constants.PARAM_PATH ) String path ) throws Exception {
-    return Boolean.toString( isFileEditAllowed( path ) );
+  @GET @Path( Constants.ENDPOINT_CAN_EDIT )
+  public String canEdit( @QueryParam( Constants.PARAM_PATH ) String path ) {
+    return Boolean.toString( getCteEditor().canEdit( path ) );
   }
 
-  @GET
-  @Path( Constants.ENDPOINT_CAN_READ )
-  @Produces( { MediaType.WILDCARD } )
-  public String canRead( @QueryParam( Constants.PARAM_PATH ) String path ) throws Exception {
-    return Boolean.toString( isFileReadAllowed( path ) );
+  @GET @Path( Constants.ENDPOINT_CAN_READ )
+  public String canRead( @QueryParam( Constants.PARAM_PATH ) String path ) {
+    return Boolean.toString( getCteEditor().canRead( path ) );
   }
 
-  @GET
-  @Path( Constants.ENDPOINT_BLANK_EDITOR )
-  @Produces( { MediaType.WILDCARD } )
-  public void blank( @Context HttpServletResponse servletResponse ) throws Exception {
+  @GET @Path( Constants.ENDPOINT_EDITOR )
+  public void edit( @QueryParam( Constants.PARAM_PATH ) String path, @Context HttpServletResponse servletResponse )
+      throws WebApplicationException {
+
+    if ( !getCteEditor().canRead( path ) ) {
+      logger.info( "CteApi.edit(): not allowed to read " + path );
+      throw new WebApplicationException( Response.Status.FORBIDDEN );
+    }
 
     try {
-      PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getCteEditor().getEditor() );
+      PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getCteEditor().getEditor( path ) );
 
     } catch ( Exception e ) {
       logger.error( e.getMessage(), e );
-      throw e;
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
   }
 
-  @GET
-  @Path( Constants.ENDPOINT_EDITOR )
-  @Produces( { MediaType.WILDCARD } )
-  public void edit( @QueryParam( Constants.PARAM_PATH ) String path,
-      @Context HttpServletResponse servletResponse ) throws Exception {
+  @GET @Path( Constants.ENDPOINT_GET_FILE )
+  public void getFile( @QueryParam( Constants.PARAM_PATH ) String path, @Context HttpServletResponse servletResponse )
+      throws WebApplicationException {
 
-    if ( isFileReadAllowed( path ) ) {
+    if ( !getCteEditor().canRead( path ) ) {
+      logger.info( "CteApi.getFile(): not allowed to read " + path );
+      throw new WebApplicationException( Response.Status.FORBIDDEN );
+    }
 
-      try {
-        PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getCteEditor().getEditor( path ) );
+    try {
+      PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getCteEditor().getFile( path ) );
 
-      } catch ( Exception e ) {
-        logger.error( e.getMessage(), e );
-        throw e;
-      }
+    } catch ( Exception e ) {
+      logger.error( e.getMessage(), e );
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
   }
 
-  @GET
-  @Path( Constants.ENDPOINT_GET_FILE )
-  @Produces( { MediaType.WILDCARD } )
-  public void getFile( @QueryParam( Constants.PARAM_PATH ) String path,
-      @Context HttpServletResponse servletResponse ) throws Exception {
-
-    if ( isFileReadAllowed( path ) ) {
-
-      try {
-        PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getCteEditor().getFile( path ) );
-
-      } catch ( Exception e ) {
-        logger.error( e.getMessage(), e );
-        throw e;
-      }
-    }
-  }
-
-  @POST
-  @Path( Constants.ENDPOINT_SAVE_FILE )
-  @Produces( { MediaType.WILDCARD } )
+  @POST @Path( Constants.ENDPOINT_SAVE_FILE )
   public String saveFile( @FormParam( Constants.PARAM_PATH ) String path,
-      @FormParam( Constants.PARAM_DATA ) @DefaultValue( StringUtils.EMPTY ) String data ) throws Exception {
+      @FormParam( Constants.PARAM_DATA ) @DefaultValue( StringUtils.EMPTY ) String data ) throws WebApplicationException {
 
-    boolean success = false;
-
-    if ( isFileEditAllowed( path ) ) {
-
-      try {
-        success = getCteEditor().saveFile( path,
-            new ByteArrayInputStream( data.getBytes( getEngine().getEnvironment().getSystemEncoding() ) ) );
-
-      } catch ( Exception e ) {
-        logger.error( e.getMessage(), e );
-        throw e;
-      }
+    if ( !getCteEditor().canEdit( path ) ) {
+      logger.info( "CteApi.saveFile(): not allowed to edit " + path );
+      throw new WebApplicationException( Response.Status.FORBIDDEN );
     }
 
-    return String.valueOf( success );
-  }
+    try {
+      return String.valueOf( getCteEditor().saveFile( path,
+              new ByteArrayInputStream( data.getBytes( getEngine().getEnvironment().getSystemEncoding() ) ) ) );
 
-  /**
-   * Centralized method for all security and file path validations
-   *
-   * @param path - path to file
-   * @return boolean - true if can edit, false otherwise
-   */
-  private boolean isFileReadAllowed( String path ) {
-
-    // TODO implement HTTP 403 FORBIDDEN
-
-    boolean canRead = false;
-
-    if ( !StringUtils.isEmpty( path ) ) {
-
-      try {
-
-        canRead = getCteEditor().canRead( path );
-
-        if ( !canRead ) {
-          logger.error( "CteApi.isFileReadAllowed(): not allowed to edit file at " + path );
-        }
-
-      } catch ( Exception e ) {
-        logger.error( e.getMessage(), e );
-      }
-    } else {
-      logger.error( "CteApi.isFileReadAllowed(): file path is null" );
+    } catch ( Exception e ) {
+      logger.error( e.getMessage(), e );
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
-
-    return canRead;
   }
 
-  @POST
-  @Path( Constants.ENDPOINT_TREE_EXPLORE )
-  @Produces( MimeTypes.PLAIN_TEXT )
-  public String tree(
-      @FormParam( Constants.PARAM_DIR ) @DefaultValue( "/" ) String folder,
-      @QueryParam( Constants.PARAM_FILE_EXTENSIONS ) String fileExtensions,
+  @POST @Path( Constants.ENDPOINT_TREE_EXPLORE ) @Produces( MimeTypes.PLAIN_TEXT )
+  public String tree( @FormParam( Constants.PARAM_DIR ) @DefaultValue( "/" ) String dir,
+      @QueryParam( Constants.PARAM_FILE_EXTENSIONS ) @DefaultValue( StringUtils.EMPTY )
+      String commaSeparatedAllowedExtensions,
       @QueryParam( Constants.PARAM_SHOW_HIDDEN_FILES ) @DefaultValue( "false" ) boolean showHiddenFiles )
-      throws IOException {
+      throws WebApplicationException {
 
-      return RepositoryHelper.toJQueryFileTree( folder,
-          getCteEditor().getTree( folder, fileExtensions, showHiddenFiles, SessionUtils.userInSessionIsAdmin() ) );
-  }
-
-  /**
-   * Centralized method for all security and file path validations
-   *
-   * @param path - path to file
-   * @return boolean - true if can edit, false otherwise
-   */
-  private boolean isFileEditAllowed( String path ) {
-
-    // TODO implement HTTP 403 FORBIDDEN
-
-    boolean canEdit = false;
-
-    if ( !StringUtils.isEmpty( path ) ) {
-
-      try {
-
-        canEdit = getCteEditor().canEdit( path );
-
-        if ( !canEdit ) {
-          logger.error( "CteApi.isFileEditAllowed(): not allowed to edit file at " + path );
-        }
-
-      } catch ( Exception e ) {
-        logger.error( e.getMessage(), e );
-      }
-    } else {
-      logger.error( "CteApi.isFileEditAllowed(): file path is null" );
+    if ( !getCteEditor().canRead( dir ) ) {
+      logger.info( "CteApi.tree(): not allowed to read " + dir );
+      throw new WebApplicationException( Response.Status.FORBIDDEN );
     }
 
-    return canEdit;
+    String[] allowedExtensions = new String[] { };
+    if ( !StringUtils.isEmpty( commaSeparatedAllowedExtensions ) ) {
+
+      allowedExtensions =
+          commaSeparatedAllowedExtensions.contains( "," ) ? commaSeparatedAllowedExtensions.toLowerCase().split( "," ) :
+              new String[] { commaSeparatedAllowedExtensions.toLowerCase() };
+    }
+
+    try {
+
+      return RepositoryHelper.toJQueryFileTree( dir,
+          getCteEditor().getTree( dir, allowedExtensions, showHiddenFiles, SessionUtils.userInSessionIsAdmin() ) );
+
+    } catch ( Exception e ) {
+      logger.error( e.getMessage(), e );
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
+    }
   }
 
   private ICteEditor getCteEditor() {

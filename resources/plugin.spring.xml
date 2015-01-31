@@ -14,8 +14,6 @@
   <bean id="api" class="org.pentaho.platform.web.servlet.JAXRSPluginServlet"/>
   <bean id="cteApi" class="pt.webdetails.cte.web.CteApi" />
   
-  <!--bean id="ICteEditor" class="pt.webdetails.cte.editor.DefaultCdaLeveragedEditor" /-->
-  <bean id="ICteEditor" class="pt.webdetails.cte.editor.ace.AceEditor" />
   <bean id="ICteEnvironment" class="pt.webdetails.cte.PentahoCteEnvironment" />
   
   <bean class="pt.webdetails.cte.CteContentGenerator" id="cte.edit" />
@@ -26,5 +24,25 @@
   <bean class="pt.webdetails.cte.CteContentGenerator" id="css" />
   <bean class="pt.webdetails.cte.CteContentGenerator" id="xml" />
   <bean class="pt.webdetails.cte.CteContentGenerator" id="js" />
+  
+  <!--bean id="ICteEditor" class="pt.webdetails.cte.editor.DefaultCdaLeveragedEditor" /-->
+  <bean id="ICteEditor" class="pt.webdetails.cte.editor.ace.AceEditor">
+  	<constructor-arg ref="blacklisted-folders" />
+  	<constructor-arg ref="blacklisted-file-extensions" />
+  </bean>
+  
+  <!-- files one shouldn't be able to handle in a text editor, such as image files -->
+  <util:list id="blacklisted-file-extensions" value-type="java.lang.String">
+    <value>prpt</value>
+    <value>png</value>
+    <value>jpg</value>
+    <value>jpeg</value>
+    <value>svg</value>
+  </util:list>
+  
+  <!-- folders one shouldn't be able to access, such as system folders -->
+  <util:list id="blacklisted-folders" value-type="java.lang.String">
+    <value>/etc</value>
+  </util:list>
   
 </beans>

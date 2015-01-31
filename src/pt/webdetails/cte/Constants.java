@@ -25,7 +25,6 @@ public class Constants {
   public static final String ENDPOINT_CAN_EDIT = "canEdit";
   public static final String ENDPOINT_CAN_READ = "canRead";
   public static final String ENDPOINT_EDITOR = "edit";
-  public static final String ENDPOINT_BLANK_EDITOR = "blank";
   public static final String ENDPOINT_GET_FILE = "getFile";
   public static final String ENDPOINT_SAVE_FILE = "saveFile";
   public static final String ENDPOINT_TREE_EXPLORE = "tree";
@@ -41,6 +40,5 @@ public class Constants {
   public static final String PARAM_FILE_EXTENSIONS = "fileExtensions";
   public static final String PARAM_ACCESS = "access";
   public static final String PARAM_SHOW_HIDDEN_FILES = "showHiddenFiles";
-
 
 }
