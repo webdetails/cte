@@ -11,6 +11,17 @@
  * the license for the specific language governing your rights and limitations.
  */
 
+#modes {
+  margin-top: 5px;
+  text-align: center;
+  font-size: 11px;
+}
+
+.selected {
+  font-size: 13px;
+  font-weight: bold;
+}
+
 #saveBtn{
   width: auto;
   border: solid 2px #bbb;
@@ -27,15 +38,13 @@
 }
 
 #infoArea, #infoAreaWarnings{
-  padding-left: 10px;
-  padding-right: 10px;
+  padding: 2px 10px 2px 10px;
   position: relative;
 }
 #infoArea {
   font-size: 13px;
   font-weight: bold;
   color: #444;
-  border: 1px solid #bbb;
   left: 10px;
 }
 #infoArea.disabled{
@@ -60,6 +69,7 @@ body{
   background: -o-linear-gradient(#EAEDEE, #F9FAFA); /* For Opera 11.1 to 12.0 */
   background: -moz-linear-gradient(#EAEDEE, #F9FAFA); /* For Firefox 3.6 to 15 */
   background: linear-gradient(#EAEDEE, #F9FAFA); /* Standard syntax */
+  font-size: 13px;
 }
 
 td{
