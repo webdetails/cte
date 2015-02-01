@@ -39,7 +39,8 @@
     <script language="javascript" type="text/javascript" src="ace/src/theme-eclipse.js"></script-->
     <script language="javascript">
 
-      var editor = new CodeEditor();
+      var editor = new CodeEditor(),
+          editorMode = "";
       // stores URL parameters
       var params = {};
       // stores currently opened file name
@@ -71,8 +72,8 @@
 
             setDirty(false);
 
-            // use filename extension to set mode
-            editor.setMode(loadedFileName.split('.').pop());
+            // use menu selected mode or filename extension to set mode
+            editor.setMode((!editorMode) ? loadedFileName.split('.').pop() : editorMode);
 
             notify('File ' + loadedFileName + ' loaded.');
 
@@ -189,12 +190,29 @@
     <table style="width: 100%;">
       <tbody>
         <tr>
-          <td style="padding-right: 10px;">Select file to edit:</td>
+          <td style="vertical-align: bottom; padding-right: 10px;">Available files:</td>
           <td>
             <div id="btnArea">
               <button id="saveBtn" onclick ="save()" style=""> Save </button>
               <span id="infoArea" style="min-width: 200px;"></span>
               <span id="infoAreaWarnings"></span>
+              <span>&nbsp;mode:&nbsp;<select id="modes">
+                <option value="" selected="selected">(auto detect)</option>
+                <option value="coffee">Coffee</option>
+                <option value="css">CSS</option>
+                <option value="html">HTML</option>
+                <option value="javascript">JavaScript</option>
+                <option value="json">JSON</option>
+                <option value="jsp">JSP</option>
+                <option value="less">Less</option>
+                <option value="pgsql">PGSQL</option>
+                <option value="properties">Properties</option>
+                <option value="sql">SQL</option>
+                <option value="svg">SVG</option>
+                <option value="text">Text</option>
+                <option value="xml">XML</option>
+                <option value="xquery">XQuery</option>
+              </select></span>
             </div>
           </td>
         </tr>
@@ -210,7 +228,7 @@
     </table>
 
     <script>
-      window.onload = function() {
+      $(window).load(function() {
         // read url query parameters
         var queryParam,
             queryParams = window.location.search.substring(1),
@@ -305,9 +323,23 @@
           }
           
         });
-      };
 
-      window.onresize = function() {
+        /**********************************
+         **** editor mode select box ******
+         **********************************/
+        $("#modes")
+          .change(function() {
+            editorMode = $(this).val();
+            // auto detect
+            if(!editorMode) {
+              editorMode = (!fileName) ? "" : fileName.split('.').pop();
+            }
+            editor.setMode(editorMode);
+            notify("Requested editor mode: " + editorMode, 'info');
+          });
+      });
+
+      $(window).resize(function() {
         $('#treeDiv').height(window.innerHeight - (params.editorOnly ? 20 : 80));
         $('#editArea').height(window.innerHeight - (params.editorOnly ? 20 : 80));
 
@@ -315,8 +347,7 @@
         //$('#editArea').width($('#editArea').parent().width() - 10);
         $('#treeDiv').width(window.innerWidth - (window.innerWidth * 0.75) - 25);
         $('#editArea').width(window.innerWidth - (window.innerWidth * 0.25) - 25);
-
-      };
+      });
     </script>
   </body>
 </html>

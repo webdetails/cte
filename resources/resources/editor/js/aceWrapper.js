@@ -158,6 +158,8 @@ var CodeEditor = function() {
     } else {
       HLMode = ace.require(this.MODE_BASE + this.mode).Mode;
     }
+    //clear previous code annotations
+    this.editor.getSession().clearAnnotations();
     this.editor.getSession().setMode(new HLMode());
   },
 
