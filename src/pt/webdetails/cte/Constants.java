@@ -21,6 +21,7 @@ public class Constants {
   public static final String PLUGIN_ID = "cte";
 
   public static final String PLUGIN_WELCOME_FILE = "welcome.txt";
+  public static final String PLUGIN_INVALID_PERMISSIONS_FILE = "invalid_permissions.txt";
 
   public static final String ENDPOINT_CAN_EDIT = "canEdit";
   public static final String ENDPOINT_CAN_READ = "canRead";

@@ -18,22 +18,48 @@ package pt.webdetails.cte;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.platform.api.engine.IPlatformReadyListener;
 import org.pentaho.platform.api.engine.IPluginLifecycleListener;
 import org.pentaho.platform.api.engine.PluginLifecycleException;
+import org.pentaho.platform.engine.security.SecurityHelper;
+import pt.webdetails.cte.engine.CteEngine;
 
-public class CteLifecycleListener implements IPluginLifecycleListener {
+import java.util.concurrent.Callable;
+
+public class CteLifecycleListener implements IPluginLifecycleListener, IPlatformReadyListener {
 
   static Log logger = LogFactory.getLog( CteLifecycleListener.class );
 
+  @Override
   public void init() throws PluginLifecycleException {
     logger.debug( "CteLifecycleListener.init()" );
   }
 
+  @Override
   public void loaded() throws PluginLifecycleException {
     logger.debug( "CteLifecycleListener.loaded()" );
   }
 
+  @Override
   public void unLoaded() throws PluginLifecycleException {
     logger.debug( "CteLifecycleListener.unLoaded()" );
+  }
+
+  @Override
+  public void ready() throws PluginLifecycleException {
+    logger.debug( "CteLifecycleListener.ready()" );
+
+    try {
+      SecurityHelper.getInstance().runAsSystem( new Callable() {
+
+        @Override
+        public Object call() throws Exception {
+          CteEngine.getInstance().ensureBasicDir();
+          return null;
+        }
+      });
+    } catch ( Exception e ) {
+      logger.error( e );
+    }
   }
 }

@@ -6,6 +6,7 @@ import pt.webdetails.cpf.Util;
 import pt.webdetails.cpf.repository.api.FileAccess;
 import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cpf.repository.api.IUserContentAccess;
+import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.api.ICteEditor;
 import pt.webdetails.cte.api.ICteEnvironment;
 import pt.webdetails.cte.engine.CteEngine;
@@ -88,10 +89,30 @@ public class AceEditor implements ICteEditor{
   public InputStream getFile( String path ) throws Exception {
     IUserContentAccess access = getEnvironment().getUserContentAccess( null );
 
-    if ( canRead( path ) ) {
+    /**
+     * the getFile needs to be in a canEdit validation ( and not in a canRead ),
+     * a user that is not allowed to edit the file should not be allowed to check ( even if in read-only mode )
+     * its contents, as it may hold some sensitive data.
+     *
+     * One example if that are the .ktr files:
+     *
+     * 1 - ktr's are nothing more than xml-based files
+     * 2 - user suzy can only execute this item ( she cannot download them, therefore she is unable
+     * to manipulate any of its contents )
+     * 3 - if she were allowed to view the .ktr content using CTE ( in read-only mode ), she would see the
+     * database connections declared within it ( wichi means she would be able to see the datasource connection url,
+     * username and password )
+     *
+     */
+
+    if ( canEdit( path ) ) {
+
       return access.getFileInputStream( path );
+
     } else {
-      return null;
+
+      return access.getFileInputStream( Util.joinPath( getEnvironment().getPluginRepositoryDir(),
+          Constants.PLUGIN_INVALID_PERMISSIONS_FILE ) );
     }
   }
 
@@ -110,6 +131,9 @@ public class AceEditor implements ICteEditor{
 
   @Override
   public IBasicFile[] getTree( String dir, String[] allowedExtensions, boolean showHiddenFiles, boolean userIsAdmin ) throws Exception {
+
+    // only admin users are allowed to use this feature
+    showHiddenFiles = showHiddenFiles && userIsAdmin;
 
     if( allowedExtensions != null && allowedExtensions.length > 0 ) {
 

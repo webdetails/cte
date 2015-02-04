@@ -70,16 +70,30 @@ public class CteEngine {
 
   public void ensureBasicDir(){
 
-    IRWAccess pluginRepoAccess = getEnvironment().getPluginRepositoryWriter( null );
+    IRWAccess repoAccess = getEnvironment().getPluginRepositoryWriter( null );
+    IReadAccess systemAccess = getEnvironment().getPluginSystemReader( null );
 
-    if ( !pluginRepoAccess.fileExists( Constants.PLUGIN_WELCOME_FILE ) ) {
-      IReadAccess pluginSystemAccess = getEnvironment().getPluginSystemReader( null );
+    if ( !repoAccess.fileExists( Constants.PLUGIN_WELCOME_FILE ) ) {
 
-      if ( pluginSystemAccess.fileExists( "resources/" + Constants.PLUGIN_WELCOME_FILE ) ) {
+      if ( systemAccess.fileExists( "resources/" + Constants.PLUGIN_WELCOME_FILE ) ) {
 
         try {
-          pluginRepoAccess.saveFile( Constants.PLUGIN_WELCOME_FILE,
-              pluginSystemAccess.getFileInputStream( "resources/" + Constants.PLUGIN_WELCOME_FILE ) );
+          repoAccess.saveFile( Constants.PLUGIN_WELCOME_FILE,
+              systemAccess.getFileInputStream( "resources/" + Constants.PLUGIN_WELCOME_FILE ) );
+
+        } catch ( IOException e ) {
+          logger.error( e.getMessage(), e );
+        }
+      }
+    }
+
+    if ( !repoAccess.fileExists( Constants.PLUGIN_INVALID_PERMISSIONS_FILE ) ) {
+
+      if ( systemAccess.fileExists( "resources/" + Constants.PLUGIN_INVALID_PERMISSIONS_FILE ) ) {
+
+        try {
+          repoAccess.saveFile( Constants.PLUGIN_INVALID_PERMISSIONS_FILE,
+              systemAccess.getFileInputStream( "resources/" + Constants.PLUGIN_INVALID_PERMISSIONS_FILE ) );
 
         } catch ( IOException e ) {
           logger.error( e.getMessage(), e );
