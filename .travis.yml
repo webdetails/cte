@@ -1,0 +1,6 @@
+language: java
+before_script:
+- ant resolve
+script:
+- ant dist
+
