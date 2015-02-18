@@ -18,8 +18,9 @@ import pt.webdetails.cpf.exceptions.InitializationException;
 import pt.webdetails.cpf.repository.api.IRWAccess;
 import pt.webdetails.cpf.repository.api.IReadAccess;
 import pt.webdetails.cte.Constants;
-import pt.webdetails.cte.api.ICteEditor;
+import pt.webdetails.cte.CteSettings;
 import pt.webdetails.cte.api.ICteEnvironment;
+import pt.webdetails.cte.editor.CteProviderManager;
 
 import java.io.IOException;
 
@@ -27,7 +28,8 @@ public class CteEngine {
 
   private static CteEngine instance;
   private static Logger logger = LoggerFactory.getLogger( CteEngine.class );
-  private ICteEditor cteEditor;
+  private CteSettings settings;
+  private CteProviderManager providerManager;
   private ICteEnvironment environment;
 
   private CteEngine() throws InitializationException {
@@ -42,10 +44,17 @@ public class CteEngine {
 
     environment.init();
 
-    this.cteEditor = (ICteEditor) factory.getBean( ICteEditor.class.getSimpleName() );
+    this.providerManager = (CteProviderManager) factory.getBean( CteProviderManager.class.getSimpleName() );
 
-    if ( cteEditor == null ) {
-      logger.error( "ICteEditor has not been set; CteEngine will not function properly" );
+    if ( providerManager == null ) {
+      logger.error( "ProviderManager has not been set; CteEngine will not function properly" );
+    }
+
+    // settings.xml
+    this.settings = new CteSettings( getEnvironment().getPluginSystemWriter( null ) );
+
+    if ( settings == null ) {
+      logger.error( "CteSettings has not been set; CteEngine will not function properly" );
     }
 
     ensureBasicDir();
@@ -64,7 +73,7 @@ public class CteEngine {
     return instance;
   }
 
-  public void ensureBasicDir(){
+  public void ensureBasicDir() {
 
     IRWAccess repoAccess = getEnvironment().getPluginRepositoryWriter( null );
     IReadAccess systemAccess = getEnvironment().getPluginSystemReader( null );
@@ -98,12 +107,12 @@ public class CteEngine {
     }
   }
 
-  public ICteEditor getCteEditor() {
-    return cteEditor;
+  public CteProviderManager getProviderManager() {
+    return providerManager;
   }
 
-  protected void setCteEditor( ICteEditor cteEditor ) {
-    this.cteEditor = cteEditor;
+  protected void setProviderManager( CteProviderManager providerManager ) {
+    this.providerManager = providerManager;
   }
 
   public ICteEnvironment getEnvironment() {
@@ -112,5 +121,13 @@ public class CteEngine {
 
   public void setEnvironment( ICteEnvironment environment ) {
     this.environment = environment;
+  }
+
+  public CteSettings getSettings() {
+    return settings;
+  }
+
+  public void setSettings( CteSettings settings ) {
+    this.settings = settings;
   }
 }

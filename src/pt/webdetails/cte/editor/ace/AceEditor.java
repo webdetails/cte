@@ -19,8 +19,8 @@ import pt.webdetails.cpf.repository.api.FileAccess;
 import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cpf.repository.api.IUserContentAccess;
 import pt.webdetails.cte.Constants;
-import pt.webdetails.cte.api.ICteEditor;
 import pt.webdetails.cte.api.ICteEnvironment;
+import pt.webdetails.cte.api.ICteProvider;
 import pt.webdetails.cte.engine.CteEngine;
 
 import javax.ws.rs.WebApplicationException;
@@ -29,76 +29,79 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ListIterator;
 
-public class AceEditor implements ICteEditor{
+public class AceEditor implements ICteProvider {
 
+  private String id;
+  private String name;
   private String extEditor;
-  private List<String> blacklistedFolders;
-  private List<String> blacklistedFileExtensions;
 
   private boolean bypassBlacklists = false; // super-admin hidden flag
 
   public AceEditor() {
-    this( new ArrayList<String>(), new ArrayList<String>()  );
-  }
-
-  public AceEditor( List<String> blacklistedFolders , List<String> blacklistedFileExtensions ) {
-
-    this.blacklistedFolders = blacklistedFolders != null ? blacklistedFolders : new ArrayList<String>();
-
-    if( blacklistedFileExtensions != null ){
-
-      ListIterator<String> iterator = blacklistedFileExtensions.listIterator();
-      while ( iterator.hasNext() ) {
-        iterator.set( iterator.next().toLowerCase() );
-      }
-    }
-
-    this.blacklistedFileExtensions = blacklistedFileExtensions != null ?
-        blacklistedFileExtensions : new ArrayList<String>();
   }
 
   private String getExtEditor() throws Exception {
 
     // sanitized calls; output is always the same ( ext-editor.html )
 
-    if( extEditor == null ){
+    //if ( extEditor == null ) { TODO REDO THIS
       extEditor = new ExtEditor( getEnvironment().getUrlProvider(), PluginEnvironment.repository() ).getExtEditor();
-    }
+    //}
 
     return extEditor;
   }
 
-  @Override
-  public boolean canRead( String path ) {
+  @Override public boolean canRead( String path ) {
     IUserContentAccess access = getEnvironment().getUserContentAccess( null );
 
     return !StringUtils.isEmpty( path ) && access.fileExists( path ) && access.hasAccess( path, FileAccess.READ );
   }
 
-  @Override
-  public boolean canEdit( String path ) {
+  @Override public String getId() {
+    return id;
+  }
+
+  public void setId( String id ) {
+    this.id = id;
+  }
+
+  @Override public String getName() {
+    return name;
+  }
+
+  public void setName( String name ) {
+    this.name = name;
+  }
+
+  @Override public String[] getBlacklistedFolders() {
+    // use settings.xml blacklisted folders
+    return CteEngine.getInstance().getSettings().getBlacklistedFolders().toArray( new String[] { } );
+  }
+
+  @Override public String[] getBlacklistedFileExtensions() {
+    // use settings.xml blacklisted file extensions
+    return CteEngine.getInstance().getSettings().getBlacklistedFileExtensions().toArray( new String[] { } );
+  }
+
+  @Override public boolean canEdit( String path ) {
     IUserContentAccess access = getEnvironment().getUserContentAccess( null );
 
     return canRead( path ) && access.hasAccess( path, FileAccess.WRITE );
   }
 
-  @Override
-  public InputStream getEditor() throws Exception {
+  @Override public InputStream getEditor() throws Exception {
     return new ByteArrayInputStream( getExtEditor().getBytes( getEnvironment().getSystemEncoding() ) );
   }
 
-  @Override
-  public InputStream getEditor( String path ) throws Exception {
+  @Override public InputStream getEditor( String path ) throws Exception {
     if ( StringUtils.isEmpty( path ) ) {
       throw new WebApplicationException( 400 );
     }
     return new ByteArrayInputStream( getExtEditor().getBytes( getEnvironment().getSystemEncoding() ) );
   }
 
-  @Override
-  public InputStream getFile( String path ) throws Exception {
+  @Override public InputStream getFile( String path ) throws Exception {
     IUserContentAccess access = getEnvironment().getUserContentAccess( null );
 
     /**
@@ -123,13 +126,12 @@ public class AceEditor implements ICteEditor{
 
     } else {
 
-      return access.getFileInputStream( Util.joinPath( getEnvironment().getPluginRepositoryDir(),
-          Constants.PLUGIN_INVALID_PERMISSIONS_FILE ) );
+      return access.getFileInputStream(
+          Util.joinPath( getEnvironment().getPluginRepositoryDir(), Constants.PLUGIN_INVALID_PERMISSIONS_FILE ) );
     }
   }
 
-  @Override
-  public boolean saveFile( String path, InputStream content ) throws Exception {
+  @Override public boolean saveFile( String path, InputStream content ) throws Exception {
 
     IUserContentAccess access = getEnvironment().getUserContentAccess( null );
 
@@ -140,14 +142,14 @@ public class AceEditor implements ICteEditor{
     return false;
   }
 
-
   @Override
-  public IBasicFile[] getTree( String dir, String[] allowedExtensions, boolean showHiddenFiles, boolean userIsAdmin ) throws Exception {
+  public IBasicFile[] getTree( String dir, String[] allowedExtensions, boolean showHiddenFiles, boolean userIsAdmin )
+      throws Exception {
 
     // only admin users are allowed to use this feature
     showHiddenFiles = showHiddenFiles && userIsAdmin;
 
-    if( allowedExtensions != null && allowedExtensions.length > 0 ) {
+    if ( allowedExtensions != null && allowedExtensions.length > 0 ) {
 
       return getFilteredTree( dir, allowedExtensions, showHiddenFiles, userIsAdmin );
 
@@ -158,8 +160,8 @@ public class AceEditor implements ICteEditor{
     }
   }
 
-  private IBasicFile[] getFilteredTree( String dir, String[] allowedExtensions,
-      boolean showHiddenFiles, boolean userIsAdmin ) throws Exception {
+  private IBasicFile[] getFilteredTree( String dir, String[] allowedExtensions, boolean showHiddenFiles,
+      boolean userIsAdmin ) throws Exception {
 
     List<String> allowedExtensionsList = Arrays.asList( allowedExtensions );
 
@@ -167,24 +169,24 @@ public class AceEditor implements ICteEditor{
 
     List<IBasicFile> filteredFileList = new ArrayList<IBasicFile>();
 
-    for( IBasicFile file : files ) {
+    for ( IBasicFile file : files ) {
 
-      if( !StringUtils.isEmpty( file.getExtension() )
-          && allowedExtensionsList.contains( file.getExtension().toLowerCase() )  ) {
+      if ( !StringUtils.isEmpty( file.getExtension() ) && allowedExtensionsList
+          .contains( file.getExtension().toLowerCase() ) ) {
         filteredFileList.add( file );
       }
     }
 
-    return filteredFileList.toArray( new IBasicFile[]{} );
+    return filteredFileList.toArray( new IBasicFile[] { } );
   }
 
   private IBasicFile[] getStandardTree( String dir, boolean showHiddenFiles, boolean userIsAdmin ) throws Exception {
 
-    IBasicFile[] files = new IBasicFile[] {};
+    IBasicFile[] files = new IBasicFile[] { };
 
     AceEditorFilter fileAndDirFilter = null;
 
-    if( bypassBlacklists && userIsAdmin ){
+    if ( bypassBlacklists && userIsAdmin ) {
 
       // Not to be trifled with
 
@@ -196,8 +198,8 @@ public class AceEditor implements ICteEditor{
     } else {
 
       // act as a blacklist
-      fileAndDirFilter = new AceEditorFilter( null, getBlacklistedFileExtensions().toArray( new String[] { } ),
-          getBlacklistedFolders().toArray( new String[] { } ), GenericBasicFileFilter.FilterType.FILTER_OUT );
+      fileAndDirFilter = new AceEditorFilter( null, getBlacklistedFileExtensions(),
+              getBlacklistedFolders(), GenericBasicFileFilter.FilterType.FILTER_OUT );
     }
 
     IUserContentAccess access = getEnvironment().getUserContentAccess( null );
@@ -207,22 +209,22 @@ public class AceEditor implements ICteEditor{
 
       List<IBasicFile> filteredFileList = new ArrayList<IBasicFile>();
 
-      for( IBasicFile file : fileList ) {
+      for ( IBasicFile file : fileList ) {
 
-        if( !isInBlacklistedFolder( file.getPath(), userIsAdmin ) && canRead( file.getPath() ) ) {
-            filteredFileList.add( file );
+        if ( !isInBlacklistedFolder( file.getPath(), userIsAdmin ) && canRead( file.getPath() ) ) {
+          filteredFileList.add( file );
         }
       }
 
-      files = filteredFileList.toArray( new IBasicFile[ filteredFileList.size() ] );
+      files = filteredFileList.toArray( new IBasicFile[filteredFileList.size()] );
     }
 
     return files;
   }
 
-  private boolean isInBlacklistedFolder( String path, boolean userIsAdmin  ) {
+  private boolean isInBlacklistedFolder( String path, boolean userIsAdmin ) {
 
-    if( bypassBlacklists && userIsAdmin ){
+    if ( bypassBlacklists && userIsAdmin ) {
 
       // Not to be trifled with
 
@@ -232,34 +234,17 @@ public class AceEditor implements ICteEditor{
       return false;
     }
 
-
     boolean isInBlacklistedFolder = false;
 
-    if( !path.startsWith( Util.SEPARATOR ) ){
+    if ( !path.startsWith( Util.SEPARATOR ) ) {
       path = Util.SEPARATOR + path;
     }
 
-    for( String blacklistedFolder : getBlacklistedFolders() ) {
+    for ( String blacklistedFolder : getBlacklistedFolders() ) {
       isInBlacklistedFolder |= path.startsWith( blacklistedFolder );
     }
 
     return isInBlacklistedFolder;
-  }
-
-  public List<String> getBlacklistedFolders() {
-    return blacklistedFolders;
-  }
-
-  public void setBlacklistedFolders( List<String> blacklistedFolders ) {
-    this.blacklistedFolders = blacklistedFolders;
-  }
-
-  public List<String> getBlacklistedFileExtensions() {
-    return blacklistedFileExtensions;
-  }
-
-  public void setBlacklistedFileExtensions( List<String> blacklistedFileExtensions ) {
-    this.blacklistedFileExtensions = blacklistedFileExtensions;
   }
 
   public boolean isBypassBlacklists() {
@@ -270,7 +255,7 @@ public class AceEditor implements ICteEditor{
     this.bypassBlacklists = bypassBlacklists;
   }
 
-  private ICteEnvironment getEnvironment(){
+  private ICteEnvironment getEnvironment() {
     return CteEngine.getInstance().getEnvironment();
   }
 }

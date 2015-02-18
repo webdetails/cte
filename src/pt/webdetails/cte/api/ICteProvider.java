@@ -16,7 +16,31 @@ import pt.webdetails.cpf.repository.api.IBasicFile;
 
 import java.io.InputStream;
 
-public interface ICteEditor {
+public interface ICteProvider {
+
+  /**
+   * Unique id for this provider
+   * @return unique id
+   */
+  String getId();
+
+  /**
+   * A small readable name for this provider (ex: "Repository", "Mondrian Files", "Filesystem",.. )
+   * @return description
+   */
+  String getName();
+
+  /**
+   * array of folders paths this ICteProvider needs to filter-out
+   * @return array of folders paths
+   */
+  public String[] getBlacklistedFolders();
+
+  /**
+   * array of file extensions this ICteProvider needs to filter-out
+   * @return array of file extensions
+   */
+  public String[] getBlacklistedFileExtensions();
 
   /**
    * Centralized method for all security and file path validations

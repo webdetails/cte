@@ -81,7 +81,9 @@ if(jQuery) (function($){
 							/********************ADDED *************************************/
 							if(o.folderClick != undefined) o.folderClick(this,$(this).attr('rel'));
 						} else {
-							h($(this).attr('rel'));
+							// CTE: send second parameter: provider id
+							h($(this).attr('rel'), o.providerId );
+							//h($(this).attr('rel'));
 						}
 						return false;
 					});

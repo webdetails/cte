@@ -23,26 +23,27 @@
   <bean class="pt.webdetails.cte.CteContentGenerator" id="html" />
   <bean class="pt.webdetails.cte.CteContentGenerator" id="css" />
   <bean class="pt.webdetails.cte.CteContentGenerator" id="xml" />
+  <bean class="pt.webdetails.cte.CteContentGenerator" id="txt" />
   <bean class="pt.webdetails.cte.CteContentGenerator" id="js" />
   
-  <!--bean id="ICteEditor" class="pt.webdetails.cte.editor.DefaultCdaLeveragedEditor" /-->
-  <bean id="ICteEditor" class="pt.webdetails.cte.editor.ace.AceEditor">
-  	<constructor-arg ref="blacklisted-folders" />
-  	<constructor-arg ref="blacklisted-file-extensions" />
+
+  <bean id="CteProviderManager" class="pt.webdetails.cte.editor.CteProviderManager">
+    <constructor-arg>
+      <util:list id="providers" value-type="pt.webdetails.cte.api.ICteProvider">
+        
+        <!-- Provider list. Must implement pt.webdetails.cte.api.ICteProvider -->
+        <ref bean="cteAceRepositoryEditor" />
+
+      </util:list>
+    </constructor-arg>
+  </bean>
+
+
+  <!-- <bean id="ICteProvider" class="pt.webdetails.cte.editor.DefaultCdaLeveragedEditor" /> -->
+  <bean id="cteAceRepositoryEditor" class="pt.webdetails.cte.editor.ace.AceEditor">
+    <property name="id" value="repo" />
+    <property name="name" value="Content Repository" />
   </bean>
   
-  <!-- files one shouldn't be able to handle in a text editor, such as image files -->
-  <util:list id="blacklisted-file-extensions" value-type="java.lang.String">
-    <value>prpt</value>
-    <value>png</value>
-    <value>jpg</value>
-    <value>jpeg</value>
-    <value>svg</value>
-  </util:list>
-  
-  <!-- folders one shouldn't be able to access, such as system folders -->
-  <util:list id="blacklisted-folders" value-type="java.lang.String">
-    <value>/etc</value>
-  </util:list>
   
 </beans>

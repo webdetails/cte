@@ -13,6 +13,7 @@
 
 //URLs filled by backend
 var ExternalEditor = {
+  PROVIDERS: null,
   EXT_EDITOR: null,
   CAN_EDIT_URL: null,
   GET_FILE_URL: null,
@@ -80,22 +81,22 @@ var CodeEditor = function() {
     this.setTheme(this.DEFAULT_THEME_PATH);
   },
   
-  loadFile: function(filename, callback, errorCallback) {
+  loadFile: function(filename, provider, callback, errorCallback) {
     var myself = this;
 
     //check read permissions
-    $.get(ExternalEditor.CAN_READ_URL, {path: filename}, function(response) {
+    $.get(ExternalEditor.CAN_READ_URL, {path: filename, provider: provider} , function(response) {
         if(response && response.toString() === "true") {
 
-          $.get(ExternalEditor.CAN_EDIT_URL, {path: filename}, function(response) {
+          $.get(ExternalEditor.CAN_EDIT_URL, {path: filename, provider: provider}, function(response) {
             if(response && response.toString() === "true") {
               myself.setReadOnly(false);
             } else {
               myself.setReadOnly(true);
             }
 
-            $.get(ExternalEditor.GET_FILE_URL, {path: filename}, function(response) {
-              callback(response, filename);
+            $.get(ExternalEditor.GET_FILE_URL, {path: filename, provider: provider}, function(response) {
+              callback(response, filename, provider );
             })
               .fail(function(response) {
                 errorCallback(response);
@@ -123,7 +124,7 @@ var CodeEditor = function() {
     //this.editor.navigateFileStart();
   },
 
-  saveFile: function(filename, callback, errorCallback) {
+  saveFile: function(filename, provider, callback, errorCallback) {
     if(this.isReadOnly()) {
       errorCallback("Sorry, you don't have permissions to edit " + filename);
       return;
@@ -133,7 +134,7 @@ var CodeEditor = function() {
       type: "POST",
       //contentType: "application/json",
       dataType: "json",
-      data: {path: filename, data: this.getContents()},
+      data: {path: filename, provider: provider, data: this.getContents()},
       success: function(response) {
         callback(response);
       },
@@ -201,6 +202,24 @@ var CodeEditor = function() {
   
   onChange: function(callback) {
     this.editor.getSession().on('change', callback);
+  },
+
+  getProviders: function( callback, errorCallback ) {
+    var myself = this;
+
+    $.ajax({
+      url: ExternalEditor.PROVIDERS,
+      type: "GET",
+      dataType: "json",
+      async: false,
+      success: function(response) {
+        callback( response );
+      },
+      error: function( response ) {
+        errorCallback( response );
+      }
+    });
   }
+
  }//return new
 };

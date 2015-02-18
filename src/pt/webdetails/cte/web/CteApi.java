@@ -13,13 +13,17 @@
 package pt.webdetails.cte.web;
 
 import org.apache.commons.lang.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cpf.repository.util.RepositoryHelper;
 import pt.webdetails.cpf.utils.MimeTypes;
 import pt.webdetails.cpf.utils.PluginIOUtils;
 import pt.webdetails.cte.Constants;
-import pt.webdetails.cte.api.ICteEditor;
+import pt.webdetails.cte.api.ICteProvider;
+import pt.webdetails.cte.editor.CteProviderManager;
 import pt.webdetails.cte.engine.CteEngine;
 import pt.webdetails.cte.utils.SessionUtils;
 
@@ -33,27 +37,31 @@ import java.io.ByteArrayInputStream;
 
   private Logger logger = LoggerFactory.getLogger( CteApi.class );
 
+  // for ( a higher ) ease of use
+  private final String PATH = Constants.PARAM_PATH;
+  private final String PROVIDER = Constants.PARAM_PROVIDER;
+
   @GET @Path( Constants.ENDPOINT_CAN_EDIT )
-  public String canEdit( @QueryParam( Constants.PARAM_PATH ) String path ) {
-    return Boolean.toString( getCteEditor().canEdit( path ) );
+  public String canEdit( @QueryParam( PATH ) String path, @QueryParam( PROVIDER ) String provider ) {
+      return Boolean.toString( isValidProvider( provider ) ? getProvider( provider ).canEdit( path ) : false );
   }
 
   @GET @Path( Constants.ENDPOINT_CAN_READ )
-  public String canRead( @QueryParam( Constants.PARAM_PATH ) String path ) {
-    return Boolean.toString( getCteEditor().canRead( path ) );
+  public String canRead( @QueryParam( PATH ) String path, @QueryParam( PROVIDER ) String provider ) {
+    return Boolean.toString( isValidProvider( provider ) ? getProvider( provider ).canRead( path ) : false );
   }
 
   @GET @Path( Constants.ENDPOINT_EDITOR )
-  public void edit( @QueryParam( Constants.PARAM_PATH ) String path, @Context HttpServletResponse servletResponse )
-      throws WebApplicationException {
+  public void edit( @QueryParam( PATH ) String path, @QueryParam( PROVIDER ) String provider,
+      @Context HttpServletResponse servletResponse ) throws WebApplicationException {
 
-    if ( !getCteEditor().canRead( path ) ) {
+    if ( !isValidProvider( provider ) || !getProvider( provider ).canRead( path ) ) {
       logger.info( "CteApi.edit(): not allowed to read " + path );
       throw new WebApplicationException( Response.Status.FORBIDDEN );
     }
 
     try {
-      PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getCteEditor().getEditor( path ) );
+      PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getProvider( provider ).getEditor( path ) );
 
     } catch ( Exception e ) {
       logger.error( e.getMessage(), e );
@@ -62,16 +70,16 @@ import java.io.ByteArrayInputStream;
   }
 
   @GET @Path( Constants.ENDPOINT_GET_FILE )
-  public void getFile( @QueryParam( Constants.PARAM_PATH ) String path, @Context HttpServletResponse servletResponse )
-      throws WebApplicationException {
+  public void getFile( @QueryParam( PATH ) String path, @QueryParam( PROVIDER ) String provider,
+      @Context HttpServletResponse servletResponse ) throws WebApplicationException {
 
-    if ( !getCteEditor().canRead( path ) ) {
+    if ( !isValidProvider( provider ) || !getProvider( provider ).canRead( path ) ) {
       logger.info( "CteApi.getFile(): not allowed to read " + path );
       throw new WebApplicationException( Response.Status.FORBIDDEN );
     }
 
     try {
-      PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getCteEditor().getFile( path ) );
+      PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getProvider( provider ).getFile( path ) );
 
     } catch ( Exception e ) {
       logger.error( e.getMessage(), e );
@@ -80,17 +88,40 @@ import java.io.ByteArrayInputStream;
   }
 
   @POST @Path( Constants.ENDPOINT_SAVE_FILE )
-  public String saveFile( @FormParam( Constants.PARAM_PATH ) String path,
+  public String saveFile( @FormParam( PATH ) String path, @FormParam( PROVIDER ) String provider,
       @FormParam( Constants.PARAM_DATA ) @DefaultValue( StringUtils.EMPTY ) String data ) throws WebApplicationException {
 
-    if ( !getCteEditor().canEdit( path ) ) {
+    if ( !isValidProvider( provider ) ||  !getProvider( provider ).canEdit( path ) ) {
       logger.info( "CteApi.saveFile(): not allowed to edit " + path );
       throw new WebApplicationException( Response.Status.FORBIDDEN );
     }
 
     try {
-      return String.valueOf( getCteEditor().saveFile( path,
+      return String.valueOf( getProvider( provider ).saveFile( path,
               new ByteArrayInputStream( data.getBytes( getEngine().getEnvironment().getSystemEncoding() ) ) ) );
+
+    } catch ( Exception e ) {
+      logger.error( e.getMessage(), e );
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
+    }
+  }
+
+  @GET @Path( Constants.ENDPOINT_PROVIDERS )
+  public String providers() {
+
+    try {
+      JSONArray jsonArray = new JSONArray();
+
+      for ( ICteProvider provider : getProviderManager().getProviders() ) {
+
+        JSONObject jsonObj = new JSONObject();
+        jsonObj.put( "id", provider.getId() );
+        jsonObj.put( "name", provider.getName() );
+
+        jsonArray.put( jsonObj );
+      }
+
+      return jsonArray.toString( 2 );
 
     } catch ( Exception e ) {
       logger.error( e.getMessage(), e );
@@ -100,15 +131,11 @@ import java.io.ByteArrayInputStream;
 
   @GET @Path( Constants.ENDPOINT_TREE_EXPLORE ) @Produces( MimeTypes.PLAIN_TEXT )
   public String tree( @QueryParam( Constants.PARAM_DIR ) @DefaultValue( "/" ) String dir,
+      @QueryParam( PROVIDER ) String provider,
       @QueryParam( Constants.PARAM_FILE_EXTENSIONS ) @DefaultValue( StringUtils.EMPTY )
       String commaSeparatedAllowedExtensions,
       @QueryParam( Constants.PARAM_SHOW_HIDDEN_FILES ) @DefaultValue( "false" ) boolean showHiddenFiles )
       throws WebApplicationException {
-
-    if ( !getCteEditor().canRead( dir ) ) {
-      logger.info( "CteApi.tree(): not allowed to read " + dir );
-      throw new WebApplicationException( Response.Status.FORBIDDEN );
-    }
 
     String[] allowedExtensions = new String[] { };
     if ( !StringUtils.isEmpty( commaSeparatedAllowedExtensions ) ) {
@@ -118,10 +145,29 @@ import java.io.ByteArrayInputStream;
               new String[] { commaSeparatedAllowedExtensions.toLowerCase() };
     }
 
+    boolean isAdmin = SessionUtils.userInSessionIsAdmin();
+
     try {
 
-      return RepositoryHelper.toJQueryFileTree( dir,
-          getCteEditor().getTree( dir, allowedExtensions, showHiddenFiles, SessionUtils.userInSessionIsAdmin() ) );
+      if( StringUtils.isEmpty( provider ) ){
+
+        // a tree with all providers
+        return fullTree( allowedExtensions , showHiddenFiles );
+
+
+      } else if ( !isValidProvider( provider ) || !getProvider( provider ).canRead( dir ) ) {
+
+        // tree of a specific provider
+
+        logger.info( "CteApi.tree(): not allowed to read " + dir );
+        throw new WebApplicationException( Response.Status.FORBIDDEN );
+
+      } else {
+
+        return RepositoryHelper.toJQueryFileTree( dir,
+            getProvider( provider ).getTree( dir, allowedExtensions, showHiddenFiles, isAdmin ) );
+
+      }
 
     } catch ( Exception e ) {
       logger.error( e.getMessage(), e );
@@ -129,8 +175,47 @@ import java.io.ByteArrayInputStream;
     }
   }
 
-  private ICteEditor getCteEditor() {
-    return getEngine().getCteEditor();
+  private String fullTree( String[] allowedExtensions, boolean showHiddenFiles ) throws WebApplicationException {
+
+    try {
+
+      StringBuffer sb = new StringBuffer();
+
+      boolean isAdmin = SessionUtils.userInSessionIsAdmin();
+
+      for ( ICteProvider provider : getProviderManager().getProviders() ) {
+
+        IBasicFile[] tree = provider.getTree( "/" , allowedExtensions, showHiddenFiles, isAdmin );
+
+        sb.append( RepositoryHelper.toJQueryFileTree( provider.getId() + "/" , tree ) );
+      }
+
+      return sb.toString();
+
+    } catch ( Exception e ) {
+      logger.error( e.getMessage(), e );
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
+    }
+  }
+
+  private boolean isValidProvider( String provider ) throws WebApplicationException {
+
+    if( StringUtils.isEmpty( provider ) ){
+      throw new WebApplicationException( "missing provider", Response.Status.FORBIDDEN );
+
+    } else if( getProvider( provider ) == null ){
+      throw new WebApplicationException( "invalid/unknown provider", Response.Status.FORBIDDEN );
+    }
+
+    return true;
+  }
+
+  private CteProviderManager getProviderManager() {
+    return getEngine().getProviderManager();
+  }
+
+  private ICteProvider getProvider( String providerId ) {
+    return getEngine().getProviderManager().getProviderById( providerId );
   }
 
   private CteEngine getEngine() {

@@ -19,7 +19,7 @@ import pt.webdetails.cpf.InterPluginCall;
 import pt.webdetails.cpf.Util;
 import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cte.Constants;
-import pt.webdetails.cte.api.ICteEditor;
+import pt.webdetails.cte.api.ICteProvider;
 import pt.webdetails.cte.engine.CteEngine;
 
 import java.io.ByteArrayInputStream;
@@ -28,13 +28,29 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DefaultCdaLeveragedEditor implements ICteEditor {
+public class DefaultCdaLeveragedEditor implements ICteProvider {
 
   private Logger logger = LoggerFactory.getLogger( DefaultCdaLeveragedEditor.class );
 
   @Override
   public boolean canRead( String path ) {
     return !StringUtils.isEmpty( path ); /* CDA takes care of this */
+  }
+
+  @Override public String getId() {
+    return "cda-leveraged";
+  }
+
+  @Override public String getName() {
+    return "Cda Leveraged";
+  }
+
+  @Override public String[] getBlacklistedFolders() {
+    return CteEngine.getInstance().getSettings().getBlacklistedFolders().toArray( new String[] { } );
+  }
+
+  @Override public String[] getBlacklistedFileExtensions() {
+    return CteEngine.getInstance().getSettings().getBlacklistedFileExtensions().toArray( new String[] { } );
   }
 
   @Override
