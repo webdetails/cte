@@ -10,27 +10,23 @@
 * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to
 * the license for the specific language governing your rights and limitations.
 */
-package pt.webdetails.cte.editor;
+package pt.webdetails.cte.provider;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.webdetails.cpf.InterPluginCall;
-import pt.webdetails.cpf.Util;
 import pt.webdetails.cpf.repository.api.IBasicFile;
-import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.api.ICteProvider;
 import pt.webdetails.cte.engine.CteEngine;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DefaultCdaLeveragedEditor implements ICteProvider {
+public class BasicCdaProvider implements ICteProvider {
 
-  private Logger logger = LoggerFactory.getLogger( DefaultCdaLeveragedEditor.class );
+  private Logger logger = LoggerFactory.getLogger( BasicCdaProvider.class );
 
   @Override
   public boolean canRead( String path ) {
@@ -66,26 +62,6 @@ public class DefaultCdaLeveragedEditor implements ICteProvider {
     String reply = doCDAInterPluginCall( "canEdit", params );
 
     return reply != null && reply.toLowerCase().contains( "true" );
-  }
-
-  @Override
-  public InputStream getEditor() throws Exception {
-    return getEditor( Util.joinPath( CteEngine.getInstance().getEnvironment().getPluginRepositoryDir(),
-        Constants.PLUGIN_WELCOME_FILE ) );
-  }
-
-  @Override
-  public InputStream getEditor( String path ) throws Exception {
-
-    Map<String, Object> params = new HashMap<String, Object>();
-
-    params.put( "path", path );
-    String reply = doCDAInterPluginCall( "getExtEditor", params );
-
-    if ( reply != null ) {
-      return new ByteArrayInputStream( reply.getBytes( Charset.defaultCharset() ) );
-    }
-    return null;
   }
 
   @Override

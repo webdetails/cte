@@ -12,6 +12,7 @@
 */
 package pt.webdetails.cte;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import pt.webdetails.cpf.SimpleContentGenerator;
@@ -21,13 +22,19 @@ public class CteContentGenerator extends SimpleContentGenerator {
 
   private static Log logger = LogFactory.getLog( CteContentGenerator.class );
 
+  private String provider;
+
   @Override public void createContent() throws Exception {
     String path = getPathParameterAsString( Constants.PARAM_PATH, "" );
 
+    if( StringUtils.isEmpty( provider ) ){
+      logger.error( "No content provider id has been set; file loading may not function as expected" );
+    }
+
     if( isCallForEditor() ) {
 
-      getResponse()
-          .sendRedirect( CteEngine.getInstance().getEnvironment().getPluginBaseUrl() + "api/edit?path=" + path );
+      getResponse().sendRedirect( CteEngine.getInstance().getEnvironment().getPluginBaseUrl() + "api/edit?path=" + path
+              + "&provider=" + provider );
 
     } else {
       // back into the standard platform file handling with you...
@@ -41,5 +48,13 @@ public class CteContentGenerator extends SimpleContentGenerator {
 
   private boolean isCallForEditor(){
     return getRequest().getRequestURI().endsWith( Constants.PLUGIN_EDITOR_PERSPECTIVE_ID );
+  }
+
+  public String getProvider() {
+    return provider;
+  }
+
+  public void setProvider( String provider ) {
+    this.provider = provider;
   }
 }

@@ -10,7 +10,7 @@
 * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to
 * the license for the specific language governing your rights and limitations.
 */
-package pt.webdetails.cte.editor;
+package pt.webdetails.cte.provider;
 
 import org.apache.commons.lang.StringUtils;
 import pt.webdetails.cpf.exceptions.InitializationException;

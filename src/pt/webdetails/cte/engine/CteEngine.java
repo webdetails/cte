@@ -19,8 +19,9 @@ import pt.webdetails.cpf.repository.api.IRWAccess;
 import pt.webdetails.cpf.repository.api.IReadAccess;
 import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.CteSettings;
+import pt.webdetails.cte.api.ICteEditor;
 import pt.webdetails.cte.api.ICteEnvironment;
-import pt.webdetails.cte.editor.CteProviderManager;
+import pt.webdetails.cte.provider.CteProviderManager;
 
 import java.io.IOException;
 
@@ -29,6 +30,7 @@ public class CteEngine {
   private static CteEngine instance;
   private static Logger logger = LoggerFactory.getLogger( CteEngine.class );
   private CteSettings settings;
+  private ICteEditor editor;
   private CteProviderManager providerManager;
   private ICteEnvironment environment;
 
@@ -36,7 +38,7 @@ public class CteEngine {
 
     CoreBeanFactory factory = new CoreBeanFactory( Constants.PLUGIN_ID );
 
-    this.environment = (ICteEnvironment) factory.getBean( ICteEnvironment.class.getSimpleName() );
+    this.environment = ( ICteEnvironment ) factory.getBean( ICteEnvironment.class.getSimpleName() );
 
     if ( environment == null ) {
       logger.error( "ICteEditor has not been set; CteEngine will not function properly" );
@@ -44,11 +46,14 @@ public class CteEngine {
 
     environment.init();
 
-    this.providerManager = (CteProviderManager) factory.getBean( CteProviderManager.class.getSimpleName() );
+    this.providerManager = ( CteProviderManager ) factory.getBean( CteProviderManager.class.getSimpleName() );
 
     if ( providerManager == null ) {
       logger.error( "ProviderManager has not been set; CteEngine will not function properly" );
     }
+
+    // chosen editor
+    this.editor = ( ICteEditor ) factory.getBean( ICteEditor.class.getSimpleName() );
 
     // settings.xml
     this.settings = new CteSettings( getEnvironment().getPluginSystemWriter( null ) );
@@ -129,5 +134,13 @@ public class CteEngine {
 
   public void setSettings( CteSettings settings ) {
     this.settings = settings;
+  }
+
+  public ICteEditor getEditor() {
+    return editor;
+  }
+
+  public void setEditor( ICteEditor editor ) {
+    this.editor = editor;
   }
 }

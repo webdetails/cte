@@ -16,7 +16,10 @@
   
   <bean id="ICteEnvironment" class="pt.webdetails.cte.PentahoCteEnvironment" />
   
-  <bean class="pt.webdetails.cte.CteContentGenerator" id="cte.edit" />
+  <bean class="pt.webdetails.cte.CteContentGenerator" id="cte.edit">
+    <!--  the provider id to use whenever user clicks on 'Edit' action in 'Browse Files' -->
+    <property name="provider" value="repo" />
+  </bean>
   
   <bean class="pt.webdetails.cte.CteContentGenerator" id="properties" />
   <bean class="pt.webdetails.cte.CteContentGenerator" id="cdfde" />
@@ -26,23 +29,39 @@
   <bean class="pt.webdetails.cte.CteContentGenerator" id="txt" />
   <bean class="pt.webdetails.cte.CteContentGenerator" id="js" />
   
+  <!-- chosen editor -->
+  <bean id="ICteEditor" class="pt.webdetails.cte.editor.ace.AceEditor" />  
 
-  <bean id="CteProviderManager" class="pt.webdetails.cte.editor.CteProviderManager">
+  <!-- content provider list --> 
+  <bean id="CteProviderManager" class="pt.webdetails.cte.provider.CteProviderManager">
     <constructor-arg>
       <util:list id="providers" value-type="pt.webdetails.cte.api.ICteProvider">
         
         <!-- Provider list. Must implement pt.webdetails.cte.api.ICteProvider -->
-        <ref bean="cteAceRepositoryEditor" />
+        <ref bean="contentRepo" />
+        <ref bean="testRepo" />
+        <ref bean="anotherRepo" />
 
       </util:list>
     </constructor-arg>
   </bean>
 
 
-  <!-- <bean id="ICteProvider" class="pt.webdetails.cte.editor.DefaultCdaLeveragedEditor" /> -->
-  <bean id="cteAceRepositoryEditor" class="pt.webdetails.cte.editor.ace.AceEditor">
+  <!-- <bean id="basicCdaProvider" class="pt.webdetails.cte.provider.BasicCdaProvider" /> -->
+
+  <bean id="contentRepo" class="pt.webdetails.cte.provider.ContentRepoProvider">
     <property name="id" value="repo" />
     <property name="name" value="Content Repository" />
+  </bean>
+
+  <bean id="testRepo" class="pt.webdetails.cte.provider.ContentRepoProvider">
+    <property name="id" value="test" />
+    <property name="name" value="Test Repository" />
+  </bean>
+
+  <bean id="anotherRepo" class="pt.webdetails.cte.provider.ContentRepoProvider">
+    <property name="id" value="another" />
+    <property name="name" value="Another Repository" />
   </bean>
   
   

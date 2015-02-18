@@ -23,7 +23,7 @@ import pt.webdetails.cpf.utils.MimeTypes;
 import pt.webdetails.cpf.utils.PluginIOUtils;
 import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.api.ICteProvider;
-import pt.webdetails.cte.editor.CteProviderManager;
+import pt.webdetails.cte.provider.CteProviderManager;
 import pt.webdetails.cte.engine.CteEngine;
 import pt.webdetails.cte.utils.SessionUtils;
 
@@ -52,16 +52,11 @@ import java.io.ByteArrayInputStream;
   }
 
   @GET @Path( Constants.ENDPOINT_EDITOR )
-  public void edit( @QueryParam( PATH ) String path, @QueryParam( PROVIDER ) String provider,
+  public void edit( @QueryParam( PATH ) String path,  @QueryParam( PROVIDER ) String provider,
       @Context HttpServletResponse servletResponse ) throws WebApplicationException {
 
-    if ( !isValidProvider( provider ) || !getProvider( provider ).canRead( path ) ) {
-      logger.info( "CteApi.edit(): not allowed to read " + path );
-      throw new WebApplicationException( Response.Status.FORBIDDEN );
-    }
-
     try {
-      PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getProvider( provider ).getEditor( path ) );
+      PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getEngine().getEditor().getEditor() );
 
     } catch ( Exception e ) {
       logger.error( e.getMessage(), e );

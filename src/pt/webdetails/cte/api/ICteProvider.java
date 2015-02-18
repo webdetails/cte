@@ -59,21 +59,6 @@ public interface ICteProvider {
   boolean canRead( String path );
 
   /**
-   * Blank editor ( no file )
-   *
-   * @return blank editor
-   */
-  InputStream getEditor() throws Exception;
-
-  /**
-   * return editor for the content of a file
-   *
-   * @param path - file path
-   * @return editor for the content of a file
-   */
-  InputStream getEditor( String path ) throws Exception;
-
-  /**
    * returns the content of a file
    *
    * @param path - file path
