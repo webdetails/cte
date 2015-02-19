@@ -26,7 +26,7 @@ Following this steps should get you going:
 
 ### Compile the project
 
-Just run *ant* and you should be all set
+Just run *ant dist* and you should be all set
 
 
 ### Deploying the plugin in your pentaho environment
