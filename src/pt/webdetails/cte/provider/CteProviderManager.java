@@ -35,17 +35,22 @@ public class CteProviderManager {
 
     // validate all provider id's are unique
 
+    List<String> ids = new ArrayList<String>();
+
     for ( ICteProvider provider : providers ) {
 
-      if ( provider == null || StringUtils.isEmpty( provider.getId() ) ) {
-        throw new InitializationException( "ICteProvider " + provider.getClass().getSimpleName() + " with null ID. "
-            + "Each provider must have a unique ID", null );
-      }
+        if ( provider == null || StringUtils.isEmpty( provider.getId() ) ) {
+          throw new InitializationException( "ICteProvider " + provider.getClass().getSimpleName() + " with null ID. "
+              + "Each provider must have a unique ID", null );
+        }
 
-      if ( providerExists( provider ) ) {
-        throw new InitializationException( "Duplicated ICteProvider id: " + provider.getId() +
-            ". Each provider must have a unique ID", null );
-      }
+        if ( ids.contains( provider.getId() ) ) {
+          throw new InitializationException( "Duplicated ICteProvider id: " + provider.getId() +
+              ". Each provider must have a unique ID", null );
+
+        } else {
+          ids.add( provider.getId() );
+        }
     }
 
     // all validations passed
@@ -75,13 +80,13 @@ public class CteProviderManager {
     this.providers = providers;
   }
 
-  public boolean addProvider( ICteProvider provider, boolean override ) {
+  public boolean addProvider( ICteProvider provider , boolean override ) {
 
-    if ( provider == null || StringUtils.isEmpty( provider.getId() ) ) {
-      logger.error( "Cannot add a provider with an empty ID" );
+    if( provider == null || StringUtils.isEmpty( provider.getId() ) ){
+      logger.error("Cannot add a provider with an empty ID");
       return false;
 
-    } else if ( providerExists( provider ) && !override ) {
+    } else if( providerExists( provider ) && !override ){
       logger.warn( "Provider already exists and override set to false" );
       return false;
     }
@@ -90,15 +95,15 @@ public class CteProviderManager {
     return true;
   }
 
-  public boolean providerExists( ICteProvider provider ) {
+  public boolean providerExists( ICteProvider provider ){
     return provider != null && providerExists( provider.getId() );
   }
 
-  public boolean providerExists( String id ) {
+  public boolean providerExists( String id ){
 
     boolean matchFound = false;
 
-    if ( !StringUtils.isEmpty( id ) ) {
+    if( !StringUtils.isEmpty( id ) ) {
 
       for ( ICteProvider provider : getProviders() ) {
         matchFound |= id.equals( provider.getId() );
