@@ -13,6 +13,7 @@
 package pt.webdetails.cte.editor.ace;
 
 import pt.webdetails.cpf.PluginEnvironment;
+import pt.webdetails.cpf.exceptions.InitializationException;
 import pt.webdetails.cte.api.ICteEditor;
 import pt.webdetails.cte.api.ICteEnvironment;
 import pt.webdetails.cte.engine.CteEngine;
@@ -22,32 +23,32 @@ import java.io.InputStream;
 
 public class AceEditor implements ICteEditor {
 
-
-  private InputStream editor;
+  private byte[] editorContent;
 
   public AceEditor() {
+  }
+
+  @Override public void init( ICteEnvironment environment ) throws InitializationException {
   }
 
   @Override public InputStream getEditor() throws Exception {
     return getEditor( null );
   }
 
-  @Override
-  public InputStream getEditor( InputStream fileContent ) throws Exception {
+  @Override public InputStream getEditor( InputStream fileContent ) throws Exception {
 
-    // sanitized calls; output is always the same ( ext-editor.html )
-    if ( editor == null ) {
+    if ( editorContent == null || editorContent.length == 0 ) {
 
-      String tmpEdit = new ExtEditor( getEnvironment().getUrlProvider(), PluginEnvironment.repository() ).getExtEditor();
+      editorContent =
+          new ExtEditor( getEnvironment().getUrlProvider(), PluginEnvironment.repository() ).getExtEditor()
+              .getBytes( getEnvironment().getSystemEncoding() );
 
-      editor = new ByteArrayInputStream( tmpEdit.getBytes( getEnvironment().getSystemEncoding() ) );
     }
 
-    return editor;
+    return new ByteArrayInputStream( editorContent );
   }
 
   private ICteEnvironment getEnvironment() {
     return CteEngine.getInstance().getEnvironment();
   }
 }
-

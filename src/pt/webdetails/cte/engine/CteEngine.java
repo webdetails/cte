@@ -21,8 +21,8 @@ import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.CteSettings;
 import pt.webdetails.cte.api.ICteEditor;
 import pt.webdetails.cte.api.ICteEnvironment;
-import pt.webdetails.cte.api.ICteProvider;
-import pt.webdetails.cte.provider.CteProviderManager;
+import pt.webdetails.cte.api.ICteProviderManager;
+import pt.webdetails.cte.provider.CteDefaultProviderManager;
 
 import java.io.IOException;
 
@@ -32,14 +32,14 @@ public class CteEngine {
   private static Logger logger = LoggerFactory.getLogger( CteEngine.class );
   private CteSettings settings;
   private ICteEditor editor;
-  private CteProviderManager providerManager;
+  private ICteProviderManager providerManager;
   private ICteEnvironment environment;
 
   private CteEngine() throws InitializationException {
 
     CoreBeanFactory factory = new CoreBeanFactory( Constants.PLUGIN_ID );
 
-    this.environment = ( ICteEnvironment ) factory.getBean( ICteEnvironment.class.getSimpleName() );
+    this.environment = (ICteEnvironment) factory.getBean( ICteEnvironment.class.getSimpleName() );
 
     if ( environment == null ) {
       logger.error( "ICteEditor has not been set; CteEngine will not function properly" );
@@ -48,25 +48,25 @@ public class CteEngine {
     environment.init();
 
     // chosen editor
-    this.editor = ( ICteEditor ) factory.getBean( ICteEditor.class.getSimpleName() );
+    this.editor = (ICteEditor) factory.getBean( ICteEditor.class.getSimpleName() );
+    editor.init( environment );
 
     // settings.xml
-    this.settings = new CteSettings( getEnvironment().getPluginSystemWriter( null ) );
+    this.settings = new CteSettings( environment.getPluginSystemWriter( null ) );
 
     if ( settings == null ) {
       logger.error( "CteSettings has not been set; CteEngine will not function properly" );
     }
 
-    this.providerManager = ( CteProviderManager ) factory.getBean( CteProviderManager.class.getSimpleName() );
+    // chosen provider manager
+    this.providerManager = (ICteProviderManager) factory.getBean( ICteProviderManager.class.getSimpleName() );
 
     if ( providerManager == null ) {
       logger.error( "ProviderManager has not been set; CteEngine will not function properly" );
     }
 
-    // init all providers registered in provider Manager
-    for ( ICteProvider provider : getProviderManager().getProviders() ) {
-      provider.init( environment );
-    }
+    // init provider manager
+    providerManager.init( environment );
 
     ensureBasicDir();
   }
@@ -118,11 +118,11 @@ public class CteEngine {
     }
   }
 
-  public CteProviderManager getProviderManager() {
+  public ICteProviderManager getProviderManager() {
     return providerManager;
   }
 
-  protected void setProviderManager( CteProviderManager providerManager ) {
+  protected void setProviderManager( CteDefaultProviderManager providerManager ) {
     this.providerManager = providerManager;
   }
 

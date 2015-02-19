@@ -16,18 +16,20 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.webdetails.cpf.exceptions.InitializationException;
+import pt.webdetails.cte.api.ICteEnvironment;
 import pt.webdetails.cte.api.ICteProvider;
+import pt.webdetails.cte.api.ICteProviderManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CteProviderManager {
+public class CteDefaultProviderManager implements ICteProviderManager {
 
-  private Logger logger = LoggerFactory.getLogger( CteProviderManager.class );
+  private Logger logger = LoggerFactory.getLogger( CteDefaultProviderManager.class );
 
   List<ICteProvider> providers = new ArrayList<ICteProvider>();
 
-  public CteProviderManager( List<ICteProvider> providers ) throws InitializationException {
+  public CteDefaultProviderManager( List<ICteProvider> providers ) throws InitializationException {
 
     if ( providers == null || providers.size() == 0 ) {
       throw new InitializationException( "Need to declare at least one ICteProvider", null );
@@ -57,11 +59,20 @@ public class CteProviderManager {
     this.providers = providers;
   }
 
-  public List<ICteProvider> getProviders() {
+  @Override public void init( ICteEnvironment environment ) throws InitializationException {
+
+    // init all providers registered in provider Manager
+    for ( ICteProvider provider : getProviders() ) {
+      provider.init( environment );
+    }
+
+  }
+
+  @Override public List<ICteProvider> getProviders() {
     return providers;
   }
 
-  public ICteProvider getProviderById( String id ) {
+  @Override public ICteProvider getProviderById( String id ) {
 
     if ( providerExists( id ) ) {
 
@@ -80,7 +91,7 @@ public class CteProviderManager {
     this.providers = providers;
   }
 
-  public boolean addProvider( ICteProvider provider, boolean override ) {
+  @Override public boolean addProvider( ICteProvider provider, boolean override ) {
 
     if ( provider == null || StringUtils.isEmpty( provider.getId() ) ) {
       logger.error( "Cannot add a provider with an empty ID" );
@@ -99,7 +110,7 @@ public class CteProviderManager {
     return provider != null && providerExists( provider.getId() );
   }
 
-  public boolean providerExists( String id ) {
+  @Override public boolean providerExists( String id ) {
 
     boolean matchFound = false;
 

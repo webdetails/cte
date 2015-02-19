@@ -14,25 +14,18 @@ package pt.webdetails.cte.api;
 
 import pt.webdetails.cpf.exceptions.InitializationException;
 
-import java.io.InputStream;
+import java.util.List;
 
-public interface ICteEditor {
+public interface ICteProviderManager {
 
   void init( ICteEnvironment environment ) throws InitializationException;
 
-  /**
-   * Blank editor ( no file )
-   *
-   * @return blank editor
-   */
-  InputStream getEditor() throws Exception;
+  List<ICteProvider> getProviders();
 
-  /**
-   * return editor for the content of a file
-   *
-   * @param file - content of a file to display
-   * @return editor for the content of a file
-   */
-  InputStream getEditor( InputStream file ) throws Exception;
+  ICteProvider getProviderById( String id );
+
+  boolean addProvider( ICteProvider provider, boolean override );
+
+  boolean providerExists( String id );
 
 }

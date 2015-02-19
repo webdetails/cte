@@ -22,8 +22,8 @@ import pt.webdetails.cpf.repository.util.RepositoryHelper;
 import pt.webdetails.cpf.utils.PluginIOUtils;
 import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.api.ICteProvider;
+import pt.webdetails.cte.api.ICteProviderManager;
 import pt.webdetails.cte.engine.CteEngine;
-import pt.webdetails.cte.provider.CteProviderManager;
 import pt.webdetails.cte.utils.SessionUtils;
 
 import javax.servlet.http.HttpServletResponse;
@@ -240,7 +240,7 @@ import java.io.ByteArrayInputStream;
     return true;
   }
 
-  private CteProviderManager getProviderManager() {
+  private ICteProviderManager getProviderManager() {
     return getEngine().getProviderManager();
   }
 

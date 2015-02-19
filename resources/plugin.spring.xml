@@ -33,18 +33,18 @@
   <bean id="ICteEditor" class="pt.webdetails.cte.editor.ace.AceEditor" />  
 
   <!-- content provider list --> 
-  <bean id="CteProviderManager" class="pt.webdetails.cte.provider.CteProviderManager">
+  <bean id="ICteProviderManager" class="pt.webdetails.cte.provider.CteProviderManagerExtended">
     <constructor-arg>
       <util:list id="providers" value-type="pt.webdetails.cte.api.ICteProvider">
         
         <!-- Provider list. Must implement pt.webdetails.cte.api.ICteProvider -->
         <ref bean="contentRepo" />
-        <ref bean="cteFileSystem" />
-        <ref bean="cdaFileSystem" />
         <ref bean="cggFileSystem" />
 
       </util:list>
     </constructor-arg>
+
+    <property name="autoDiscoverSparklApps" value="true" />
   </bean>
 
 

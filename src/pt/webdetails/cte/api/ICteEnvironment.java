@@ -55,4 +55,6 @@ public interface ICteEnvironment {
   IRWAccess getOtherPluginSystemWriter( String pluginId, String path );
 
   IUrlProvider getUrlProvider();
+
+  String[] getRegisteredPluginIds();
 }

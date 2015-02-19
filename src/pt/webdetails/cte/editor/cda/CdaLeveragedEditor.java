@@ -16,8 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.webdetails.cpf.InterPluginCall;
 import pt.webdetails.cpf.Util;
+import pt.webdetails.cpf.exceptions.InitializationException;
 import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.api.ICteEditor;
+import pt.webdetails.cte.api.ICteEnvironment;
 import pt.webdetails.cte.engine.CteEngine;
 
 import java.io.ByteArrayInputStream;
@@ -29,6 +31,9 @@ import java.util.Map;
 public class CdaLeveragedEditor implements ICteEditor {
 
   private Logger logger = LoggerFactory.getLogger( CdaLeveragedEditor.class );
+
+  @Override public void init( ICteEnvironment environment ) throws InitializationException {
+  }
 
   @Override
   public InputStream getEditor() throws Exception {

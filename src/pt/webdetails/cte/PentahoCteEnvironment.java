@@ -14,7 +14,9 @@ package pt.webdetails.cte;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.platform.api.engine.IPluginManager;
 import org.pentaho.platform.engine.core.system.PentahoRequestContextHolder;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.util.messages.LocaleHelper;
 import pt.webdetails.cpf.PentahoPluginEnvironment;
 import pt.webdetails.cpf.Util;
@@ -25,6 +27,8 @@ import pt.webdetails.cpf.repository.api.IRWAccess;
 import pt.webdetails.cpf.repository.api.IReadAccess;
 import pt.webdetails.cte.api.ICteEnvironment;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class PentahoCteEnvironment extends PentahoPluginEnvironment implements ICteEnvironment {
@@ -62,6 +66,19 @@ public class PentahoCteEnvironment extends PentahoPluginEnvironment implements I
 
   @Override public IUrlProvider getUrlProvider() {
     return super.getUrlProvider();
+  }
+
+  @Override public String[] getRegisteredPluginIds() {
+
+    List<String> registeredPlugins = new ArrayList<String>();
+
+    IPluginManager pluginManager = PentahoSystem.get( IPluginManager.class );
+
+    if ( pluginManager != null && pluginManager.getRegisteredPlugins() != null ) {
+      registeredPlugins = pluginManager.getRegisteredPlugins();
+    }
+
+    return registeredPlugins.toArray( new String[]{} );
   }
 
   @Override public String getApplicationBaseUrl() {
