@@ -39,30 +39,32 @@
         
         <!-- Provider list. Must implement pt.webdetails.cte.api.ICteProvider -->
         <ref bean="contentRepo" />
-        <ref bean="testRepo" />
-        <ref bean="anotherRepo" />
+        <ref bean="cteFileSystem" />
+        <ref bean="cdaFileSystem" />
+        <ref bean="cggFileSystem" />
 
       </util:list>
     </constructor-arg>
   </bean>
 
 
-  <!-- <bean id="basicCdaProvider" class="pt.webdetails.cte.provider.BasicCdaProvider" /> -->
+  <!-- <bean id="basicCdaProvider" class="pt.webdetails.cte.provider.cda.BasicCdaProvider" /> -->
 
-  <bean id="contentRepo" class="pt.webdetails.cte.provider.ContentRepoProvider">
+  <bean id="contentRepo" class="pt.webdetails.cte.provider.repo.ContentRepoProvider">
     <property name="id" value="repo" />
     <property name="name" value="Content Repository" />
   </bean>
 
-  <bean id="testRepo" class="pt.webdetails.cte.provider.ContentRepoProvider">
-    <property name="id" value="test" />
-    <property name="name" value="Test Repository" />
+  <bean id="cteFileSystem" class="pt.webdetails.cte.provider.fs.GenericPluginFileSystemProvider">
+    <constructor-arg value="cte" />
   </bean>
 
-  <bean id="anotherRepo" class="pt.webdetails.cte.provider.ContentRepoProvider">
-    <property name="id" value="another" />
-    <property name="name" value="Another Repository" />
+  <bean id="cggFileSystem" class="pt.webdetails.cte.provider.fs.GenericPluginFileSystemProvider">
+    <constructor-arg value="cgg" />
   </bean>
-  
+
+  <bean id="cdaFileSystem" class="pt.webdetails.cte.provider.fs.GenericPluginFileSystemProvider">
+    <constructor-arg value="cda" />
+  </bean>
   
 </beans>

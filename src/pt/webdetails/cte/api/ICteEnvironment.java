@@ -18,9 +18,7 @@ import pt.webdetails.cpf.repository.api.IRWAccess;
 import pt.webdetails.cpf.repository.api.IReadAccess;
 import pt.webdetails.cpf.repository.api.IUserContentAccess;
 
-import java.io.Serializable;
 import java.util.Locale;
-import java.util.Map;
 
 public interface ICteEnvironment {
 
@@ -50,9 +48,11 @@ public interface ICteEnvironment {
 
   IReadAccess getPluginSystemReader( String path );
 
+  IReadAccess getOtherPluginSystemReader( String pluginId, String path );
+
   IRWAccess getPluginSystemWriter( String path );
 
-  IUrlProvider getUrlProvider();
+  IRWAccess getOtherPluginSystemWriter( String pluginId, String path );
 
-  Map<String, Serializable> getRepoFileMetadata( String path ) throws Exception;
+  IUrlProvider getUrlProvider();
 }

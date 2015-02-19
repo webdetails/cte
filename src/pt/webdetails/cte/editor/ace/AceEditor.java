@@ -22,20 +22,10 @@ import java.io.InputStream;
 
 public class AceEditor implements ICteEditor {
 
-  private String extEditor;
+
+  private InputStream editor;
 
   public AceEditor() {
-  }
-
-  private String getExtEditor() throws Exception {
-
-    // sanitized calls; output is always the same ( ext-editor.html )
-
-    if ( extEditor == null ) {
-      extEditor = new ExtEditor( getEnvironment().getUrlProvider(), PluginEnvironment.repository() ).getExtEditor();
-    }
-
-    return extEditor;
   }
 
   @Override public InputStream getEditor() throws Exception {
@@ -44,7 +34,16 @@ public class AceEditor implements ICteEditor {
 
   @Override
   public InputStream getEditor( InputStream fileContent ) throws Exception {
-    return new ByteArrayInputStream( getExtEditor().getBytes( getEnvironment().getSystemEncoding() ) );
+
+    // sanitized calls; output is always the same ( ext-editor.html )
+    if ( editor == null ) {
+
+      String tmpEdit = new ExtEditor( getEnvironment().getUrlProvider(), PluginEnvironment.repository() ).getExtEditor();
+
+      editor = new ByteArrayInputStream( tmpEdit.getBytes( getEnvironment().getSystemEncoding() ) );
+    }
+
+    return editor;
   }
 
   private ICteEnvironment getEnvironment() {

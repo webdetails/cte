@@ -10,19 +10,20 @@
 * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to
 * the license for the specific language governing your rights and limitations.
 */
-package pt.webdetails.cte.provider;
+package pt.webdetails.cte.provider.repo;
 
 import org.apache.commons.lang.StringUtils;
 import pt.webdetails.cpf.Util;
+import pt.webdetails.cpf.exceptions.InitializationException;
 import pt.webdetails.cpf.repository.api.FileAccess;
 import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cpf.repository.api.IUserContentAccess;
 import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.api.ICteEnvironment;
 import pt.webdetails.cte.api.ICteProvider;
-import pt.webdetails.cte.editor.ace.AceEditorFilter;
-import pt.webdetails.cte.editor.ace.GenericBasicFileFilter;
 import pt.webdetails.cte.engine.CteEngine;
+import pt.webdetails.cte.provider.GenericBasicFileFilter;
+import pt.webdetails.cte.provider.GenericFileAndDirFilter;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -43,6 +44,9 @@ public class ContentRepoProvider implements ICteProvider {
     IUserContentAccess access = getEnvironment().getUserContentAccess( null );
 
     return !StringUtils.isEmpty( path ) && access.fileExists( path ) && access.hasAccess( path, FileAccess.READ );
+  }
+
+  @Override public void init( ICteEnvironment environment ) throws InitializationException {
   }
 
   @Override public String getId() {
@@ -160,7 +164,7 @@ public class ContentRepoProvider implements ICteProvider {
 
     IBasicFile[] files = new IBasicFile[] { };
 
-    AceEditorFilter fileAndDirFilter = null;
+    GenericFileAndDirFilter fileAndDirFilter = null;
 
     if ( bypassBlacklists && userIsAdmin ) {
 
@@ -169,13 +173,13 @@ public class ContentRepoProvider implements ICteProvider {
       // this is a super-admin hidden feature, where all blacklists are bypassed; user in session will
       // have access to system folders and any and all files that may contain sensitive information
 
-      fileAndDirFilter = new AceEditorFilter( null, null, null, GenericBasicFileFilter.FilterType.FILTER_IN );
+      fileAndDirFilter = new GenericFileAndDirFilter( null, null, null, GenericBasicFileFilter.FilterType.FILTER_IN );
 
     } else {
 
       // act as a blacklist
       fileAndDirFilter =
-          new AceEditorFilter( null, getBlacklistedFileExtensions(), getBlacklistedFolders(),
+          new GenericFileAndDirFilter( null, getBlacklistedFileExtensions(), getBlacklistedFolders(),
               GenericBasicFileFilter.FilterType.FILTER_OUT );
     }
 

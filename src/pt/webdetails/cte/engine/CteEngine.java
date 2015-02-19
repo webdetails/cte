@@ -21,6 +21,7 @@ import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.CteSettings;
 import pt.webdetails.cte.api.ICteEditor;
 import pt.webdetails.cte.api.ICteEnvironment;
+import pt.webdetails.cte.api.ICteProvider;
 import pt.webdetails.cte.provider.CteProviderManager;
 
 import java.io.IOException;
@@ -46,12 +47,6 @@ public class CteEngine {
 
     environment.init();
 
-    this.providerManager = ( CteProviderManager ) factory.getBean( CteProviderManager.class.getSimpleName() );
-
-    if ( providerManager == null ) {
-      logger.error( "ProviderManager has not been set; CteEngine will not function properly" );
-    }
-
     // chosen editor
     this.editor = ( ICteEditor ) factory.getBean( ICteEditor.class.getSimpleName() );
 
@@ -60,6 +55,17 @@ public class CteEngine {
 
     if ( settings == null ) {
       logger.error( "CteSettings has not been set; CteEngine will not function properly" );
+    }
+
+    this.providerManager = ( CteProviderManager ) factory.getBean( CteProviderManager.class.getSimpleName() );
+
+    if ( providerManager == null ) {
+      logger.error( "ProviderManager has not been set; CteEngine will not function properly" );
+    }
+
+    // init all providers registered in provider Manager
+    for ( ICteProvider provider : getProviderManager().getProviders() ) {
+      provider.init( environment );
     }
 
     ensureBasicDir();

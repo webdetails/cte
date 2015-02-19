@@ -13,6 +13,7 @@
       <extension>svg</extension>
       <extension>zip</extension>
       <extension>rar</extension>
+      <extension>jar</extension>
 
    </files>
 

@@ -10,13 +10,15 @@
 * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to
 * the license for the specific language governing your rights and limitations.
 */
-package pt.webdetails.cte.provider;
+package pt.webdetails.cte.provider.cda;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.webdetails.cpf.InterPluginCall;
+import pt.webdetails.cpf.exceptions.InitializationException;
 import pt.webdetails.cpf.repository.api.IBasicFile;
+import pt.webdetails.cte.api.ICteEnvironment;
 import pt.webdetails.cte.api.ICteProvider;
 import pt.webdetails.cte.engine.CteEngine;
 
@@ -31,6 +33,9 @@ public class BasicCdaProvider implements ICteProvider {
   @Override
   public boolean canRead( String path ) {
     return !StringUtils.isEmpty( path ); /* CDA takes care of this */
+  }
+
+  @Override public void init( ICteEnvironment environment ) throws InitializationException {
   }
 
   @Override public String getId() {

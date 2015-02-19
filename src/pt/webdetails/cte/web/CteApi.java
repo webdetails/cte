@@ -19,12 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cpf.repository.util.RepositoryHelper;
-import pt.webdetails.cpf.utils.MimeTypes;
 import pt.webdetails.cpf.utils.PluginIOUtils;
 import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.api.ICteProvider;
-import pt.webdetails.cte.provider.CteProviderManager;
 import pt.webdetails.cte.engine.CteEngine;
+import pt.webdetails.cte.provider.CteProviderManager;
 import pt.webdetails.cte.utils.SessionUtils;
 
 import javax.servlet.http.HttpServletResponse;
@@ -37,26 +36,62 @@ import java.io.ByteArrayInputStream;
 
   private Logger logger = LoggerFactory.getLogger( CteApi.class );
 
-  // for ( a higher ) ease of use
+  // for ( an even higher ) ease of use
+  private final String DIR = Constants.PARAM_DIR;
   private final String PATH = Constants.PARAM_PATH;
   private final String PROVIDER = Constants.PARAM_PROVIDER;
 
-  @GET @Path( Constants.ENDPOINT_CAN_EDIT )
-  public String canEdit( @QueryParam( PATH ) String path, @QueryParam( PROVIDER ) String provider ) {
-      return Boolean.toString( isValidProvider( provider ) ? getProvider( provider ).canEdit( path ) : false );
+
+  @GET @Path( Constants.ENDPOINT_CAN_EDIT + "/{" + PROVIDER + ": [^?]+ }/{ " + PATH + ": [^?]+ }" )
+  public String canEdit( @PathParam( PROVIDER ) String provider, @PathParam( PATH ) String path  ) {
+    return Boolean.toString( isValidProvider( provider ) ? getProvider( provider ).canEdit( path ) : false );
   }
 
-  @GET @Path( Constants.ENDPOINT_CAN_READ )
-  public String canRead( @QueryParam( PATH ) String path, @QueryParam( PROVIDER ) String provider ) {
+  @GET @Path( Constants.ENDPOINT_CAN_EDIT )
+  public String canEditAlt( @QueryParam( PROVIDER ) String provider, @QueryParam( PATH ) String path ) {
+    return canEdit( provider , path );
+  }
+
+  @GET @Path( Constants.ENDPOINT_CAN_READ + "/{" + PROVIDER + ": [^?]+ }/{ " + PATH + ": [^?]+ }" )
+  public String canRead( @PathParam( PROVIDER ) String provider, @PathParam( PATH ) String path ) {
     return Boolean.toString( isValidProvider( provider ) ? getProvider( provider ).canRead( path ) : false );
   }
 
-  @GET @Path( Constants.ENDPOINT_EDITOR )
-  public void edit( @QueryParam( PATH ) String path,  @QueryParam( PROVIDER ) String provider,
-      @Context HttpServletResponse servletResponse ) throws WebApplicationException {
+  @GET @Path( Constants.ENDPOINT_CAN_READ )
+  public String canReadAlt( @QueryParam( PROVIDER ) String provider, @QueryParam( PATH ) String path ) {
+    return canRead( provider, path );
+  }
+
+  @GET @Path( Constants.ENDPOINT_EDITOR + "/{" + PROVIDER + ": [^?]+ }/{ " + PATH + ": [^?]+ }" )
+  public void edit( @PathParam( PROVIDER ) String provider, @PathParam( PATH ) String path,
+      @Context HttpServletResponse response ) throws WebApplicationException {
 
     try {
-      PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getEngine().getEditor().getEditor() );
+      PluginIOUtils.writeOutAndFlush( response.getOutputStream(), getEngine().getEditor().getEditor() );
+
+    } catch ( Exception e ) {
+      logger.error( e.getMessage(), e );
+      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
+    }
+  }
+
+  @GET @Path( Constants.ENDPOINT_EDITOR )
+  public void editAlt( @QueryParam( PROVIDER ) String provider, @QueryParam( PATH ) String path,
+      @Context HttpServletResponse response ) throws WebApplicationException {
+    edit( provider, path, response );
+  }
+
+  @GET @Path( Constants.ENDPOINT_GET_FILE + "/{" + PROVIDER + ": [^?]+ }/{ " + PATH + ": [^?]+ }" )
+  public void getFile( @PathParam( PROVIDER ) String provider, @PathParam( PATH ) String path,
+      @Context HttpServletResponse response ) throws WebApplicationException {
+
+    if ( !isValidProvider( provider ) || !getProvider( provider ).canRead( path ) ) {
+      logger.info( "CteApi.getFile(): not allowed to read " + path );
+      throw new WebApplicationException( Response.Status.FORBIDDEN );
+    }
+
+    try {
+      PluginIOUtils.writeOutAndFlush( response.getOutputStream(), getProvider( provider ).getFile( path ) );
 
     } catch ( Exception e ) {
       logger.error( e.getMessage(), e );
@@ -65,26 +100,14 @@ import java.io.ByteArrayInputStream;
   }
 
   @GET @Path( Constants.ENDPOINT_GET_FILE )
-  public void getFile( @QueryParam( PATH ) String path, @QueryParam( PROVIDER ) String provider,
-      @Context HttpServletResponse servletResponse ) throws WebApplicationException {
-
-    if ( !isValidProvider( provider ) || !getProvider( provider ).canRead( path ) ) {
-      logger.info( "CteApi.getFile(): not allowed to read " + path );
-      throw new WebApplicationException( Response.Status.FORBIDDEN );
-    }
-
-    try {
-      PluginIOUtils.writeOutAndFlush( servletResponse.getOutputStream(), getProvider( provider ).getFile( path ) );
-
-    } catch ( Exception e ) {
-      logger.error( e.getMessage(), e );
-      throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
-    }
+  public void getFileAlt( @QueryParam( PROVIDER ) String provider, @QueryParam( PATH ) String path,
+      @Context HttpServletResponse response ) throws WebApplicationException {
+    getFile( provider, path, response );
   }
 
-  @POST @Path( Constants.ENDPOINT_SAVE_FILE )
-  public String saveFile( @FormParam( PATH ) String path, @FormParam( PROVIDER ) String provider,
-      @FormParam( Constants.PARAM_DATA ) @DefaultValue( StringUtils.EMPTY ) String data ) throws WebApplicationException {
+  @POST @Path( Constants.ENDPOINT_SAVE_FILE + "/{" + PROVIDER + ": [^?]+ }/{ " + PATH + ": [^?]+ }" )
+  public String saveFile( @PathParam( PROVIDER ) String provider, @PathParam( PATH ) String path,
+      @FormParam( Constants.PARAM_DATA ) @DefaultValue( "" ) String data ) throws WebApplicationException {
 
     if ( !isValidProvider( provider ) ||  !getProvider( provider ).canEdit( path ) ) {
       logger.info( "CteApi.saveFile(): not allowed to edit " + path );
@@ -93,12 +116,18 @@ import java.io.ByteArrayInputStream;
 
     try {
       return String.valueOf( getProvider( provider ).saveFile( path,
-              new ByteArrayInputStream( data.getBytes( getEngine().getEnvironment().getSystemEncoding() ) ) ) );
+          new ByteArrayInputStream( data.getBytes( getEngine().getEnvironment().getSystemEncoding() ) ) ) );
 
     } catch ( Exception e ) {
       logger.error( e.getMessage(), e );
       throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
+  }
+
+  @POST @Path( Constants.ENDPOINT_SAVE_FILE )
+  public String saveFileAlt( @FormParam( PROVIDER ) String provider, @FormParam( PATH ) String path,
+      @FormParam( Constants.PARAM_DATA ) @DefaultValue( "" ) String data ) throws WebApplicationException {
+    return saveFile( provider, path, data );
   }
 
   @GET @Path( Constants.ENDPOINT_PROVIDERS )
@@ -124,20 +153,17 @@ import java.io.ByteArrayInputStream;
     }
   }
 
-  @GET @Path( Constants.ENDPOINT_TREE_EXPLORE ) @Produces( MimeTypes.PLAIN_TEXT )
-  public String tree( @QueryParam( Constants.PARAM_DIR ) @DefaultValue( "/" ) String dir,
-      @QueryParam( PROVIDER ) String provider,
-      @QueryParam( Constants.PARAM_FILE_EXTENSIONS ) @DefaultValue( StringUtils.EMPTY )
-      String commaSeparatedAllowedExtensions,
+  @GET @Path( Constants.ENDPOINT_TREE_EXPLORE + "/{" + PROVIDER + ": [^?]+ }/{ " + DIR + ": [^?]+ }" )
+  public String tree( @PathParam( PROVIDER ) String provider, @PathParam( DIR ) @DefaultValue( "/" ) String dir,
+      @QueryParam( Constants.PARAM_FILE_EXTENSIONS ) String commaSeparatedExtensions,
       @QueryParam( Constants.PARAM_SHOW_HIDDEN_FILES ) @DefaultValue( "false" ) boolean showHiddenFiles )
       throws WebApplicationException {
 
     String[] allowedExtensions = new String[] { };
-    if ( !StringUtils.isEmpty( commaSeparatedAllowedExtensions ) ) {
+    if ( !StringUtils.isEmpty( commaSeparatedExtensions ) ) {
 
-      allowedExtensions =
-          commaSeparatedAllowedExtensions.contains( "," ) ? commaSeparatedAllowedExtensions.toLowerCase().split( "," ) :
-              new String[] { commaSeparatedAllowedExtensions.toLowerCase() };
+      allowedExtensions = commaSeparatedExtensions.contains( "," ) ? commaSeparatedExtensions.toLowerCase().split( "," ) :
+              new String[] { commaSeparatedExtensions.toLowerCase() };
     }
 
     boolean isAdmin = SessionUtils.userInSessionIsAdmin();
@@ -168,6 +194,15 @@ import java.io.ByteArrayInputStream;
       logger.error( e.getMessage(), e );
       throw new WebApplicationException( Response.Status.INTERNAL_SERVER_ERROR );
     }
+  }
+
+  @GET @Path( Constants.ENDPOINT_TREE_EXPLORE )
+  public String treeAlt( @QueryParam( PROVIDER ) String provider,
+      @QueryParam( Constants.PARAM_DIR ) @DefaultValue( "/" ) String dir,
+      @QueryParam( Constants.PARAM_FILE_EXTENSIONS ) @DefaultValue( StringUtils.EMPTY ) String commaSeparatedExtensions,
+      @QueryParam( Constants.PARAM_SHOW_HIDDEN_FILES ) @DefaultValue( "false" ) boolean showHiddenFiles )
+      throws WebApplicationException {
+    return tree( provider, dir, commaSeparatedExtensions, showHiddenFiles );
   }
 
   private String fullTree( String[] allowedExtensions, boolean showHiddenFiles ) throws WebApplicationException {

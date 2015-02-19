@@ -12,11 +12,14 @@
 */
 package pt.webdetails.cte.api;
 
+import pt.webdetails.cpf.exceptions.InitializationException;
 import pt.webdetails.cpf.repository.api.IBasicFile;
 
 import java.io.InputStream;
 
 public interface ICteProvider {
+
+  void init( ICteEnvironment environment ) throws InitializationException;
 
   /**
    * Unique id for this provider

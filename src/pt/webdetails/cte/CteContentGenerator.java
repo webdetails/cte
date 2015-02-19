@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import pt.webdetails.cpf.SimpleContentGenerator;
+import pt.webdetails.cte.api.ICteEnvironment;
 import pt.webdetails.cte.engine.CteEngine;
 
 public class CteContentGenerator extends SimpleContentGenerator {
@@ -33,8 +34,19 @@ public class CteContentGenerator extends SimpleContentGenerator {
 
     if( isCallForEditor() ) {
 
-      getResponse().sendRedirect( CteEngine.getInstance().getEnvironment().getPluginBaseUrl() + "api/edit?path=" + path
-              + "&provider=" + provider );
+      // base cte endpoint path ( /pentaho/plugin/cte/api  )
+      StringBuffer sb = new StringBuffer( getEnvironment().getPluginBaseUrl() ).append( "api/" );
+
+      // edit endpoint
+      sb.append( Constants.ENDPOINT_EDITOR ).append( "?" );
+
+      // send given path as a query parameter
+      sb.append( Constants.PARAM_PATH ).append( "=" ).append( path ).append( "&" );
+
+      // send given provider as a query parameter
+      sb.append( Constants.PARAM_PROVIDER ).append( "=" ).append( provider );
+
+      getResponse().sendRedirect( sb.toString() );
 
     } else {
       // back into the standard platform file handling with you...
@@ -56,5 +68,9 @@ public class CteContentGenerator extends SimpleContentGenerator {
 
   public void setProvider( String provider ) {
     this.provider = provider;
+  }
+
+  private ICteEnvironment getEnvironment() {
+    return CteEngine.getInstance().getEnvironment();
   }
 }

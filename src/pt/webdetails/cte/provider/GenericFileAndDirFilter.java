@@ -10,7 +10,7 @@
 * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to
 * the license for the specific language governing your rights and limitations.
 */
-package pt.webdetails.cte.editor.ace;
+package pt.webdetails.cte.provider;
 
 import pt.webdetails.cpf.repository.api.IBasicFile;
 
@@ -18,14 +18,15 @@ import pt.webdetails.cpf.repository.api.IBasicFile;
  * this class extends on the existing GenericBasicFileFilter calculations, adding on top of it some basic directory
  * filtering
  */
-public class AceEditorFilter extends GenericBasicFileFilter {
+public class GenericFileAndDirFilter extends GenericBasicFileFilter {
 
   /**
    * directories to be filtered
    */
   private String[] directories;
 
-  public AceEditorFilter( String fileName, String[] fileExtensions, String[] directories, FilterType filterType ) {
+  public GenericFileAndDirFilter( String fileName, String[] fileExtensions, String[] directories,
+      FilterType filterType ) {
     super( fileName, fileExtensions, filterType );
     setDirectories( directories != null ? directories : new String[]{} );
   }
