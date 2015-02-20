@@ -14,6 +14,7 @@
       <extension>zip</extension>
       <extension>rar</extension>
       <extension>jar</extension>
+      <extension>DS_Store</extension> <!-- Mac OS proprietary hidden file -->
 
    </files>
 
@@ -25,5 +26,33 @@
     </folders>
 
   </blacklist>
+
+
+  <sparkl-apps-blacklist>
+    <!-- the following are file extensions that should be safeguarded from any editing in sparkl apps -->
+    <!-- these are *added* to the standard blacklisted file extensions -->
+    <files>
+
+      <extension>xml</extension>
+      <extension>bak</extension>
+      <extension>disabled</extension>
+
+   </files>
+
+    <!-- the following are folders that should be safeguarded from any editing in sparkl apps -->
+    <!-- these are *added* to the standard blacklisted folders -->
+    <folders>
+
+       <path>/endpoints</path>
+       <path>/lib</path>
+       <path>/stub</path>
+       <path>/dist</path>
+       <path>/build-res</path>
+       <path>/runtime-lib</path>
+
+    </folders>
+
+  </sparkl-apps-blacklist>
+
 
 </settings>

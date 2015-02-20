@@ -20,12 +20,12 @@ import pt.webdetails.cpf.exceptions.InitializationException;
 import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cpf.repository.api.IRWAccess;
 import pt.webdetails.cpf.repository.api.IReadAccess;
+import pt.webdetails.cpf.session.IUserSession;
 import pt.webdetails.cte.api.ICteEnvironment;
 import pt.webdetails.cte.api.ICteProvider;
 import pt.webdetails.cte.engine.CteEngine;
 import pt.webdetails.cte.provider.GenericBasicFileFilter;
 import pt.webdetails.cte.provider.GenericFileAndDirFilter;
-import pt.webdetails.cte.utils.SessionUtils;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -42,11 +42,14 @@ public class GenericPluginFileSystemProvider implements ICteProvider {
   IReadAccess readAccess;
   IRWAccess writeAccess;
 
-  public GenericPluginFileSystemProvider( String id ){
+  String[] blacklistedFolders;
+  String[] blacklistedFileExtensions;
+
+  public GenericPluginFileSystemProvider( String id ) {
     setId( id );
   }
 
-  @Override public void init( ICteEnvironment environment )  throws InitializationException {
+  @Override public void init( ICteEnvironment environment ) throws InitializationException {
 
     logger.info( "Initializing GenericPluginFileSystemProvider for plugin " + getId() +
         ". Note that this is an admin-only provider, as it 'opens' plenty of doors ( that are best remained shut )" );
@@ -83,6 +86,11 @@ public class GenericPluginFileSystemProvider implements ICteProvider {
     }
   }
 
+  @Override public boolean isAccessible( IUserSession user ) {
+    // this provider offers the means to edit system files; so this needs to be an admin-only provider
+    return getEnvironment().getUserSession().isAdministrator();
+  }
+
   @Override public String getId() {
     return id;
   }
@@ -92,7 +100,7 @@ public class GenericPluginFileSystemProvider implements ICteProvider {
   }
 
   @Override public String getName() {
-    if( StringUtils.isEmpty( name ) ){
+    if ( StringUtils.isEmpty( name ) ) {
       name = getId().toUpperCase() + " Plugin File System"; // default
     }
     return name;
@@ -103,13 +111,34 @@ public class GenericPluginFileSystemProvider implements ICteProvider {
   }
 
   @Override public String[] getBlacklistedFolders() {
-    // use settings.xml blacklisted folders
-    return CteEngine.getInstance().getSettings().getBlacklistedFolders().toArray( new String[] { } );
+
+    if ( blacklistedFolders == null ) {
+
+      // use settings.xml blacklisted folders
+      blacklistedFolders = CteEngine.getInstance().getSettings().getBlacklistedFolders().toArray( new String[] { } );
+    }
+
+    return blacklistedFolders;
+  }
+
+  public void setBlacklistedFolders( String[] blacklistedFolders ) {
+    this.blacklistedFolders = blacklistedFolders;
   }
 
   @Override public String[] getBlacklistedFileExtensions() {
-    // use settings.xml blacklisted file extensions
-    return CteEngine.getInstance().getSettings().getBlacklistedFileExtensions().toArray( new String[] { } );
+
+    if ( blacklistedFileExtensions == null ) {
+
+      // use settings.xml blacklisted file extensions
+      blacklistedFileExtensions =
+          CteEngine.getInstance().getSettings().getBlacklistedFileExtensions().toArray( new String[] { } );
+    }
+
+    return blacklistedFileExtensions;
+  }
+
+  public void setBlacklistedFileExtensions( String[] blacklistedFileExtensions ) {
+    this.blacklistedFileExtensions = blacklistedFileExtensions;
   }
 
   @Override public boolean canEdit( String path ) {
@@ -127,8 +156,8 @@ public class GenericPluginFileSystemProvider implements ICteProvider {
 
     logger.debug( "GenericPluginFileSystemProvider.canRead(): note that this is an admin-only provider" );
 
-    return SessionUtils.userInSessionIsAdmin() && !StringUtils.isEmpty( path ) && getReadAccess().fileExists( path )
-        && getReadAccess().fetchFile( path ) != null;
+    return getEnvironment().getUserSession().isAdministrator() && !StringUtils.isEmpty( path ) && getReadAccess()
+        .fileExists( path ) && getReadAccess().fetchFile( path ) != null;
   }
 
   @Override public InputStream getFile( String path ) throws Exception {
@@ -139,30 +168,29 @@ public class GenericPluginFileSystemProvider implements ICteProvider {
     return canEdit( path ) ? getWriteAccess().saveFile( path, content ) : false;
   }
 
-  @Override
-  public IBasicFile[] getTree( String dir, String[] allowedExtensions, boolean showHiddenFiles, boolean userIsAdmin )
+  @Override public IBasicFile[] getTree( String dir, String[] allowedExtensions, boolean showHiddenFiles )
       throws Exception {
 
     // only admin users are allowed to use this feature
-    showHiddenFiles = showHiddenFiles && userIsAdmin;
+    showHiddenFiles = showHiddenFiles && getEnvironment().getUserSession().isAdministrator();
 
     if ( allowedExtensions != null && allowedExtensions.length > 0 ) {
 
-      return getFilteredTree( dir, allowedExtensions, showHiddenFiles, userIsAdmin );
+      return getFilteredTree( dir, allowedExtensions, showHiddenFiles );
 
     } else {
 
-      return getStandardTree( dir, showHiddenFiles, userIsAdmin );
+      return getStandardTree( dir, showHiddenFiles );
 
     }
   }
 
-  private IBasicFile[] getFilteredTree( String dir, String[] allowedExtensions, boolean showHiddenFiles,
-      boolean userIsAdmin ) throws Exception {
+  private IBasicFile[] getFilteredTree( String dir, String[] allowedExtensions, boolean showHiddenFiles )
+      throws Exception {
 
     List<String> allowedExtensionsList = Arrays.asList( allowedExtensions );
 
-    IBasicFile[] files = getStandardTree( dir, showHiddenFiles, userIsAdmin );
+    IBasicFile[] files = getStandardTree( dir, showHiddenFiles );
 
     List<IBasicFile> filteredFileList = new ArrayList<IBasicFile>();
 
@@ -177,7 +205,7 @@ public class GenericPluginFileSystemProvider implements ICteProvider {
     return filteredFileList.toArray( new IBasicFile[] { } );
   }
 
-  private IBasicFile[] getStandardTree( String dir, boolean showHiddenFiles, boolean userIsAdmin ) throws Exception {
+  private IBasicFile[] getStandardTree( String dir, boolean showHiddenFiles ) throws Exception {
 
     IBasicFile[] files = new IBasicFile[] { };
 
@@ -200,7 +228,7 @@ public class GenericPluginFileSystemProvider implements ICteProvider {
 
       for ( IBasicFile file : fileList ) {
 
-        if ( !isInBlacklistedFolder( file.getPath(), userIsAdmin ) && canRead( file.getPath() ) ) {
+        if ( !isInBlacklistedFolder( file.getPath() ) && canRead( file.getPath() ) ) {
           filteredFileList.add( file );
         }
       }
@@ -211,7 +239,7 @@ public class GenericPluginFileSystemProvider implements ICteProvider {
     return files;
   }
 
-  private boolean isInBlacklistedFolder( String path, boolean userIsAdmin ) {
+  private boolean isInBlacklistedFolder( String path ) {
 
     boolean isInBlacklistedFolder = false;
 

@@ -43,5 +43,7 @@ public class Constants {
   public static final String PARAM_ACCESS = "access";
   public static final String PARAM_SHOW_HIDDEN_FILES = "showHiddenFiles";
   public static final String PARAM_PROVIDER = "provider";
+  public static final String PARAM_ID = "id";
+  public static final String PARAM_NAME = "name";
 
 }

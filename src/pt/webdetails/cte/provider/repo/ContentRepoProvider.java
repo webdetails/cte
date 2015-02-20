@@ -18,6 +18,7 @@ import pt.webdetails.cpf.exceptions.InitializationException;
 import pt.webdetails.cpf.repository.api.FileAccess;
 import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cpf.repository.api.IUserContentAccess;
+import pt.webdetails.cpf.session.IUserSession;
 import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.api.ICteEnvironment;
 import pt.webdetails.cte.api.ICteProvider;
@@ -47,6 +48,11 @@ public class ContentRepoProvider implements ICteProvider {
   }
 
   @Override public void init( ICteEnvironment environment ) throws InitializationException {
+  }
+
+  @Override public boolean isAccessible( IUserSession user ) {
+    // any authenticated user can access this provider
+    return getEnvironment().getUserSession() != null;
   }
 
   @Override public String getId() {
@@ -123,29 +129,28 @@ public class ContentRepoProvider implements ICteProvider {
   }
 
   @Override
-  public IBasicFile[] getTree( String dir, String[] allowedExtensions, boolean showHiddenFiles, boolean userIsAdmin )
+  public IBasicFile[] getTree( String dir, String[] allowedExtensions, boolean showHiddenFiles )
       throws Exception {
 
     // only admin users are allowed to use this feature
-    showHiddenFiles = showHiddenFiles && userIsAdmin;
+    showHiddenFiles = showHiddenFiles && getEnvironment().getUserSession().isAdministrator();
 
     if ( allowedExtensions != null && allowedExtensions.length > 0 ) {
 
-      return getFilteredTree( dir, allowedExtensions, showHiddenFiles, userIsAdmin );
+      return getFilteredTree( dir, allowedExtensions, showHiddenFiles );
 
     } else {
 
-      return getStandardTree( dir, showHiddenFiles, userIsAdmin );
+      return getStandardTree( dir, showHiddenFiles );
 
     }
   }
 
-  private IBasicFile[] getFilteredTree( String dir, String[] allowedExtensions, boolean showHiddenFiles,
-      boolean userIsAdmin ) throws Exception {
+  private IBasicFile[] getFilteredTree( String dir, String[] allowedExtensions, boolean showHiddenFiles ) throws Exception {
 
     List<String> allowedExtensionsList = Arrays.asList( allowedExtensions );
 
-    IBasicFile[] files = getStandardTree( dir, showHiddenFiles, userIsAdmin );
+    IBasicFile[] files = getStandardTree( dir, showHiddenFiles );
 
     List<IBasicFile> filteredFileList = new ArrayList<IBasicFile>();
 
@@ -160,13 +165,13 @@ public class ContentRepoProvider implements ICteProvider {
     return filteredFileList.toArray( new IBasicFile[] { } );
   }
 
-  private IBasicFile[] getStandardTree( String dir, boolean showHiddenFiles, boolean userIsAdmin ) throws Exception {
+  private IBasicFile[] getStandardTree( String dir, boolean showHiddenFiles ) throws Exception {
 
     IBasicFile[] files = new IBasicFile[] { };
 
     GenericFileAndDirFilter fileAndDirFilter = null;
 
-    if ( bypassBlacklists && userIsAdmin ) {
+    if ( bypassBlacklists && getEnvironment().getUserSession().isAdministrator() ) {
 
       // Not to be trifled with
 
@@ -192,7 +197,7 @@ public class ContentRepoProvider implements ICteProvider {
 
       for ( IBasicFile file : fileList ) {
 
-        if ( !isInBlacklistedFolder( file.getPath(), userIsAdmin ) && canRead( file.getPath() ) ) {
+        if ( !isInBlacklistedFolder( file.getPath() ) && canRead( file.getPath() ) ) {
           filteredFileList.add( file );
         }
       }
@@ -203,9 +208,9 @@ public class ContentRepoProvider implements ICteProvider {
     return files;
   }
 
-  private boolean isInBlacklistedFolder( String path, boolean userIsAdmin ) {
+  private boolean isInBlacklistedFolder( String path ) {
 
-    if ( bypassBlacklists && userIsAdmin ) {
+    if ( bypassBlacklists && getEnvironment().getUserSession().isAdministrator() ) {
 
       // Not to be trifled with
 

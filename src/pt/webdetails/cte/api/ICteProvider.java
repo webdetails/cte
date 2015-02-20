@@ -14,12 +14,26 @@ package pt.webdetails.cte.api;
 
 import pt.webdetails.cpf.exceptions.InitializationException;
 import pt.webdetails.cpf.repository.api.IBasicFile;
+import pt.webdetails.cpf.session.IUserSession;
 
 import java.io.InputStream;
 
 public interface ICteProvider {
 
+  /**
+   * Init method for a provider
+   *
+   * @param environment cte environment
+   * @throws InitializationException should something go wrong during init
+   */
   void init( ICteEnvironment environment ) throws InitializationException;
+
+  /**
+   * determines if this provider is accessible to a given user
+   * @param user user session
+   * @return true if this provider is accessible to a given user, false otherwise
+   */
+  boolean isAccessible( IUserSession user );
 
   /**
    * Unique id for this provider
@@ -84,9 +98,8 @@ public interface ICteProvider {
    * @param dir - dir path
    * @param allowedExtensions - list of allowed file extensions under the tree
    * @param showHiddenFiles - if true then hidden files will be included
-   * @param userIsAdmin - true if user is administrator
    * @return IBasicFile[] - tree under the given dir path
    */
-  IBasicFile[] getTree( String dir, String[] allowedExtensions, boolean showHiddenFiles, boolean userIsAdmin ) throws Exception;
+  IBasicFile[] getTree( String dir, String[] allowedExtensions, boolean showHiddenFiles ) throws Exception;
 
 }

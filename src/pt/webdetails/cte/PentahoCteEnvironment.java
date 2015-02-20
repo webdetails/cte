@@ -25,6 +25,9 @@ import pt.webdetails.cpf.context.api.IUrlProvider;
 import pt.webdetails.cpf.exceptions.InitializationException;
 import pt.webdetails.cpf.repository.api.IRWAccess;
 import pt.webdetails.cpf.repository.api.IReadAccess;
+import pt.webdetails.cpf.session.ISessionUtils;
+import pt.webdetails.cpf.session.IUserSession;
+import pt.webdetails.cpf.session.PentahoSessionUtils;
 import pt.webdetails.cte.api.ICteEnvironment;
 
 import java.util.ArrayList;
@@ -40,8 +43,11 @@ public class PentahoCteEnvironment extends PentahoPluginEnvironment implements I
   private static final String SYSTEM = "system";
   private static final String PLUGIN = "plugin";
 
+  ISessionUtils sessionUtils;
+
   @Override public void init() throws InitializationException {
     super.init( this );
+    this.sessionUtils = new PentahoSessionUtils();
   }
 
   @Override public void refresh() {
@@ -79,6 +85,10 @@ public class PentahoCteEnvironment extends PentahoPluginEnvironment implements I
     }
 
     return registeredPlugins.toArray( new String[]{} );
+  }
+
+  @Override public IUserSession getUserSession() {
+    return sessionUtils.getCurrentSession();
   }
 
   @Override public String getApplicationBaseUrl() {

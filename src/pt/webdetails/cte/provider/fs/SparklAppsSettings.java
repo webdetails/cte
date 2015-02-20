@@ -10,7 +10,7 @@
 * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to
 * the license for the specific language governing your rights and limitations.
 */
-package pt.webdetails.cte;
+package pt.webdetails.cte.provider.fs;
 
 import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
@@ -20,16 +20,20 @@ import pt.webdetails.cpf.repository.api.IRWAccess;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CteSettings extends PluginSettings {
+public class SparklAppsSettings extends PluginSettings {
+
+  // we store sparkl apps specific blacklists in cte's settings.xml, for ease of use
+  private static final String SETTINGS_SPARKL_APPS_BLACKLISTED_FOLDERS = "sparkl-apps-blacklist/folders/path";
+  private static final String SETTINGS_SPARKL_APPS_BLACKLISTED_EXTENSIONS = "sparkl-apps-blacklist/files/extension";
 
   List<String> blacklistedFolders;
   List<String> blacklistedFileExtensions;
 
-  public CteSettings( IRWAccess writeAccess ) {
+  public SparklAppsSettings( IRWAccess writeAccess ) {
     super( writeAccess );
   }
 
-  public void init(){
+  public void init() {
     setBlacklistedFolders( initBlacklistedFolders() );
     setBlacklistedFileExtensions( initBlacklistedFileExtensions() );
   }
@@ -53,7 +57,7 @@ public class CteSettings extends PluginSettings {
   protected List<String> initBlacklistedFileExtensions() {
 
     List<String> blacklistedFileExtensions = new ArrayList<String>();
-    List<Element> xmlElements = getSettingsXmlSection( Constants.SETTINGS_XPATH_BLACKLISTED_FILE_EXTENSIONS );
+    List<Element> xmlElements = getSettingsXmlSection( SETTINGS_SPARKL_APPS_BLACKLISTED_EXTENSIONS );
 
     if ( xmlElements != null ) {
 
@@ -76,7 +80,7 @@ public class CteSettings extends PluginSettings {
   protected List<String> initBlacklistedFolders() {
 
     List<String> blacklistedFolders = new ArrayList<String>();
-    List<Element> xmlElements = getSettingsXmlSection( Constants.SETTINGS_XPATH_BLACKLISTED_FOLDERS );
+    List<Element> xmlElements = getSettingsXmlSection( SETTINGS_SPARKL_APPS_BLACKLISTED_FOLDERS );
 
     if ( xmlElements != null ) {
 

@@ -17,6 +17,7 @@ import pt.webdetails.cpf.exceptions.InitializationException;
 import pt.webdetails.cpf.repository.api.IRWAccess;
 import pt.webdetails.cpf.repository.api.IReadAccess;
 import pt.webdetails.cpf.repository.api.IUserContentAccess;
+import pt.webdetails.cpf.session.IUserSession;
 
 import java.util.Locale;
 
@@ -57,4 +58,6 @@ public interface ICteEnvironment {
   IUrlProvider getUrlProvider();
 
   String[] getRegisteredPluginIds();
+
+  IUserSession getUserSession();
 }

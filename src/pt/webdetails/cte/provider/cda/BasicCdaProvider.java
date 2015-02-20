@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import pt.webdetails.cpf.InterPluginCall;
 import pt.webdetails.cpf.exceptions.InitializationException;
 import pt.webdetails.cpf.repository.api.IBasicFile;
+import pt.webdetails.cpf.session.IUserSession;
 import pt.webdetails.cte.api.ICteEnvironment;
 import pt.webdetails.cte.api.ICteProvider;
 import pt.webdetails.cte.engine.CteEngine;
@@ -36,6 +37,10 @@ public class BasicCdaProvider implements ICteProvider {
   }
 
   @Override public void init( ICteEnvironment environment ) throws InitializationException {
+  }
+
+  @Override public boolean isAccessible( IUserSession user ) {
+    return true;
   }
 
   @Override public String getId() {
@@ -80,7 +85,7 @@ public class BasicCdaProvider implements ICteProvider {
   }
 
   @Override
-  public IBasicFile[] getTree( String dir, String[] allowedExtensions, boolean showHiddenFiles, boolean userIsAdmin ) throws Exception{
+  public IBasicFile[] getTree( String dir, String[] allowedExtensions, boolean showHiddenFiles ) throws Exception{
     return null; /* CDA leveraged ACE editor doesn't provide us with a file tree... */
   }
 

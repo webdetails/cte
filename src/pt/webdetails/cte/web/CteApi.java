@@ -21,10 +21,10 @@ import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cpf.repository.util.RepositoryHelper;
 import pt.webdetails.cpf.utils.PluginIOUtils;
 import pt.webdetails.cte.Constants;
+import pt.webdetails.cte.api.ICteEnvironment;
 import pt.webdetails.cte.api.ICteProvider;
 import pt.webdetails.cte.api.ICteProviderManager;
 import pt.webdetails.cte.engine.CteEngine;
-import pt.webdetails.cte.utils.SessionUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
@@ -116,7 +116,7 @@ import java.io.ByteArrayInputStream;
 
     try {
       return String.valueOf( getProvider( provider ).saveFile( path,
-          new ByteArrayInputStream( data.getBytes( getEngine().getEnvironment().getSystemEncoding() ) ) ) );
+          new ByteArrayInputStream( data.getBytes( getEnvironment().getSystemEncoding() ) ) ) );
 
     } catch ( Exception e ) {
       logger.error( e.getMessage(), e );
@@ -138,11 +138,16 @@ import java.io.ByteArrayInputStream;
 
       for ( ICteProvider provider : getProviderManager().getProviders() ) {
 
-        JSONObject jsonObj = new JSONObject();
-        jsonObj.put( "id", provider.getId() );
-        jsonObj.put( "name", provider.getName() );
+        // check if this user has access to this provider
+        if( provider.isAccessible( getEnvironment().getUserSession() ) ) {
 
-        jsonArray.put( jsonObj );
+          JSONObject jsonObj = new JSONObject();
+          jsonObj.put( Constants.PARAM_ID, provider.getId() );
+          jsonObj.put( Constants.PARAM_NAME, provider.getName() );
+
+          jsonArray.put( jsonObj );
+
+        }
       }
 
       return jsonArray.toString( 2 );
@@ -166,8 +171,6 @@ import java.io.ByteArrayInputStream;
               new String[] { commaSeparatedExtensions.toLowerCase() };
     }
 
-    boolean isAdmin = SessionUtils.userInSessionIsAdmin();
-
     try {
 
       if( StringUtils.isEmpty( provider ) ){
@@ -186,7 +189,7 @@ import java.io.ByteArrayInputStream;
       } else {
 
         return RepositoryHelper.toJQueryFileTree( dir,
-            getProvider( provider ).getTree( dir, allowedExtensions, showHiddenFiles, isAdmin ) );
+            getProvider( provider ).getTree( dir, allowedExtensions, showHiddenFiles ) );
 
       }
 
@@ -211,11 +214,9 @@ import java.io.ByteArrayInputStream;
 
       StringBuffer sb = new StringBuffer();
 
-      boolean isAdmin = SessionUtils.userInSessionIsAdmin();
-
       for ( ICteProvider provider : getProviderManager().getProviders() ) {
 
-        IBasicFile[] tree = provider.getTree( "/" , allowedExtensions, showHiddenFiles, isAdmin );
+        IBasicFile[] tree = provider.getTree( "/" , allowedExtensions, showHiddenFiles );
 
         sb.append( RepositoryHelper.toJQueryFileTree( provider.getId() + "/" , tree ) );
       }
@@ -235,6 +236,9 @@ import java.io.ByteArrayInputStream;
 
     } else if( getProvider( provider ) == null ){
       throw new WebApplicationException( "invalid/unknown provider", Response.Status.FORBIDDEN );
+
+    } else if( !getProvider( provider ).isAccessible( getEnvironment().getUserSession() ) ) {
+      throw new WebApplicationException( "user has been denied access to provider", Response.Status.FORBIDDEN );
     }
 
     return true;
@@ -250,5 +254,9 @@ import java.io.ByteArrayInputStream;
 
   private CteEngine getEngine() {
     return CteEngine.getInstance();
+  }
+
+  private ICteEnvironment getEnvironment() {
+    return CteEngine.getInstance().getEnvironment();
   }
 }
