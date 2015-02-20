@@ -34,6 +34,12 @@ public class CteSettings extends PluginSettings {
     setBlacklistedFileExtensions( initBlacklistedFileExtensions() );
   }
 
+  @Override
+  // overriding to change method access visibility
+  public List<Element> getSettingsXmlSection(String section) {
+    return super.getSettingsXmlSection( section );
+  }
+
   public List<String> getBlacklistedFolders() {
     return blacklistedFolders;
   }

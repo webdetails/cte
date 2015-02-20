@@ -14,7 +14,6 @@
       <extension>zip</extension>
       <extension>rar</extension>
       <extension>jar</extension>
-      <extension>DS_Store</extension> <!-- Mac OS proprietary hidden file -->
 
    </files>
 

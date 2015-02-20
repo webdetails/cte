@@ -1,5 +1,7 @@
 package pt.webdetails.cte.provider.fs;
 
+import org.apache.commons.lang.StringUtils;
+import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.webdetails.cpf.exceptions.InitializationException;
@@ -20,14 +22,13 @@ import java.util.List;
  */
 public class SparklAppsAutoDiscoverMetaProvider implements ICteProvider {
 
-  SparklAppsSettings sparklAppsSettings;
+  // we store sparkl apps specific blacklists in cte's settings.xml, for ease of use
+  private static final String SETTINGS_SPARKL_APPS_BLACKLISTED_FOLDERS = "sparkl-apps-blacklist/folders/path";
+  private static final String SETTINGS_SPARKL_APPS_BLACKLISTED_EXTENSIONS = "sparkl-apps-blacklist/files/extension";
 
   private Logger logger = LoggerFactory.getLogger( SparklAppsAutoDiscoverMetaProvider.class );
 
   @Override public void init( ICteEnvironment environment ) throws InitializationException {
-
-    sparklAppsSettings = new SparklAppsSettings( environment.getPluginSystemWriter( null ) );
-    sparklAppsSettings.init();
 
     String[] sparklAppBlacklistedFolders = getSparklAppBlacklistedFolders();
     String[] sparklAppBlacklistedFileExtensions = getSparklAppBlacklistedFileExtensions();
@@ -104,14 +105,15 @@ public class SparklAppsAutoDiscoverMetaProvider implements ICteProvider {
     // standard CTE blacklisted file extensions
     List<String> standardBlacklistedFileExtensions = getEngine().getSettings().getBlacklistedFileExtensions();
 
-    if( standardBlacklistedFileExtensions != null && standardBlacklistedFileExtensions.size() > 0 ){
+    if ( standardBlacklistedFileExtensions != null && standardBlacklistedFileExtensions.size() > 0 ) {
       blacklistedFileExtensions.addAll( standardBlacklistedFileExtensions );
     }
 
     // sparkl app specific blacklisted file extensions
-    List<String> sparklAppBlacklistedFileExtensions = getSparklAppsSettings().getBlacklistedFileExtensions();
+    List<String> sparklAppBlacklistedFileExtensions =
+        getElementListAsStringList( SETTINGS_SPARKL_APPS_BLACKLISTED_EXTENSIONS );
 
-    if( sparklAppBlacklistedFileExtensions != null && sparklAppBlacklistedFileExtensions.size() > 0 ){
+    if ( sparklAppBlacklistedFileExtensions != null && sparklAppBlacklistedFileExtensions.size() > 0 ) {
       blacklistedFileExtensions.addAll( sparklAppBlacklistedFileExtensions );
     }
 
@@ -125,22 +127,41 @@ public class SparklAppsAutoDiscoverMetaProvider implements ICteProvider {
     // standard CTE blacklisted folders
     List<String> standardBlacklistedFolders = getEngine().getSettings().getBlacklistedFolders();
 
-    if( standardBlacklistedFolders != null && standardBlacklistedFolders.size() > 0 ){
+    if ( standardBlacklistedFolders != null && standardBlacklistedFolders.size() > 0 ) {
       blacklistedFolders.addAll( standardBlacklistedFolders );
     }
 
     // sparkl app specific blacklisted folders
-    List<String> sparklAppBlacklistedFolders = getSparklAppsSettings().getBlacklistedFolders();
+    List<String> sparklAppBlacklistedFolders = getElementListAsStringList( SETTINGS_SPARKL_APPS_BLACKLISTED_FOLDERS );
 
-    if( sparklAppBlacklistedFolders != null && sparklAppBlacklistedFolders.size() > 0 ){
+    if ( sparklAppBlacklistedFolders != null && sparklAppBlacklistedFolders.size() > 0 ) {
       blacklistedFolders.addAll( sparklAppBlacklistedFolders );
     }
 
     return blacklistedFolders.toArray( new String[] { } );
   }
 
-  protected SparklAppsSettings getSparklAppsSettings() {
-    return sparklAppsSettings;
+  private List<String> getElementListAsStringList( String section ) {
+
+    List<String> stringElements = new ArrayList<String>();
+
+    List<Element> xmlElements = getEngine().getSettings().getSettingsXmlSection( section );
+
+    if ( xmlElements != null ) {
+
+      for ( Element xmlElement : xmlElements ) {
+
+        String value = StringUtils.strip( xmlElement.getTextTrim() );
+
+        if ( StringUtils.isEmpty( value ) ) {
+          logger.error( "Invalid empty value. Skipping.." );
+          continue;
+        }
+
+        stringElements.add( value );
+      }
+    }
+    return stringElements;
   }
 
   private CteEngine getEngine() {
