@@ -4,7 +4,7 @@
 	<overlays>
 		<overlay id="startup.cte" resourcebundle="content/cte/resources/lang/messages">
 			<menubar id="toolsmenu">
-	        	<menuitem id="cte" label="${launcher.cte}" command="mantleXulHandler.openUrl('${launcher.cte}','${launcher.cte.tooltip}','plugin/cte/api/edit?path=/public/cte/welcome.txt&amp;provider=repo')"/>
+	        	<menuitem id="cte" label="${launcher.cte}" command="mantleXulHandler.openUrl('${launcher.cte}','${launcher.cte.tooltip}','/api/repos/%3Apublic%3Acte%3Awelcome.txt/cte.edit')"/>
 	      	</menubar>
 	    </overlay>
 	</overlays>

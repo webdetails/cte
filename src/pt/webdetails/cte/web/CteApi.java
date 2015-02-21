@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.webdetails.cpf.Util;
 import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cpf.repository.util.RepositoryHelper;
 import pt.webdetails.cpf.utils.PluginIOUtils;
@@ -216,9 +217,9 @@ import java.io.ByteArrayInputStream;
 
       for ( ICteProvider provider : getProviderManager().getProviders() ) {
 
-        IBasicFile[] tree = provider.getTree( "/" , allowedExtensions, showHiddenFiles );
+        IBasicFile[] tree = provider.getTree( Util.SEPARATOR , allowedExtensions, showHiddenFiles );
 
-        sb.append( RepositoryHelper.toJQueryFileTree( provider.getId() + "/" , tree ) );
+        sb.append( RepositoryHelper.toJQueryFileTree( provider.getId() + Util.SEPARATOR , tree ) );
       }
 
       return sb.toString();

@@ -52,7 +52,7 @@ public class ContentRepoProvider implements ICteProvider {
 
   @Override public boolean isAccessible( IUserSession user ) {
     // any authenticated user can access this provider
-    return getEnvironment().getUserSession() != null;
+    return user != null;
   }
 
   @Override public String getId() {
@@ -129,8 +129,7 @@ public class ContentRepoProvider implements ICteProvider {
   }
 
   @Override
-  public IBasicFile[] getTree( String dir, String[] allowedExtensions, boolean showHiddenFiles )
-      throws Exception {
+  public IBasicFile[] getTree( String dir, String[] allowedExtensions, boolean showHiddenFiles ) throws Exception {
 
     // only admin users are allowed to use this feature
     showHiddenFiles = showHiddenFiles && getEnvironment().getUserSession().isAdministrator();

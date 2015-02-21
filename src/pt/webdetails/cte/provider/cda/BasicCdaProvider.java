@@ -40,7 +40,7 @@ public class BasicCdaProvider implements ICteProvider {
   }
 
   @Override public boolean isAccessible( IUserSession user ) {
-    return true;
+    return user != null;
   }
 
   @Override public String getId() {

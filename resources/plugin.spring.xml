@@ -38,8 +38,9 @@
       <util:list id="providers" value-type="pt.webdetails.cte.api.ICteProvider">
         
         <!-- Provider list. Must implement pt.webdetails.cte.api.ICteProvider -->
-        <ref bean="contentRepo" />
-        <ref bean="cteFileSystem" />
+        <ref bean="contentRepoProvider" />
+        <ref bean="mondrianSchemaProvider" />
+        <ref bean="cteFileSystemProvider" />
         <ref bean="sparklAppsAutoDiscoverMetaProvider" />
 
       </util:list>
@@ -50,12 +51,16 @@
 
   <!-- <bean id="basicCdaProvider" class="pt.webdetails.cte.provider.cda.BasicCdaProvider" /> -->
 
-  <bean id="contentRepo" class="pt.webdetails.cte.provider.repo.ContentRepoProvider">
+  <bean id="contentRepoProvider" class="pt.webdetails.cte.provider.repo.ContentRepoProvider">
     <property name="id" value="repo" />
     <property name="name" value="Content Repository" />
   </bean>
 
-  <bean id="cteFileSystem" class="pt.webdetails.cte.provider.fs.GenericPluginFileSystemProvider">
+  <bean id="mondrianSchemaProvider" class="pt.webdetails.cte.provider.repo.MondrianSchemaProvider">
+    <property name="id" value="mondrian" />
+  </bean>
+
+  <bean id="cteFileSystemProvider" class="pt.webdetails.cte.provider.fs.GenericPluginFileSystemProvider">
     <constructor-arg value="cte" />
   </bean>
 

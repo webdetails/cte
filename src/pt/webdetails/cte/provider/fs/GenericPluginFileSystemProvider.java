@@ -88,7 +88,7 @@ public class GenericPluginFileSystemProvider implements ICteProvider {
 
   @Override public boolean isAccessible( IUserSession user ) {
     // this provider offers the means to edit system files; so this needs to be an admin-only provider
-    return getEnvironment().getUserSession().isAdministrator();
+    return user !=null && user.isAdministrator();
   }
 
   @Override public String getId() {
