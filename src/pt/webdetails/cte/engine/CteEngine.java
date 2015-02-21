@@ -42,17 +42,21 @@ public class CteEngine {
     this.environment = (ICteEnvironment) factory.getBean( ICteEnvironment.class.getSimpleName() );
 
     if ( environment == null ) {
-      logger.error( "ICteEditor has not been set; CteEngine will not function properly" );
+      logger.error( "ICteEnvironment has not been set; CteEngine will not function properly" );
     }
-
-    // chosen editor
-    this.editor = (ICteEditor) factory.getBean( ICteEditor.class.getSimpleName() );
 
     // settings.xml
     this.settings = new CteSettings( environment.getPluginSystemWriter( null ) );
 
     if ( settings == null ) {
       logger.error( "CteSettings has not been set; CteEngine will not function properly" );
+    }
+
+    // chosen editor
+    this.editor = (ICteEditor) factory.getBean( ICteEditor.class.getSimpleName() );
+
+    if ( settings == null ) {
+      logger.error( "ICteEditor has not been set; CteEngine will not function properly" );
     }
 
     // chosen provider manager
@@ -71,9 +75,7 @@ public class CteEngine {
 
     getEditor().init( getEnvironment() );
 
-    getProviderManager().init( getEnvironment() );
-
-    ensureBasicDir();
+    getProviderManager().init( getEnvironment(), getSettings().getBlacklistedPlugins().toArray( new String[] {} ) );
   }
 
   public static CteEngine getInstance() {
@@ -81,7 +83,9 @@ public class CteEngine {
     if ( instance == null ) {
       try {
         instance = new CteEngine();
-        instance.init();
+
+        instance.init(); // instance properly created, let's go ahead and initialize all of its containing beans
+
       } catch ( InitializationException e ) {
         logger.error( e.getMessage(), e );
       }

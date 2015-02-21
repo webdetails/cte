@@ -22,6 +22,7 @@ import java.util.List;
 
 public class CteSettings extends PluginSettings {
 
+  List<String> blacklistedPlugins;
   List<String> blacklistedFolders;
   List<String> blacklistedFileExtensions;
 
@@ -30,6 +31,7 @@ public class CteSettings extends PluginSettings {
   }
 
   public void init(){
+    setBlacklistedPlugins( initBlacklistedPlugins() );
     setBlacklistedFolders( initBlacklistedFolders() );
     setBlacklistedFileExtensions( initBlacklistedFileExtensions() );
   }
@@ -44,7 +46,7 @@ public class CteSettings extends PluginSettings {
     return blacklistedFolders;
   }
 
-  public void setBlacklistedFolders( List<String> blacklistedFolders ) {
+  protected void setBlacklistedFolders( List<String> blacklistedFolders ) {
     this.blacklistedFolders = blacklistedFolders;
   }
 
@@ -52,8 +54,16 @@ public class CteSettings extends PluginSettings {
     return blacklistedFileExtensions;
   }
 
-  public void setBlacklistedFileExtensions( List<String> blacklistedFileExtension ) {
+  protected void setBlacklistedFileExtensions( List<String> blacklistedFileExtension ) {
     this.blacklistedFileExtensions = blacklistedFileExtension;
+  }
+
+  public List<String> getBlacklistedPlugins() {
+    return blacklistedPlugins;
+  }
+
+  protected void setBlacklistedPlugins( List<String> blacklistedPlugins ) {
+    this.blacklistedPlugins = blacklistedPlugins;
   }
 
   protected List<String> initBlacklistedFileExtensions() {
@@ -100,5 +110,28 @@ public class CteSettings extends PluginSettings {
     }
 
     return blacklistedFolders;
+  }
+
+  protected List<String> initBlacklistedPlugins() {
+
+    List<String> blacklistedPlugins = new ArrayList<String>();
+    List<Element> xmlElements = getSettingsXmlSection( Constants.SETTINGS_XPATH_BLACKLISTED_PLUGINS );
+
+    if ( xmlElements != null ) {
+
+      for ( Element xmlElement : xmlElements ) {
+
+        String value = StringUtils.strip( xmlElement.getTextTrim() );
+
+        if ( StringUtils.isEmpty( value ) ) {
+          logger.error( "Invalid empty plugin id. Skipping.." );
+          continue;
+        }
+
+        blacklistedPlugins.add( value );
+      }
+    }
+
+    return blacklistedPlugins;
   }
 }

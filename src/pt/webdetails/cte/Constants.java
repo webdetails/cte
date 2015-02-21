@@ -21,6 +21,7 @@ public class Constants {
   public static final String PLUGIN_WELCOME_FILE = "welcome.txt";
   public static final String PLUGIN_INVALID_PERMISSIONS_FILE = "invalid_permissions.txt";
 
+  public static final String SETTINGS_XPATH_BLACKLISTED_PLUGINS = "blacklist/plugins/id";
   public static final String SETTINGS_XPATH_BLACKLISTED_FOLDERS = "blacklist/folders/path";
   public static final String SETTINGS_XPATH_BLACKLISTED_FILE_EXTENSIONS = "blacklist/files/extension";
 

@@ -49,11 +49,38 @@ public class SparklAppsAutoDiscoverMetaProvider implements ICteProvider {
           sparklAppProvider.setBlacklistedFileExtensions( sparklAppBlacklistedFileExtensions );
           sparklAppProvider.init( environment );
 
-          logger.info( "Adding a GenericPluginFileSystemProvider for sparkl app " + pluginId );
-          getEngine().getProviderManager().addProvider( sparklAppProvider, false );
+          injectProvider( sparklAppProvider );
         }
       }
     }
+  }
+
+  /*
+   * We're adding a a provider to the providersList, WHILE this is being iterated in the ProviderManager;
+   * this is known to cause java.util.ArrayList$ConcurrentModificationException.
+   *
+   * We can bypass this by delegating the "provider adding" logic to a thread that holds off for a couple of millis
+   */
+  private void injectProvider( final GenericPluginFileSystemProvider sparklAppProvider ) {
+
+    Thread t = new Thread( new Runnable() {
+      @Override
+      public void run() {
+        try {
+          Thread.sleep( 100 /* millis */ );
+        } catch ( InterruptedException e ) {
+          /* do nothing */
+        }
+
+        logger.info( "Adding a GenericPluginFileSystemProvider for sparkl app " + sparklAppProvider.getId() );
+        getEngine().getProviderManager().addProvider( sparklAppProvider, false /* override if exists */);
+
+      }
+    });
+
+    t.setDaemon(true); // critical: setting this thread as daemon
+
+    t.start();
   }
 
   @Override public boolean isAccessible( IUserSession user ) {

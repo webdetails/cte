@@ -21,6 +21,7 @@ import pt.webdetails.cte.api.ICteProvider;
 import pt.webdetails.cte.api.ICteProviderManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CteDefaultProviderManager implements ICteProviderManager {
@@ -28,6 +29,7 @@ public class CteDefaultProviderManager implements ICteProviderManager {
   private Logger logger = LoggerFactory.getLogger( CteDefaultProviderManager.class );
 
   List<ICteProvider> providers = new ArrayList<ICteProvider>();
+  List<String> blacklistedPlugins = new ArrayList<String>();
 
   public CteDefaultProviderManager( List<ICteProvider> providers ) throws InitializationException {
 
@@ -59,13 +61,49 @@ public class CteDefaultProviderManager implements ICteProviderManager {
     this.providers = providers;
   }
 
-  @Override public void init( ICteEnvironment environment ) throws InitializationException {
+  @Override public void init( ICteEnvironment environment, String[] blacklistedPlugins )
+      throws InitializationException {
 
-    // init all providers registered in provider Manager
-    for ( ICteProvider provider : getProviders() ) {
-      provider.init( environment );
+    if( blacklistedPlugins != null && blacklistedPlugins.length > 0 ){
+      setBlacklistedPlugins( Arrays.asList( blacklistedPlugins ) );
     }
 
+    // this will aid us in keeping track of those blacklisted providers that must be discarded
+    List<String> blacklistedProviderIds = new ArrayList<String>();
+
+    for ( ICteProvider provider : getProviders() ) {
+
+      if ( getBlacklistedPlugins().contains( provider.getId() ) ) {
+        logger.error( "Provider ID is blacklisted: " + provider.getId() + ". Discarding it.." );
+        blacklistedProviderIds.add( provider.getId() );
+      }
+    }
+
+
+    // rebuild providers list, discarding all blacklistedProviderIds
+    if( blacklistedProviderIds.size() > 0 ){
+
+      List<ICteProvider> allowedProviders = new ArrayList<ICteProvider>();
+
+      for( ICteProvider provider : getProviders() ){
+
+        if( !blacklistedProviderIds.contains( provider.getId() ) ){
+          allowedProviders.add( provider );
+        }
+      }
+
+      setProviders( allowedProviders );
+    }
+
+    initProviders( environment );
+  }
+
+  private void initProviders( ICteEnvironment environment ) throws InitializationException  {
+
+    // init all providers registered in provider Manager
+    for( ICteProvider provider : getProviders() ){
+      provider.init( environment );
+    }
   }
 
   @Override public List<ICteProvider> getProviders() {
@@ -87,7 +125,7 @@ public class CteDefaultProviderManager implements ICteProviderManager {
     return null;
   }
 
-  public void setProviders( List<ICteProvider> providers ) {
+  protected void setProviders( List<ICteProvider> providers ) {
     this.providers = providers;
   }
 
@@ -98,7 +136,11 @@ public class CteDefaultProviderManager implements ICteProviderManager {
       return false;
 
     } else if ( providerExists( provider ) && !override ) {
-      logger.warn( "Provider already exists and override set to false" );
+      logger.warn( "Provider already exists and override set to false: " + provider.getId() );
+      return false;
+
+    } else if( getBlacklistedPlugins().contains( provider.getId() ) ){
+      logger.error( "Provider ID is blacklisted: " + provider.getId() + ". Discarding it..");
       return false;
     }
 
@@ -122,5 +164,13 @@ public class CteDefaultProviderManager implements ICteProviderManager {
     }
 
     return matchFound;
+  }
+
+  public List<String> getBlacklistedPlugins() {
+    return blacklistedPlugins;
+  }
+
+  protected void setBlacklistedPlugins( List<String> blacklistedPlugins ) {
+    this.blacklistedPlugins = blacklistedPlugins;
   }
 }

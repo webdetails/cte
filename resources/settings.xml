@@ -24,12 +24,27 @@
 
     </folders>
 
+    <!-- the following are plugin folders that should be safeguarded from any editing -->
+    <plugins>
+
+      <id>axis</id>
+      <id>chartbeans</id>
+      <id>common-ui</id>
+      <id>default-content</id>
+      <id>default-plugin</id>
+      <id>sparkl</id>
+      <id>smtp-email</id>
+      <id>jackrabbit</id>
+      <id>kettle</id>
+
+    </plugins>
+
   </blacklist>
 
 
   <sparkl-apps-blacklist>
     <!-- the following are file extensions that should be safeguarded from any editing in sparkl apps -->
-    <!-- these are *added* to the standard blacklisted file extensions -->
+    <!-- these are *additions* to the standard blacklisted file extensions -->
     <files>
 
       <extension>xml</extension>
@@ -39,7 +54,7 @@
    </files>
 
     <!-- the following are folders that should be safeguarded from any editing in sparkl apps -->
-    <!-- these are *added* to the standard blacklisted folders -->
+    <!-- these are *additions* to the standard blacklisted folders -->
     <folders>
 
        <path>/endpoints</path>

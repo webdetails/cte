@@ -82,7 +82,7 @@ public class GenericPluginFileSystemProvider implements ICteProvider {
       }
 
     } catch ( Exception e ) {
-      throw new InitializationException( e.getMessage(), e );
+      throw new InitializationException( "Error while initializing system access objects for plugin " + getId(), e );
     }
   }
 

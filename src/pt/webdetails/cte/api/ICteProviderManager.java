@@ -18,7 +18,7 @@ import java.util.List;
 
 public interface ICteProviderManager {
 
-  void init( ICteEnvironment environment ) throws InitializationException;
+  void init( ICteEnvironment environment, String[] blacklistedPlugins ) throws InitializationException;
 
   List<ICteProvider> getProviders();
 
