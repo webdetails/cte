@@ -22,6 +22,7 @@
   font-weight: bold;
 }
 
+/*
 #saveBtn{
   width: auto;
   border: solid 2px #bbb;
@@ -35,12 +36,19 @@
 #saveBtn:hover{
   background-color: #bbb;
   color: #444;
-}
+}*/
 
-#infoArea, #infoAreaWarnings{
+#infoArea{
+  min-width: 200px;
+}
+#infoArea{
+  padding: 2px 10px 2px 10px;
+}
+#infoAreaWarnings{
   padding: 2px 10px 2px 10px;
   position: relative;
 }
+/*
 #infoArea {
   font-size: 13px;
   font-weight: bold;
@@ -50,7 +58,7 @@
 #infoArea.disabled{
   border: none;
   background: transparent;
-}
+}*/
 
 #infoAreaWarnings{
   font-size: 14px;
@@ -58,7 +66,7 @@
   color: red;
 }
 
-#editArea, #treeDiv{
+#editArea/*, #fileTreeAccordion*/{
   border: thin #bfdce5 solid;
 }
 
@@ -70,8 +78,32 @@ body{
   background: -moz-linear-gradient(#EAEDEE, #F9FAFA); /* For Firefox 3.6 to 15 */
   background: linear-gradient(#EAEDEE, #F9FAFA); /* Standard syntax */
   font-size: 13px;
+  padding: 5px;
 }
 
 td{
   vertical-align: middle;
+}
+
+.panel {
+  margin-bottom: 5px;
+}
+
+.panel-body {
+  padding: 2px;
+}
+
+a:hover, a:focus {
+  color: #2a6496;
+  text-decoration: none;
+}
+
+a:active, a:selected, a:visited { 
+  border: none;
+  outline: none;
+}
+
+.btn:focus, .btn:active:focus, .btn.active:focus { 
+  border: none;
+  outline: none;
 }
