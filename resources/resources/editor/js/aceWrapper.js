@@ -13,16 +13,18 @@
 
 //URLs filled by backend
 var ExternalEditor = {
-  PROVIDERS: null,
-  EXT_EDITOR: null,
-  CAN_EDIT_URL: null,
-  GET_FILE_URL: null,
-  SAVE_FILE_URL: null,
+  LANG_PATH: "/pentaho/api/repos/cte/resources/editor/languages/",
+  LOCALE: "en_US",
+  PROVIDERS: "/pentaho/plugin/cte/api/providers",
+  SAVE_FILE_URL: "/pentaho/plugin/cte/api/saveFile",
+  EXT_EDITOR: "/pentaho/plugin/cte/api/edit",
+  CAN_EDIT_URL: "/pentaho/plugin/cte/api/canEdit",
+  CAN_READ_URL: "/pentaho/plugin/cte/api/canRead",
+  GET_FILE_URL: "/pentaho/plugin/cte/api/getFile",
   STATUS: {
     OK: "ok",
     ERROR: "error"
-  },
-  EXT_EDITOR: null,
+  }
 };
 
 //ACE wrapper
@@ -85,17 +87,17 @@ var CodeEditor = function() {
     var myself = this;
 
     //check read permissions
-    $.get(ExternalEditor.CAN_READ_URL, {path: filename, provider: provider} , function(response) {
+    $.get(ExternalEditor.CAN_READ_URL + "?ts=" + (new Date).getTime(), {path: filename, provider: provider} , function(response) {
         if(response && response.toString() === "true") {
 
-          $.get(ExternalEditor.CAN_EDIT_URL, {path: filename, provider: provider}, function(response) {
+          $.get(ExternalEditor.CAN_EDIT_URL + "?ts=" + (new Date).getTime(), {path: filename, provider: provider}, function(response) {
             if(response && response.toString() === "true") {
               myself.setReadOnly(false);
             } else {
               myself.setReadOnly(true);
             }
 
-            $.get(ExternalEditor.GET_FILE_URL, {path: filename, provider: provider}, function(response) {
+            $.get(ExternalEditor.GET_FILE_URL + "?ts=" + (new Date).getTime(), {path: filename, provider: provider}, function(response) {
               callback(response, filename, provider );
             })
               .fail(function(response) {
@@ -130,7 +132,7 @@ var CodeEditor = function() {
       return;
     }
     $.ajax({
-      url: ExternalEditor.SAVE_FILE_URL,
+      url: ExternalEditor.SAVE_FILE_URL + "?ts=" + (new Date).getTime(),
       type: "POST",
       //contentType: "application/json",
       dataType: "json",
@@ -208,7 +210,7 @@ var CodeEditor = function() {
     var myself = this;
 
     $.ajax({
-      url: ExternalEditor.PROVIDERS,
+      url: ExternalEditor.PROVIDERS + "?ts=" + (new Date).getTime(),
       type: "GET",
       dataType: "json",
       async: false,

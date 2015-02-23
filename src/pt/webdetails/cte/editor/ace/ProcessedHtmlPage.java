@@ -92,8 +92,8 @@ public abstract class ProcessedHtmlPage {
     replaceUrlAttribute( html.getAllStartTags( HTMLElementName.LINK ), "href", baseDir, out );
     replaceUrlAttribute( html.getAllStartTags( HTMLElementName.SCRIPT ), "src", baseDir, out );
     replaceUrlAttribute( html.getAllStartTags( HTMLElementName.IMG ), "src", baseDir, out );
-    int insertPos = html.getFirstElement( HTMLElementName.HEAD ).getEndTag().getBegin();
-    out.insert( insertPos, getCodeSnippet( getBackendAssignments( getUrlProvider() ) ) );
+    //int insertPos = html.getFirstElement( HTMLElementName.HEAD ).getEndTag().getBegin();
+    //out.insert( insertPos, getCodeSnippet( getBackendAssignments( getUrlProvider() ) ) );
   }
 
   /**
