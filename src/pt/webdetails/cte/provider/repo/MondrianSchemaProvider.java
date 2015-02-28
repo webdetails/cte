@@ -16,10 +16,12 @@ import org.apache.commons.lang.StringUtils;
 import org.pentaho.platform.api.engine.IPentahoSession;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
+import org.pentaho.platform.plugin.action.mondrian.catalog.IMondrianCatalogService;
 import org.pentaho.platform.plugin.action.olap.IOlapService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pt.webdetails.cpf.Util;
 import pt.webdetails.cpf.exceptions.InitializationException;
-import pt.webdetails.cpf.olap.OlapUtils;
 import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cpf.repository.api.IUserContentAccess;
 import pt.webdetails.cpf.session.IUserSession;
@@ -35,6 +37,8 @@ public class MondrianSchemaProvider implements ICteProvider {
 
   private static final String MONDRIAN_SCHEMAS_BASE_ROOT = "/etc/mondrian";
   private static final String[] MONDRIAN_SCHEMAS_EXT = new String[] { "xml" };
+
+  private Logger logger = LoggerFactory.getLogger( MondrianSchemaProvider.class );
 
   private String id;
   private String name;
@@ -114,8 +118,7 @@ public class MondrianSchemaProvider implements ICteProvider {
 
         // to be called after a successful file change
         // ( otherwise the user would not see its changes reflected right away )
-        new MondrianCacheUtils().clearMondrianCache();
-
+        clearMondrianCache();
       }
     }
 
@@ -173,16 +176,25 @@ public class MondrianSchemaProvider implements ICteProvider {
     return wrap;
   }
 
-  private class MondrianCacheUtils extends OlapUtils {
+  private boolean clearMondrianCache() {
 
-    public boolean clearMondrianCache() {
-      try {
+    try {
+      // @see org.pentaho.platform.web.http.api.resources.SystemRefreshResource.flushMondrianSchemaCache();
 
-        // leverage on CPF's AbstractOlapUtils.getCacheManager()
-        super.getCacheManager().clearCache();
+      IPentahoSession session = PentahoSessionHolder.getSession();
 
-      } catch ( Throwable t ) {
-        logger.error( t );
+      // Flush the catalog helper (legacy)
+      IMondrianCatalogService
+          mondrianCatalogService =
+          PentahoSystem.get( IMondrianCatalogService.class, "IMondrianCatalogService", session ); //$NON-NLS-1$
+      mondrianCatalogService.reInit( session );
+
+      // Flush the IOlapService
+      IOlapService olapService = PentahoSystem.get( IOlapService.class, IOlapService.class.getSimpleName(), session );
+      olapService.flushAll( session );
+
+    } catch ( Throwable t ) {
+      logger.error( t.getMessage(), t );
         /* Do nothing.
          * <p/>
          * This is a simple 'nice-to-have' feature, where we actually clear mondrian cache after the user
@@ -190,37 +202,8 @@ public class MondrianSchemaProvider implements ICteProvider {
          * <p/>
          * In some off-chance this doesn't work, user can always do it via PUC > Tools > Refresh > Mondrian Cache.
         */
-      }
-
-      try {
-
-        // leverage on CPF's AbstractOlapUtils.getCacheManager()
-        super.getCacheManager().clearCache();
-
-        // TODO hum ?
-        // https://github.com/pentaho/pentaho-platform/blob/master/extensions/src/org/pentaho/platform/web/http/api/resources/SystemRefreshResource.java#L104-L113
-
-        IPentahoSession session = PentahoSessionHolder.getSession();
-
-        // Flush the catalog helper (legacy)
-        super.getMondrianCatalogService().reInit( session );
-
-        // Flush the IOlapService
-        IOlapService olapService = PentahoSystem.get( IOlapService.class, IOlapService.class.getSimpleName(), session );
-        olapService.flushAll( session );
-
-      } catch ( Throwable t ) {
-        logger.error( t );
-        /* Do nothing.
-         * <p/>
-         * This is a simple 'nice-to-have' feature, where we actually clear mondrian cache after the user
-         * makes a successful mondrian file change, so that he can immediately see its changes applied.
-         * <p/>
-         * In some off-chance this doesn't work, user can always do it via PUC > Tools > Refresh > Mondrian Cache.
-        */
-      }
-
-      return true;
     }
+
+    return true;
   }
 }
