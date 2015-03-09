@@ -307,7 +307,6 @@ $(window).load(function() {
     }
   });
 
-
   /**********************************
    **** editor mode select box ******
    **********************************/
@@ -321,7 +320,10 @@ $(window).load(function() {
       editor.setMode(editorMode);
       notify("Requested editor mode: " + editorMode, 'info');
     });
+    
 });
+
+
 
 $(window).resize(function() {
   $('#fileTreeAccordion').height(window.innerHeight - (params.editorOnly ? 20 : 80));
@@ -331,3 +333,14 @@ $(window).resize(function() {
   $('#editArea').width(window.innerWidth - (window.innerWidth * 0.25) - 25);
 });
 
+
+/*save shortcut*/
+$(document).keypress("s",function(e) {
+  if(e.ctrlKey)
+    save();
+});
+
+
+$(function(){
+    $(".syntaxSelector").select2({ width: '120px' });
+});

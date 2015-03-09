@@ -11,10 +11,53 @@
  * the license for the specific language governing your rights and limitations.
  */
 
-#modes {
-  margin-top: 5px;
-  text-align: center;
-  font-size: 11px;
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 300;
+  src:  local('Open Sans Light'),
+        local('OpenSans-Light'),
+        /* EE */
+        url('../../../../system/common-ui/resources/themes/crystal/opensans-light.eot') format('embedded-opentype'),
+        url('../../../../system/common-ui/resources/themes/crystal/opensans-light.woff') format('woff'),
+        url('../../../../system/common-ui/resources/themes/crystal/opensans-light.ttf') format('truetype'),
+        url('../../../../system/common-ui/resources/themes/crystal/opensans-light.svg#OpenSansLight') format('svg'),
+        /* CE */
+        url('../../../../../system/common-ui/resources/themes/crystal/opensans-light.eot') format('embedded-opentype'),
+        url('../../../../../system/common-ui/resources/themes/crystal/opensans-light.woff') format('woff'),
+        url('../../../../../system/common-ui/resources/themes/crystal/opensans-light.ttf') format('truetype'),
+        url('../../../../../system/common-ui/resources/themes/crystal/opensans-light.svg#OpenSansLight') format('svg'),
+        /* Internal git */
+        url('../../../system/common-ui/resources/themes/crystal/opensans-light.eot') format('embedded-opentype'),
+        url('/../../../system/common-ui/resources/themes/crystal/opensans-light.woff') format('woff'),
+        url('../../../system/common-ui/resources/themes/crystal/opensans-light.ttf') format('truetype'),
+        url('../../../system/common-ui/resources/themes/crystal/opensans-light.svg#OpenSansLight') format('svg');
+}
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 400;
+  src:  local('Open Sans'),
+        local('OpenSans'),
+        /* EE */
+        url('../../../../system/common-ui/resources/themes/crystal/opensans-regular.eot') format('embedded-opentype'),
+        url('../../../../system/common-ui/resources/themes/crystal/opensans-regular.woff') format('woff'),
+        url('../../../../system/common-ui/resources/themes/crystal/opensans-regular.ttf') format('truetype'),
+        url('../../../../system/common-ui/resources/themes/crystal/opensans-regular.svg#OpenSansRegular') format('svg'),
+        /* CE */
+        url('../../../../../system/common-ui/resources/themes/crystal/opensans-regular.eot') format('embedded-opentype'),
+        url('../../../../../system/common-ui/resources/themes/crystal/opensans-regular.woff') format('woff'),
+        url('../../../../../system/common-ui/resources/themes/crystal/opensans-regular.ttf') format('truetype'),
+        url('../../../../../system/common-ui/resources/themes/crystal/opensans-regular.svg#OpenSansRegular') format('svg'),
+        /*  Internal git */
+        url('../../../system/common-ui/resources/themes/crystal/opensans-regular.eot') format('embedded-opentype'),
+        url('../../../system/common-ui/resources/themes/crystal/opensans-regular.woff') format('woff'),
+        url('../../../system/common-ui/resources/themes/crystal/opensans-regular.ttf') format('truetype'),
+        url('../../../system/common-ui/resources/themes/crystal/opensans-regular.svg#OpenSansRegular') format('svg');
+}
+
+:focus {
+    outline:none;
 }
 
 .selected {
@@ -22,32 +65,130 @@
   font-weight: bold;
 }
 
-/*
-#saveBtn{
-  width: auto;
-  border: solid 2px #bbb;
-  height: 25px;
-  font-size: 12px;
-  padding: 3px 10px;
-  background-color: #eaedee;
-  color: #444;
+.saveBtn.active{
+    background: #007297; /* Old browsers */
+    background: -moz-linear-gradient(top,  #007297 57%, #005f7d 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(57%,#007297), color-stop(100%,#005f7d)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #007297 57%,#005f7d 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #007297 57%,#005f7d 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #007297 57%,#005f7d 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  #007297 57%,#005f7d 100%); /* W3C */
+    font-size: 15px;
+    color: #ffffff;
+    padding: 4px 14px 6px 14px;
+    font-family: opensanslight,  Helvetica, Arial, Sans serif;
+    /* Standard form */
+    border-radius: 3px;
+    /* Firefox */
+    -moz-border-radius: 3px;
+    /* Safari/Chrome */
+    -webkit-border-radius: 3px;
+    border: 0px solid #333;
+    -webkit-box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow:    0px 2px 2px 0px rgba(0, 0, 0, 0.3);
+    box-shadow:         0px 2px 2px 0px rgba(0, 0, 0, 0.3);
+    white-space: nowrap;
+    /*text-shadow: 0px 0px 2px rgba(000, 000, 000, 1);*/
+    cursor: pointer;
+    /* Chrome has a default 2px margin for buttons in user agent stylesheet rule */
+    margin: 0px; 
 }
 
-#saveBtn:hover{
-  background-color: #bbb;
-  color: #444;
-}*/
+.saveBtn.disabled{
+    background: transparent;
+    background-color: transparent;
+    color: #000;
+    opacity: 0.2 !important;
+}
 
-#infoArea{
-  min-width: 200px;
+.saveBtn, .saveBtn:active {
+    font-weight:300;
+    background: #007297; /* Old browsers */
+    background: -moz-linear-gradient(top,  #007297 57%, #005f7d 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(57%,#007297), color-stop(100%,#005f7d)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  #007297 57%,#005f7d 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  #007297 57%,#005f7d 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  #007297 57%,#005f7d 100%); /* IE10+ */
+    background: linear-gradient(to bottom,  #007297 57%,#005f7d 100%); /* W3C */
+    font-size: 15px;
+    color: #ffffff;
+    padding: 4px 14px 6px 14px;
+    /* Standard form */
+    border-radius: 3px;
+    /* Firefox */
+    -moz-border-radius: 3px;
+    /* Safari/Chrome */
+    -webkit-border-radius: 3px;
+    border: 0px solid #333;
+    -webkit-box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow:    0px 2px 2px 0px rgba(0, 0, 0, 0.3);
+    box-shadow:         0px 2px 2px 0px rgba(0, 0, 0, 0.3);
+    white-space: nowrap;
+    /*text-shadow: 0px 0px 2px rgba(000, 000, 000, 1);*/
+    cursor: pointer;
+    /* Chrome has a default 2px margin for buttons in user agent stylesheet rule */
+    margin: 0px;
 }
-#infoArea{
-  padding: 2px 10px 2px 10px;
+
+.saveBtn:hover{
+    -moz-box-shadow:    inset 0 0 1px #FFF;
+    -webkit-box-shadow: inset 0 0 1px #FFF;
+    box-shadow:         inset 0 0 1px #FFF;
+    background: #0085b0; /* Old browsers */
+} 
+
+.panel-group{
+    width: 250px !important;
 }
-#infoAreaWarnings{
-  padding: 2px 10px 2px 10px;
-  position: relative;
+
+.panel.panel-default > .panel-heading{
+    font-size: 16px;
+    font-weight: 300;
+    color: #749db1;
+    border-top: solid 1px #cbdde8;
+    border-left: solid 1px #cbdde8;
+    border-right: solid 1px #cbdde8;
+    -moz-border-radius-topleft: 1px;
+    -moz-border-radius-topright: 1px;
+    -webkit-border-top-left-radius: 1px;
+    -webkit-border-top-right-radius: 1px;
+    border-top-right-radius: 1px;
+    border-top-left-radius: 1px;
+    background: #FFF;
+    cursor: pointer;
 }
+
+.panel.panel-default > .panel-heading:hover{
+  color: #749db1;  
+}
+
+.panel.panel-default > .panel-heading.active{
+    border-top: solid 4px #f2ce17;
+}
+
+.panel-group .panel{
+    border-radius: 0px;
+    border: none;
+}
+
+.panel-title > a,
+.panel-title > a:hover,
+.panel-title > a:focus,
+.panel-title > a:active{
+    font-size: 16px;
+    font-weight: 300;
+    color: #749db1;
+}
+
+.panel.panel-default > .panel-heading:hover{
+
+}
+
+td.col1{
+    padding: 0 10px 0 5px;
+    width: 250px;
+}
+
 /*
 #infoArea {
   font-size: 13px;
@@ -60,50 +201,94 @@
   background: transparent;
 }*/
 
-#infoAreaWarnings{
-  font-size: 14px;
-  font-weight: bold;
-  color: red;
+.ace_editor.ace-tm/*, #fileTreeAccordion*/{
+    border: 1px solid #bfdce5;
 }
 
-#editArea/*, #fileTreeAccordion*/{
-  border: thin #bfdce5 solid;
+.panel-default > .panel-heading + .panel-collapse .panel-body {
+    border-top-color: #cbdde8;
+}
+
+ul.jqueryFileTree{
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+}
+
+.panel-body a.selectedFolder{
+    background: #d7e9cd;
+}
+
+.panel-body a.selectedFolder:hover{
+    background: transparent !important;
+}
+
+.panel-collapse .panel-body .urltargetfolderexplorer{
+    overflow: auto;
+}
+
+.infoAreaWarnings{
+    padding: 2px 10px 2px 10px;
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    color: red;
+    width: 20px;
+    width: 20px;
+    display: inline-block;
+}
+
+panel-body{
+    overflow: auto;
 }
 
 body{
-  color: #444;
-  background-color: #eaedee;
-  background: -webkit-linear-gradient(#EAEDEE, #F9FAFA); /* For Safari 5.1 to 6.0 */
-  background: -o-linear-gradient(#EAEDEE, #F9FAFA); /* For Opera 11.1 to 12.0 */
-  background: -moz-linear-gradient(#EAEDEE, #F9FAFA); /* For Firefox 3.6 to 15 */
-  background: linear-gradient(#EAEDEE, #F9FAFA); /* Standard syntax */
-  font-size: 13px;
-  padding: 5px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    background: -webkit-linear-gradient(#E8EEF3, #FFF); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#E8EEF3, #FFF); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#E8EEF3, #FFF); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to #E8EEF3, #FFF); /* Standard syntax */
+    font-size: 13px;
+    padding: 5px;
 }
 
 td{
-  vertical-align: middle;
+    vertical-align: middle;
 }
 
 .panel {
-  margin-bottom: 5px;
+    margin-bottom: 5px;
 }
 
 .panel-body {
-  padding: 2px;
+    padding: 2px;
 }
 
 a:hover, a:focus {
-  color: #2a6496;
-  text-decoration: none;
+    color: #2a6496;
+    text-decoration: none;
 }
 
 a:active, a:selected, a:visited { 
-  border: none;
-  outline: none;
+    border: none;
+    outline: none;
 }
 
 .btn:focus, .btn:active:focus, .btn.active:focus { 
-  border: none;
-  outline: none;
+    border: none;
+    outline: none;
+}
+
+.btnArea.chosen-container-single .chosen-single div b{
+    background: none !important;
+}
+
+.btnArea .select2-container--default .select2-selection--single, 
+.btnArea .select2-selection__rendered{
+    border-radius: 0px;
+}
+
+.select2-container.select2-container--default.select2-container--open .select2-dropdown.select2-dropdown--below{
+    border-radius: 0px;
 }
