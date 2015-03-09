@@ -222,7 +222,7 @@ $(window).load(function() {
     $('#editArea').width(params.width);
   } else{
     $('#fileTreeAccordion').width(window.innerWidth - (window.innerWidth * 0.75) - 25);
-    $('#editArea').width(window.innerWidth - (window.innerWidth * 0.25) - 25);
+    $('#editArea').width('75%');
   }
       
   editor.initEditor('editArea');
@@ -324,7 +324,7 @@ $(window).load(function() {
 });
 
 
-
+/*
 $(window).resize(function() {
   $('#fileTreeAccordion').height(window.innerHeight - (params.editorOnly ? 20 : 80));
   $('#editArea').height(window.innerHeight - (params.editorOnly ? 20 : 80));
@@ -332,7 +332,7 @@ $(window).resize(function() {
   $('#fileTreeAccordion').width(window.innerWidth - (window.innerWidth * 0.75) - 25);
   $('#editArea').width(window.innerWidth - (window.innerWidth * 0.25) - 25);
 });
-
+*/
 
 /*save shortcut*/
 $(document).keypress("s",function(e) {
@@ -342,5 +342,9 @@ $(document).keypress("s",function(e) {
 
 
 $(function(){
-    $(".syntaxSelector").select2({ width: '120px' });
+    $('.syntaxSelector').select2({ width: '140px' });
+    
+    if(document.implementation.hasFeature('http://www.w3.org/TR/SVG11/feature#Image', '1.1')){
+        $('html').addClass('svg');
+    } else $('html').addClass('no-svg');
 });
