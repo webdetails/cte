@@ -56,8 +56,9 @@
         url('../../../system/common-ui/resources/themes/crystal/opensans-regular.svg#OpenSansRegular') format('svg');
 }
 
-:focus {
-    outline:none;
+body pre {
+    border-radius: 0px;
+    min-width: 500px !important;
 }
 
 .selected {
@@ -94,10 +95,8 @@
     margin: 0px; 
 }
 
-.saveBtn.disabled{
-    background: transparent;
-    background-color: transparent;
-    color: #000;
+.btnArea .saveBtn.disabled{
+    color: #FFFFFF;
     opacity: 0.2 !important;
 }
 
@@ -166,13 +165,16 @@
     border-top: solid 4px #f2ce17;
 }
 
+.panel.panel-default .panel-heading{
+    padding: 10px 10px;
+}
+
 .panel-group .panel{
     border-radius: 0px;
     border: none;
 }
 
 .panel-title > a,
-.panel-title > a:hover,
 .panel-title > a:focus,
 .panel-title > a:active{
     font-size: 16px;
@@ -180,13 +182,21 @@
     color: #749db1;
 }
 
+.panel-title > a:hover{
+    color: #2D3539;
+}
+
 .panel.panel-default > .panel-heading:hover{
 
 }
 
 td.col1{
-    padding: 0 10px 0 5px;
+    padding: 0px 10px 12px 5px;
     width: 250px;
+}
+
+tr.row1{
+    height: 60px;
 }
 
 /*
@@ -238,10 +248,6 @@ ul.jqueryFileTree{
     display: inline-block;
 }
 
-panel-body{
-    overflow: auto;
-}
-
 body{
     font-family: 'Open Sans', sans-serif;
     font-weight: 400;
@@ -262,7 +268,8 @@ td{
 }
 
 .panel-body {
-    padding: 2px;
+    padding: 10px 10px;
+    border: 1px solid #cbdde8;
 }
 
 a:hover, a:focus {
@@ -291,4 +298,29 @@ a:active, a:selected, a:visited {
 
 .select2-container.select2-container--default.select2-container--open .select2-dropdown.select2-dropdown--below{
     border-radius: 0px;
+}
+
+.select2-results__options .select2-results__option {
+  padding: 6px 0px 6px 10px;
+}
+
+.select2-results .select2-results__options .select2-results__option.select2-results__option--highlighted{
+    background-color: #005DA6;
+}
+
+input.select2-search__field{
+    background: url('../../img/magnifier.svg') center right no-repeat;
+}
+
+.no-svg input.select2-search__field{
+    background: url('../../img/magnifier.png') center right no-repeat;
+}
+
+input.select2-search__field:focus{
+    outline: none;
+}
+
+span.dropdown{
+    float:right;
+    margin-right: 4%;
 }

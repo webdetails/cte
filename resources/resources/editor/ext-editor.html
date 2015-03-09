@@ -48,9 +48,9 @@
   <body>
     <table style="width: 100%;">
       <tbody>
-        <tr>
-          <td class="col1">Provider(s)</td>
-          <td class="col2" style="vertical-align: middle; padding: 0px 10px 5px 0px;">
+        <tr class="row1">
+          <td class="col1"><!--Provider(s)--></td>
+          <td class="col2">
             <div id="btnArea" class="btnArea">
               <!--button id="saveBtn" onclick ="save()" style=""> Save </button-->
               <!--span id="infoArea" style="min-width: 200px;"></span-->
@@ -59,8 +59,9 @@
               <!-- <span id="infoArea" class="well well-sm" role="alert"></span>-->
               
               <button type="button" id="saveBtn" class="saveBtn btn btn-sm disabled" onclick ="save()"> Save </button>
-              <span id="infoAreaWarnings" class="infoAreaWarnings"></span>
-              <span class="dropdown">&nbsp;mode:&nbsp;
+              <!--<span id="infoAreaWarnings" class="infoAreaWarnings"></span>-->
+              <span class="dropdown">&nbsp;Syntax mode:&nbsp;
+              
               <select id="modes" class="syntaxSelector">
                 <option value="" selected="selected">(auto detect)</option>
                 <option value="coffee">Coffee</option>
@@ -81,12 +82,12 @@
             </div>
           </td>
         </tr>
-        <tr>
-          <td class="col1" style="">
-            <div id="fileTreeAccordion" class="panel-group" style="width: 300px; float: left; height: 600px;"/>
+        <tr class="row2">
+          <td class="col1">
+            <div id="fileTreeAccordion" class="panel-group"/>
           </td>
-          <td class="col2" style="vertical-align: top;">
-            <pre style="height: 600px; width: 900px;" id="editArea"/>
+          <td class="col2">
+            <pre id="editArea"/>
           </td>
         </tr>
       </tbody>
