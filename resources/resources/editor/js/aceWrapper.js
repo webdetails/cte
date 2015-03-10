@@ -75,12 +75,23 @@ var CodeEditor = function() {
   editor: null,
   editorId: null,
 
-  initEditor: function(editorId) {
+  initEditor: function(editorId, saveFunc) {
     this.editor = ace.edit(editorId); 
     this.editorId = editorId;
     this.setMode(null);
     //this.setTheme(null);
     this.setTheme(this.DEFAULT_THEME_PATH);
+    // save command key bindings
+    this.editor.commands.addCommand({
+      name: 'saveFile',
+      bindKey: {
+      win: 'Ctrl-S',
+      mac: 'Command-S',
+      sender: 'editor|cli'
+    },
+    exec: function(env, args, request) {
+      saveFunc();
+    }});
   },
   
   loadFile: function(filename, provider, callback, errorCallback) {

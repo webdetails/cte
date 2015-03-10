@@ -225,7 +225,7 @@ $(window).load(function() {
     $('#editArea').width(window.innerWidth - (window.innerWidth * 0.25) - 25);
   }
       
-  editor.initEditor('editArea');
+  editor.initEditor('editArea', save);
 
   if(params.theme) {
     editor.setTheme(params.theme);
@@ -324,7 +324,6 @@ $(window).load(function() {
 });
 
 
-
 $(window).resize(function() {
   $('#fileTreeAccordion').height(window.innerHeight - (params.editorOnly ? 20 : 80));
   $('#editArea').height(window.innerHeight - (params.editorOnly ? 20 : 80));
@@ -334,13 +333,6 @@ $(window).resize(function() {
 });
 
 
-/*save shortcut*/
-$(document).keypress("s",function(e) {
-  if(e.ctrlKey)
-    save();
-});
-
-
-$(function(){
-    $(".syntaxSelector").select2({ width: '120px' });
+$(function() {
+  $(".syntaxSelector").select2({width: '120px'});
 });
