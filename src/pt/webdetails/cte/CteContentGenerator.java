@@ -15,6 +15,7 @@ package pt.webdetails.cte;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.platform.engine.core.system.objfac.spring.Const;
 import pt.webdetails.cpf.SimpleContentGenerator;
 import pt.webdetails.cte.api.ICteEnvironment;
 import pt.webdetails.cte.engine.CteEngine;
@@ -23,14 +24,8 @@ public class CteContentGenerator extends SimpleContentGenerator {
 
   private static Log logger = LogFactory.getLog( CteContentGenerator.class );
 
-  private String provider;
-
   @Override public void createContent() throws Exception {
     String path = getPathParameterAsString( Constants.PARAM_PATH, "" );
-
-    if( StringUtils.isEmpty( provider ) ){
-      logger.error( "No content provider id has been set; file loading may not function as expected" );
-    }
 
     if( isCallForEditor() ) {
 
@@ -41,10 +36,7 @@ public class CteContentGenerator extends SimpleContentGenerator {
       sb.append( Constants.ENDPOINT_EDITOR ).append( "?" );
 
       // send given path as a query parameter
-      sb.append( Constants.PARAM_PATH ).append( "=" ).append( path ).append( "&" );
-
-      // send given provider as a query parameter
-      sb.append( Constants.PARAM_PROVIDER ).append( "=" ).append( provider );
+      sb.append( Constants.PARAM_PATH ).append( "=" ).append( path );
 
       getResponse().sendRedirect( sb.toString() );
 
@@ -60,14 +52,6 @@ public class CteContentGenerator extends SimpleContentGenerator {
 
   private boolean isCallForEditor(){
     return getRequest().getRequestURI().endsWith( Constants.PLUGIN_EDITOR_PERSPECTIVE_ID );
-  }
-
-  public String getProvider() {
-    return provider;
-  }
-
-  public void setProvider( String provider ) {
-    this.provider = provider;
   }
 
   private ICteEnvironment getEnvironment() {

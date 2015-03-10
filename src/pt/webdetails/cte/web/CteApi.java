@@ -12,6 +12,7 @@
 */
 package pt.webdetails.cte.web;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,10 +33,15 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 
 @Path( Constants.PLUGIN_ID + "/api/" ) public class CteApi {
 
   private Logger logger = LoggerFactory.getLogger( CteApi.class );
+
+  // default/fallback provider to use whenever CTE's editor is called for, and no provider is explicitly passed along
+  private String defaultProviderId;
 
   // for ( an even higher ) ease of use
   private final String DIR = Constants.PARAM_DIR;
@@ -44,8 +50,8 @@ import java.io.ByteArrayInputStream;
 
 
   @GET @Path( Constants.ENDPOINT_CAN_EDIT + "/{" + PROVIDER + ": [^?]+ }/{ " + PATH + ": [^?]+ }" )
-  public String canEdit( @PathParam( PROVIDER ) String provider, @PathParam( PATH ) String path  ) {
-    return Boolean.toString( isValidProvider( provider ) ? getProvider( provider ).canEdit( path ) : false );
+  public String canEdit( @PathParam( PROVIDER ) String provider, @PathParam( PATH ) String path ) {
+    return Boolean.toString( isValidProvider( provider ) ? getProvider( provider ).canEdit( sanitize( path ) ) : false );
   }
 
   @GET @Path( Constants.ENDPOINT_CAN_EDIT )
@@ -55,7 +61,7 @@ import java.io.ByteArrayInputStream;
 
   @GET @Path( Constants.ENDPOINT_CAN_READ + "/{" + PROVIDER + ": [^?]+ }/{ " + PATH + ": [^?]+ }" )
   public String canRead( @PathParam( PROVIDER ) String provider, @PathParam( PATH ) String path ) {
-    return Boolean.toString( isValidProvider( provider ) ? getProvider( provider ).canRead( path ) : false );
+    return Boolean.toString( isValidProvider( provider ) ? getProvider( provider ).canRead( sanitize( path ) ) : false );
   }
 
   @GET @Path( Constants.ENDPOINT_CAN_READ )
@@ -65,10 +71,20 @@ import java.io.ByteArrayInputStream;
 
   @GET @Path( Constants.ENDPOINT_EDITOR + "/{" + PROVIDER + ": [^?]+ }/{ " + PATH + ": [^?]+ }" )
   public void edit( @PathParam( PROVIDER ) String provider, @PathParam( PATH ) String path,
+      @QueryParam( Constants.PARAM_BYPASS_CACHE ) @DefaultValue( "false" ) String bypassCache,
       @Context HttpServletResponse response ) throws WebApplicationException {
 
     try {
-      PluginIOUtils.writeOutAndFlush( response.getOutputStream(), getEngine().getEditor().getEditor() );
+
+      InputStream fis = null;
+
+      if( !StringUtils.isEmpty( path ) && isValidProvider( provider ) && getProvider( provider ).canRead( sanitize( path ) ) ){
+
+        fis = getProvider( provider ).getFile( sanitize( path ) );
+      }
+
+      PluginIOUtils.writeOutAndFlush( response.getOutputStream(),
+          getEngine().getEditor().getEditor( fis, BooleanUtils.toBoolean( bypassCache ) ) );
 
     } catch ( Exception e ) {
       logger.error( e.getMessage(), e );
@@ -78,21 +94,22 @@ import java.io.ByteArrayInputStream;
 
   @GET @Path( Constants.ENDPOINT_EDITOR )
   public void editAlt( @QueryParam( PROVIDER ) String provider, @QueryParam( PATH ) String path,
+      @QueryParam( Constants.PARAM_BYPASS_CACHE ) @DefaultValue( "false" ) String bypassCache,
       @Context HttpServletResponse response ) throws WebApplicationException {
-    edit( provider, path, response );
+    edit( provider, path, bypassCache, response );
   }
 
   @GET @Path( Constants.ENDPOINT_GET_FILE + "/{" + PROVIDER + ": [^?]+ }/{ " + PATH + ": [^?]+ }" )
   public void getFile( @PathParam( PROVIDER ) String provider, @PathParam( PATH ) String path,
       @Context HttpServletResponse response ) throws WebApplicationException {
 
-    if ( !isValidProvider( provider ) || !getProvider( provider ).canRead( path ) ) {
+    if ( !isValidProvider( provider ) || !getProvider( provider ).canRead( sanitize( path ) ) ) {
       logger.info( "CteApi.getFile(): not allowed to read " + path );
       throw new WebApplicationException( Response.Status.FORBIDDEN );
     }
 
     try {
-      PluginIOUtils.writeOutAndFlush( response.getOutputStream(), getProvider( provider ).getFile( path ) );
+      PluginIOUtils.writeOutAndFlush( response.getOutputStream(), getProvider( provider ).getFile( sanitize( path ) ) );
 
     } catch ( Exception e ) {
       logger.error( e.getMessage(), e );
@@ -110,13 +127,13 @@ import java.io.ByteArrayInputStream;
   public String saveFile( @PathParam( PROVIDER ) String provider, @PathParam( PATH ) String path,
       @FormParam( Constants.PARAM_DATA ) @DefaultValue( "" ) String data ) throws WebApplicationException {
 
-    if ( !isValidProvider( provider ) ||  !getProvider( provider ).canEdit( path ) ) {
+    if ( !isValidProvider( provider ) ||  !getProvider( provider ).canEdit( sanitize( path ) ) ) {
       logger.info( "CteApi.saveFile(): not allowed to edit " + path );
       throw new WebApplicationException( Response.Status.FORBIDDEN );
     }
 
     try {
-      return String.valueOf( getProvider( provider ).saveFile( path,
+      return String.valueOf( getProvider( provider ).saveFile( sanitize( path ),
           new ByteArrayInputStream( data.getBytes( getEnvironment().getSystemEncoding() ) ) ) );
 
     } catch ( Exception e ) {
@@ -180,7 +197,7 @@ import java.io.ByteArrayInputStream;
         return fullTree( allowedExtensions , showHiddenFiles );
 
 
-      } else if ( !isValidProvider( provider ) || !getProvider( provider ).canRead( dir ) ) {
+      } else if ( !isValidProvider( provider ) || !getProvider( provider ).canRead( sanitize( dir ) ) ) {
 
         // tree of a specific provider
 
@@ -189,8 +206,8 @@ import java.io.ByteArrayInputStream;
 
       } else {
 
-        return RepositoryHelper.toJQueryFileTree( dir,
-            getProvider( provider ).getTree( dir, allowedExtensions, showHiddenFiles ) );
+        return RepositoryHelper.toJQueryFileTree( sanitize( dir ),
+            getProvider( provider ).getTree( sanitize( dir ), allowedExtensions, showHiddenFiles ) );
 
       }
 
@@ -232,7 +249,7 @@ import java.io.ByteArrayInputStream;
 
   private boolean isValidProvider( String provider ) throws WebApplicationException {
 
-    if( StringUtils.isEmpty( provider ) ){
+    if( StringUtils.isEmpty( provider ) && StringUtils.isEmpty( getDefaultProviderId() ) ){
       throw new WebApplicationException( "missing provider", Response.Status.FORBIDDEN );
 
     } else if( getProvider( provider ) == null ){
@@ -250,7 +267,16 @@ import java.io.ByteArrayInputStream;
   }
 
   private ICteProvider getProvider( String providerId ) {
-    return getEngine().getProviderManager().getProviderById( providerId );
+
+    if( !StringUtils.isEmpty( providerId ) ) {
+      return getEngine().getProviderManager().getProviderById( providerId );
+
+    } else if ( !StringUtils.isEmpty( getDefaultProviderId() ) ) {
+      logger.debug( "Tentative default/fallback provider usage" );
+      return getEngine().getProviderManager().getProviderById( getDefaultProviderId() );
+    }
+
+    return null;
   }
 
   private CteEngine getEngine() {
@@ -259,5 +285,24 @@ import java.io.ByteArrayInputStream;
 
   private ICteEnvironment getEnvironment() {
     return CteEngine.getInstance().getEnvironment();
+  }
+
+  public String getDefaultProviderId() {
+    return defaultProviderId;
+  }
+
+  public void setDefaultProviderId( String defaultProviderId ) {
+    this.defaultProviderId = defaultProviderId;
+  }
+
+  // path may be colons or forward slashes as separators;
+  // if using colons, convert all to forward slashes
+  private String sanitize( String path ){
+
+    if( !StringUtils.isEmpty( path ) && path.contains( Constants.SEPARATOR_ALT ) ) {
+      return path.replaceAll( Constants.SEPARATOR_ALT, Constants.SEPARATOR );
+    }
+
+    return path;
   }
 }

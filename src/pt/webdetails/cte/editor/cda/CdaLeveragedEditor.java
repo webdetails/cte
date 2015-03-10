@@ -36,12 +36,12 @@ public class CdaLeveragedEditor implements ICteEditor {
   }
 
   @Override
-  public InputStream getEditor() throws Exception {
-    return getEditor( null );
+  public InputStream getEditor( boolean bypassCache ) throws Exception {
+    return getEditor( null, bypassCache );
   }
 
   @Override
-  public InputStream getEditor( InputStream fileContent ) throws Exception {
+  public InputStream getEditor( InputStream fileContent, boolean bypassCache ) throws Exception {
 
     Map<String, Object> params = new HashMap<String, Object>();
 

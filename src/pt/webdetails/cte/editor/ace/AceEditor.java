@@ -31,13 +31,13 @@ public class AceEditor implements ICteEditor {
   @Override public void init( ICteEnvironment environment ) throws InitializationException {
   }
 
-  @Override public InputStream getEditor() throws Exception {
-    return getEditor( null );
+  @Override public InputStream getEditor( boolean bypassCache ) throws Exception {
+    return getEditor( null, bypassCache );
   }
 
-  @Override public InputStream getEditor( InputStream fileContent ) throws Exception {
+  @Override public InputStream getEditor( InputStream fileContent, boolean bypassCache ) throws Exception {
 
-    if ( editorContent == null || editorContent.length == 0 ) {
+    if ( bypassCache || editorContent == null ) {
 
       editorContent =
           new ExtEditor( getEnvironment().getUrlProvider(), PluginEnvironment.repository() ).getExtEditor()

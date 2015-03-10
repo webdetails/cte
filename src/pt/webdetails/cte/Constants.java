@@ -12,6 +12,8 @@
 */
 package pt.webdetails.cte;
 
+import pt.webdetails.cpf.Util;
+
 public class Constants {
 
   public static final String PLUGIN_ID = "cte";
@@ -25,6 +27,8 @@ public class Constants {
   public static final String SETTINGS_XPATH_BLACKLISTED_FOLDERS = "blacklist/folders/path";
   public static final String SETTINGS_XPATH_BLACKLISTED_FILE_EXTENSIONS = "blacklist/files/extension";
 
+  public static final String SEPARATOR = Util.SEPARATOR; // forward slash
+  public static final String SEPARATOR_ALT = ":";
 
   public static final String ENDPOINT_CAN_EDIT = "canEdit";
   public static final String ENDPOINT_CAN_READ = "canRead";
@@ -46,5 +50,6 @@ public class Constants {
   public static final String PARAM_PROVIDER = "provider";
   public static final String PARAM_ID = "id";
   public static final String PARAM_NAME = "name";
+  public static final String PARAM_BYPASS_CACHE = "bypassCache";
 
 }

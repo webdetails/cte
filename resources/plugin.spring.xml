@@ -12,15 +12,14 @@
   
   <!-- JAX-RS beans -->
   <bean id="api" class="org.pentaho.platform.web.servlet.JAXRSPluginServlet"/>
-  <bean id="cteApi" class="pt.webdetails.cte.web.CteApi" />
+  <bean id="cteApi" class="pt.webdetails.cte.web.CteApi">
+    <!--  default/fallback provider to use whenever CTE's editor is called for, and no provider is explicitly passed along -->
+    <property name="defaultProviderId" value="repo" />
+  </bean>
   
   <bean id="ICteEnvironment" class="pt.webdetails.cte.PentahoCteEnvironment" />
   
-  <bean class="pt.webdetails.cte.CteContentGenerator" id="cte.edit">
-    <!--  the provider id to use whenever user clicks on 'Edit' action in 'Browse Files' -->
-    <property name="provider" value="repo" />
-  </bean>
-  
+  <bean class="pt.webdetails.cte.CteContentGenerator" id="cte.edit" />
   <bean class="pt.webdetails.cte.CteContentGenerator" id="properties" />
   <bean class="pt.webdetails.cte.CteContentGenerator" id="cdfde" />
   <bean class="pt.webdetails.cte.CteContentGenerator" id="html" />

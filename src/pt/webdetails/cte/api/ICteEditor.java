@@ -25,7 +25,7 @@ public interface ICteEditor {
    *
    * @return blank editor
    */
-  InputStream getEditor() throws Exception;
+  InputStream getEditor( boolean bypassCache ) throws Exception;
 
   /**
    * return editor for the content of a file
@@ -33,6 +33,6 @@ public interface ICteEditor {
    * @param file - content of a file to display
    * @return editor for the content of a file
    */
-  InputStream getEditor( InputStream file ) throws Exception;
+  InputStream getEditor( InputStream file, boolean bypassCache ) throws Exception;
 
 }
