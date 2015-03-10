@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="js/fileTree/css/jqueryFileTree.css" type="text/css">
 
     <link rel="stylesheet" href="css/style.css" type="text/css">
+    <link rel="stylesheet" href="css/ml-modal.css" type="text/css">
 
     <script language="javascript" type="text/javascript" src="js/lib/jquery.js"></script>
     <script language="javascript" type="text/javascript" src="js/lib/bootstrap/js/bootstrap.js"></script>
@@ -43,13 +44,16 @@
     <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.1/css/select2.min.css" rel="stylesheet" />
     <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.1/js/select2.min.js"></script>
     
+    <script language="javascript" type="text/javascript" src="js/lib/ml-modal.js"></script>
 
   </head>
-  <body>
+  <body> 
     <table style="width: 100%;">
       <tbody>
         <tr class="row1">
-          <td class="col1"><!--Provider(s)--></td>
+          <td class="col1">
+              <div class="info-btn"></div>
+          </td>
           <td class="col2">
             <div id="btnArea" class="btnArea">
               <!--button id="saveBtn" onclick ="save()" style=""> Save </button-->
@@ -57,28 +61,35 @@
               <!--span id="infoArea" class="alert alert-sm alert-success" role="alert"></span-->
               
               <!-- <span id="infoArea" class="well well-sm" role="alert"></span>-->
-              
-              <button type="button" id="saveBtn" class="saveBtn btn btn-sm disabled" onclick ="save()"> Save </button>
               <!--<span id="infoAreaWarnings" class="infoAreaWarnings"></span>-->
-              <span class="dropdown">&nbsp;Syntax mode:&nbsp;
+            <div class="dropdown">
+                <div class="syntaxLabel">
+                    <span>Syntax mode:</span>
+                </div>
+                <div class="syntaxSelector">
+                    <select id="modes" class="modes">
+                        <option value="" selected="selected">(auto detect)</option>
+                        <option value="coffee">Coffee</option>
+                        <option value="css">CSS</option>
+                        <option value="html">HTML</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="json">JSON</option>
+                        <option value="jsp">JSP</option>
+                        <option value="less">Less</option>
+                        <option value="pgsql">PGSQL</option>
+                        <option value="properties">Properties</option>
+                        <option value="sql">SQL</option>
+                        <option value="svg">SVG</option>
+                        <option value="text">Text</option>
+                        <option value="xml">XML</option>
+                        <option value="xquery">XQuery</option>
+                    </select>
+                </div>
+            </div>
+            <div class="save">
+                <button type="button" id="saveBtn" class="saveBtn btn btn-sm disabled" onclick ="save()"> Save </button>  
+            </div>
               
-              <select id="modes" class="syntaxSelector">
-                <option value="" selected="selected">(auto detect)</option>
-                <option value="coffee">Coffee</option>
-                <option value="css">CSS</option>
-                <option value="html">HTML</option>
-                <option value="javascript">JavaScript</option>
-                <option value="json">JSON</option>
-                <option value="jsp">JSP</option>
-                <option value="less">Less</option>
-                <option value="pgsql">PGSQL</option>
-                <option value="properties">Properties</option>
-                <option value="sql">SQL</option>
-                <option value="svg">SVG</option>
-                <option value="text">Text</option>
-                <option value="xml">XML</option>
-                <option value="xquery">XQuery</option>
-              </select></span>
             </div>
           </td>
         </tr>
@@ -92,5 +103,6 @@
         </tr>
       </tbody>
     </table>
+    
   </body>
 </html>

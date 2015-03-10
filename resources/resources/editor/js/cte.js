@@ -303,6 +303,8 @@ $(window).load(function() {
         $divTreeCollapsible.append($('<div class="panel-body">').append($divTree));
         $divTreePanel.append($divTreeCollapsible);
         $('#fileTreeAccordion').append($divTreePanel);
+        
+        $('.panel-title a').addClass('collapsed');
       }
     }
   });
@@ -340,11 +342,27 @@ $(document).keypress("s",function(e) {
     save();
 });
 
+function preload(sources)
+{
+  jQuery.each(sources, function(i,source) { jQuery.get(source); });
+}
+
 
 $(function(){
-    $('.syntaxSelector').select2({ width: '140px' });
+    $('.modes').select2({ width: '140px' });
     
+    /*svg support check*/
     if(document.implementation.hasFeature('http://www.w3.org/TR/SVG11/feature#Image', '1.1')){
         $('html').addClass('svg');
     } else $('html').addClass('no-svg');
+    
+    var modal = new Modal({
+        content: "<table class='table'>\n  <thead>\n    <tr>\n      <th>Action</th>\n      <th>Windows</th>\n      <th>MacOS</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Save</td>\n      <td><code>&lt;Shift + s&gt;</code></td>\n      <td> <code>&lt;Shift + s&gt;</code></td>\n    </tr>\n    <tr>\n      <td>Find</td>\n      <td></td>\n      <td></td>\n    </tr>\n    <tr>\n      <td>Find Next</td>\n      <td></td>\n      <td></td>\n    </tr>\n    <tr>\n      <td>Find Previous</td>\n      <td></td>\n      <td></td>\n    </tr>\n    <tr>\n      <td>Find Next</td>\n      <td></td>\n      <td></td>\n    </tr>\n  </tbody>\n</table>",
+        maxWidth: 500
+    });
+    
+    $(".info-btn").click(function(){
+        modal.open();
+    });
+    
 });
