@@ -10,10 +10,11 @@
       <extension>png</extension>
       <extension>jpg</extension>
       <extension>jpeg</extension>
-      <extension>svg</extension>
       <extension>zip</extension>
       <extension>rar</extension>
       <extension>jar</extension>
+      <extension>ktr</extension>
+      <extension>kjb</extension>
 
    </files>
 
