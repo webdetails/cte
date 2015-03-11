@@ -100,8 +100,13 @@ body pre {
     min-width: 500px !important;
 }
 
-:focus {outline:none;}
+:focus {
+    outline:none !important;
+}
 
+::-moz-focus-inner{
+    border: 0;
+}
 
 .btn-success{
     border: none !important;    
@@ -290,7 +295,12 @@ ul.jqueryFileTree{
     font-weight: 300;
 }
 
-.panel-body a.selectedFolder, 
+
+.panel-body a.selectedFolder{
+    background: #FFF;
+    color: #00000 !important;    
+}
+ 
 .panel-body a.selectedFile{
     background: #666;
     color: #FFFFFF !important;
