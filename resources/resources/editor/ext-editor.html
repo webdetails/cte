@@ -42,6 +42,7 @@
     
     
     <link href="css/select2.min.css" rel="stylesheet" />
+    <link href="css/jquery-ui.css" rel="stylesheet" />
     <script src="js/lib/select2.min.js"></script>
     
     <script language="javascript" type="text/javascript" src="js/lib/ml-modal.js"></script>
@@ -55,13 +56,15 @@
               <div class="info-btn"></div>
           </td>
           <td class="col2">
+            
+            <span id="infoArea" class="well well-sm infoArea" role="alert"></span>
             <div id="btnArea" class="btnArea">
               <!--button id="saveBtn" onclick ="save()" style=""> Save </button-->
               <!--span id="infoArea" style="min-width: 200px;"></span-->
-              <!--span id="infoArea" class="alert alert-sm alert-success" role="alert"></span-->
+              <!--<span id="infoArea" class="alert alert-sm alert-success" role="alert">*</span>-->
               
-              <!-- <span id="infoArea" class="well well-sm" role="alert"></span>-->
-              <!--<span id="infoAreaWarnings" class="infoAreaWarnings"></span>-->
+            
+              <!--<span id="infoAreaWarnings" class="infoAreaWarnings">*</span>-->
             <div class="dropdown">
                 <div class="syntaxLabel">
                     <span>Syntax mode:</span>
@@ -89,20 +92,19 @@
             <div class="save">
                 <button type="button" id="saveBtn" class="saveBtn btn btn-sm disabled" onclick ="save()"> Save </button>  
             </div>
-              
+            
             </div>
           </td>
         </tr>
         <tr class="row2">
           <td class="col1">
-            <div id="fileTreeAccordion" class="panel-group"/>
+            <div id="fileTreeAccordion" class="panel-group"></div>
           </td>
           <td class="col2">
-            <pre id="editArea"/>
+            <pre id="editArea"></pre>
           </td>
         </tr>
       </tbody>
     </table>
-    
   </body>
 </html>

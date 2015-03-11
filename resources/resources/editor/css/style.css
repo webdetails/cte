@@ -132,6 +132,10 @@ ul.jqueryFileTree a:hover{
     border:none;
 }
 
+.btnArea{
+    float: right;
+}
+
 .saveBtn, .btn-success:hover, .btn-success:focus {
   background: #005CA7;
   font-weight: 400;
@@ -141,24 +145,24 @@ ul.jqueryFileTree a:hover{
   text-align: left;
   position: relative;
   color: #FFF;
-  padding: 8px 38px;
+  padding: 5px 52px;
   font-size: 14px;
   -webkit-transition: all 0;
   transition: all 0;
   margin-top: 0;
   outline: 0 none !important;
-  margin-top: -45px;
+  margin-top: -40px;
 }
 
 .saveBtn:hover{
     background: #0072CE;
     -webkit-box-shadow: 0px 3px 5px 0px #0066b9 inset;
     box-shadow: 0px 3px 5px 0px #0066b9 inset;
-    margin-top: -45px;
+    margin-top: -40px;
 }
 
 .saveBtn:active{
-    margin-top: -45px;
+    margin-top: -40px;
     box-shadow: 0px 3px 5px 0px #004985 inset;
     background: #005CA7;
 }
@@ -237,7 +241,7 @@ ul.jqueryFileTree a:hover{
 
 .panel-group .panel{
     border: solid 1px #dddddd;
-    border-radius: 4px;
+    border-radius: 0px;
 }
 
 .panel-title > a{
@@ -268,7 +272,7 @@ td.col1{
 tr.row1{
     height: 60px;
 }
-
+ 
 /*
 #infoArea {
   font-size: 13px;
@@ -279,10 +283,26 @@ tr.row1{
 #infoArea.disabled{
   border: none;
   background: transparent;
-}*/
+}*/ 
+
+.infoArea{
+    float: left;
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding-top: 27px;
+    margin-bottom: 0px;
+    padding-left: 0px;
+    font-size: 14px;
+}
+
+td.col2 .infoArea{
+    color: #7c7c7c;
+}
 
 .ace_editor.ace-tm/*, #fileTreeAccordion*/{
     border: 1px solid #bfdce5;
+    width: 100% !important;
 }
 
 .panel-default > .panel-heading + .panel-collapse .panel-body {
@@ -366,11 +386,22 @@ a:active, a:selected, a:visited {
 
 .select2 .select2-selection.select2-selection--single{
     border: 1px solid #cbdde8;
+    height: 32px;
 }
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b{
+  margin-left: -8px !important;
+  margin-top: 1px !important;  
+}
+
 
 .select2-container--default .select2-search--dropdown .select2-search__field,
 .select2-dropdown{
 	border: 1px solid #cbdde8 !important;	
+}
+
+.select2-selection__rendered{
+    font-size: 14px;
 }
 
 
@@ -389,6 +420,7 @@ input.select2-search__field:focus{
 .btnArea .select2-container--default .select2-selection--single .select2-selection__rendered,
 span.select2-results li{
     color: #7c7c7c;
+    padding-top: 1px;
 }
 
 .info-btn{
@@ -422,32 +454,29 @@ span.select2-results li{
     color: #7C7E80;
 }
 
-.svg .info-btn{
+.info-btn{
     width: 25px;
     height: 25px;
-    background: url('../../img/info.svg') left center no-repeat;
-}
-
-.no-svg .info-btn{
     background: url('../../img/info.png') left center no-repeat;
 }
 
 .saveBtn{
     float:right;
-    margin-right: 4%;
-    margin-top: -45px;
+    margin-top: -40px;
 }
 
 div.dropdown{
     display:block;
-    padding-bottom: 6px;
+    padding-bottom: 8px;
+    padding-right: 165px;
 }
 
 .syntaxLabel span{
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 400;
     line-height: 1.42857143;
     color: #7C7E80;
+    padding-left: 1px;
 }
 
 .ml-content table th, .ml-content table td {
@@ -457,9 +486,13 @@ div.dropdown{
 li.file > a,
 li.directory > a{
     cursor: pointer;
-    width: 100%;
+    min-width: 100%;
 }
 
+.ml-modal code{
+    background-color: #f7f6f7;
+    color: #7C7E80;
+}
 
 #keysPopup {
 
