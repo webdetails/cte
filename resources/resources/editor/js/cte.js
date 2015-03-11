@@ -211,19 +211,11 @@ $(window).load(function() {
     $('#editArea').css('margin-bottom', 0);
   }
   
-  if(params.height) {
-    $('#editArea').height(params.height);
-  } else {
-    $('#fileTreeAccordion').height(window.innerHeight - (params.editorOnly ? 20 : 80));
-    $('#editArea').height(window.innerHeight - (params.editorOnly ? 20 : 80));
-  }
+  $('#fileTreeAccordion').height(window.innerHeight - (params.editorOnly ? 20 : 80));
+  $('#editArea').height(window.innerHeight - (params.editorOnly ? 20 : 80));
   
-  if(params.width) {
-    $('#editArea').width(params.width);
-  } else{
-    $('#fileTreeAccordion').width(window.innerWidth - (window.innerWidth * 0.75) - 25);
-    $('#editArea').width('75%');
-  }
+  $('#fileTreeAccordion').width(window.innerWidth - (window.innerWidth * 0.75) - 25);
+  $('#editArea').width('75%');
       
   editor.initEditor('editArea', save);
 
@@ -325,19 +317,17 @@ $(window).load(function() {
     
 });
 
-
-/*
 $(window).resize(function() {
   $('#fileTreeAccordion').height(window.innerHeight - (params.editorOnly ? 20 : 80));
   $('#editArea').height(window.innerHeight - (params.editorOnly ? 20 : 80));
 
-  $('#fileTreeAccordion').width(window.innerWidth - (window.innerWidth * 0.75) - 25);
-  $('#editArea').width(window.innerWidth - (window.innerWidth * 0.25) - 25);
+  $('#fileTreeAccordion').width(250);
+  $('#editArea').width(window.innerWidth - 311);
 });
-*/
+
 
 $(function() {
-  $(".syntaxSelector").select2({width: '120px'});
+  $(".modes").select2({width: '120px'});
 });
 
 function preload(sources)
@@ -355,7 +345,7 @@ $(function(){
     } else $('html').addClass('no-svg');
     
     var modal = new Modal({
-        content: "<table class='table'>\n  <thead>\n    <tr>\n      <th>Action</th>\n      <th>PC ( Win/Linux )</th>\n      <th>Mac</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Save</td>\n      <td><code>&lt;Ctrl + S&gt;</code></td>\n      <td> <code>&lt;Command + S&gt;</code></td>\n    </tr>\n    <tr>\n      <td>Find</td>\n      <td><code>&lt;Ctrl + F&gt;</code></td>\n      <td><code>&lt;Command + F&gt;</code></td>\n    </tr>\n    <tr>\n      <td>Find Next</td>\n      <td><code>&lt;Ctrl + K&gt;</code></td>\n      <td><code>&lt;Command + G&gt;</code></td>\n    </tr>\n    <tr>\n      <td>Find Previous</td>\n      <td><code>&lt;Ctrl + Shift + K&gt;</code></td>\n      <td><code>&lt;Command + Shift + G&gt;</code></td>\n    </tr>\n    <tr>\n  </tbody>\n</table>\n\n full list @ <a href='https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts' target='_blank'>github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts</a href>",
+        content: "<table class='table'>\n  <thead>\n    <tr>\n      <th>Action</th>\n      <th>PC ( Win/Linux )</th>\n      <th>Mac</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Save</td>\n      <td><code>Ctrl + S</code></td>\n      <td> <code>Command + S</code></td>\n    </tr>\n    <tr>\n      <td>Find</td>\n      <td><code>Ctrl + F</code></td>\n      <td><code>Command + F</code></td>\n    </tr>\n    <tr>\n      <td>Find Next</td>\n      <td><code>Ctrl + K</code></td>\n      <td><code>Command + G</code></td>\n    </tr>\n    <tr>\n      <td>Find Previous</td>\n      <td><code>Ctrl + Shift + K</code></td>\n      <td><code>Command + Shift + G</code></td>\n    </tr>\n    <tr>\n  </tbody>\n</table>\n\n full list @ <a href='https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts' target='_blank'>github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts</a href>",
         maxWidth: 500
     });
     
