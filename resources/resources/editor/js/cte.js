@@ -225,7 +225,7 @@ $(window).load(function() {
     $('#editArea').width('75%');
   }
       
-  editor.initEditor('editArea');
+  editor.initEditor('editArea', save);
 
   if(params.theme) {
     editor.setTheme(params.theme);
@@ -336,10 +336,8 @@ $(window).resize(function() {
 });
 */
 
-/*save shortcut*/
-$(document).keypress("s",function(e) {
-  if(e.ctrlKey)
-    save();
+$(function() {
+  $(".syntaxSelector").select2({width: '120px'});
 });
 
 function preload(sources)
@@ -357,7 +355,7 @@ $(function(){
     } else $('html').addClass('no-svg');
     
     var modal = new Modal({
-        content: "<table class='table'>\n  <thead>\n    <tr>\n      <th>Action</th>\n      <th>Windows</th>\n      <th>MacOS</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Save</td>\n      <td><code>&lt;Shift + s&gt;</code></td>\n      <td> <code>&lt;Shift + s&gt;</code></td>\n    </tr>\n    <tr>\n      <td>Find</td>\n      <td></td>\n      <td></td>\n    </tr>\n    <tr>\n      <td>Find Next</td>\n      <td></td>\n      <td></td>\n    </tr>\n    <tr>\n      <td>Find Previous</td>\n      <td></td>\n      <td></td>\n    </tr>\n    <tr>\n      <td>Find Next</td>\n      <td></td>\n      <td></td>\n    </tr>\n  </tbody>\n</table>",
+        content: "<table class='table'>\n  <thead>\n    <tr>\n      <th>Action</th>\n      <th>Win / Linux</th>\n      <th>Mac</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Save</td>\n      <td><code>&lt;Ctrl + s&gt;</code></td>\n      <td> <code>&lt;Command + s&gt;</code></td>\n    </tr>\n    <tr>\n      <td>Find</td>\n      <td></td>\n      <td></td>\n    </tr>\n    <tr>\n      <td>Find Next</td>\n      <td></td>\n      <td></td>\n    </tr>\n    <tr>\n      <td>Find Previous</td>\n      <td></td>\n      <td></td>\n    </tr>\n    <tr>\n      <td>Find + Replace</td>\n      <td></td>\n      <td></td>\n    </tr>\n  </tbody>\n</table>",
         maxWidth: 500
     });
     
