@@ -196,22 +196,22 @@ ul.jqueryFileTree a:hover{
 
 .panel-title a:not(.collapsed):before{
     content: '';
-    width: 16px;
-    height: 16px;
+    width: 13px;
+    height: 13px;
     background-image: url(../../img/arrow-down.png);
     position: absolute;
-    margin-left: -20px;
-    margin-top: -2px;
+    margin-left: -18px;
+    margin-top: 0px;
 }
 
 .panel-title a.collapsed:before{
     content: '';
-    width: 16px;
-    height: 16px;
+    width: 13px;
+    height: 13px;
     background-image: url(../../img/arrow-right.png);
     position: absolute;
-    margin-left: -20px;
-    margin-top: -2px;
+    margin-left: -18px;
+    margin-top: 0px;
 }
 
 
@@ -454,6 +454,11 @@ div.dropdown{
     color: #7C7E80;
 }
 
+li.file > a,
+li.directory > a{
+    cursor: pointer;
+    width: 100%;
+}
 
 
 #keysPopup {
