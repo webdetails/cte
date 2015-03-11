@@ -355,7 +355,7 @@ $(function(){
     } else $('html').addClass('no-svg');
     
     var modal = new Modal({
-        content: "<table class='table'>\n  <thead>\n    <tr>\n      <th>Action</th>\n      <th>Win / Linux</th>\n      <th>Mac</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Save</td>\n      <td><code>&lt;Ctrl + s&gt;</code></td>\n      <td> <code>&lt;Command + s&gt;</code></td>\n    </tr>\n    <tr>\n      <td>Find</td>\n      <td></td>\n      <td></td>\n    </tr>\n    <tr>\n      <td>Find Next</td>\n      <td></td>\n      <td></td>\n    </tr>\n    <tr>\n      <td>Find Previous</td>\n      <td></td>\n      <td></td>\n    </tr>\n    <tr>\n      <td>Find + Replace</td>\n      <td></td>\n      <td></td>\n    </tr>\n  </tbody>\n</table>",
+        content: "<table class='table'>\n  <thead>\n    <tr>\n      <th>Action</th>\n      <th>PC ( Win/Linux )</th>\n      <th>Mac</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Save</td>\n      <td><code>&lt;Ctrl + S&gt;</code></td>\n      <td> <code>&lt;Command + S&gt;</code></td>\n    </tr>\n    <tr>\n      <td>Find</td>\n      <td><code>&lt;Ctrl + F&gt;</code></td>\n      <td><code>&lt;Command + F&gt;</code></td>\n    </tr>\n    <tr>\n      <td>Find Next</td>\n      <td><code>&lt;Ctrl + K&gt;</code></td>\n      <td><code>&lt;Command + G&gt;</code></td>\n    </tr>\n    <tr>\n      <td>Find Previous</td>\n      <td><code>&lt;Ctrl + Shift + K&gt;</code></td>\n      <td><code>&lt;Command + Shift + G&gt;</code></td>\n    </tr>\n    <tr>\n  </tbody>\n</table>\n\n full list @ <a href='https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts' target='_blank'>github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts</a href>",
         maxWidth: 500
     });
     
