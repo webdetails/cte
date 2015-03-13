@@ -332,8 +332,8 @@ $(window).load(function() {
 });
 
 $(window).resize(function() {
-  $('#fileTreeAccordion').height(window.innerHeight - (params.editorOnly ? 20 : 150));
-  $('#editArea').height(window.innerHeight - (params.editorOnly ? 20 : 150));
+  $('#fileTreeAccordion').height(window.innerHeight - (params.editorOnly ? 20 : 100));
+  $('#editArea').height(window.innerHeight - (params.editorOnly ? 20 : 100));
 
   $('#fileTreeAccordion').width(250);
   $('#editArea').width(window.innerWidth - 311);
