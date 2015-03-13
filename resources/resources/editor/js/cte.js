@@ -17,7 +17,9 @@ var pageLoaded = false;
 var listeners = {
   onStatusUpdate: null,
   onSave: null,
-  notify: function(msg, type) { console.log(type + " : " + msg); }
+  notify: function(msg, type) { 
+    // console.log(type + " : " + msg); 
+  }
 };
 
 var load = function(filename, provider) {
