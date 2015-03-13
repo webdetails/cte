@@ -149,9 +149,20 @@ var updateStatus = function() {
   //$infoArea.text(fileName);
   if(fileName.length > 50) {
     var _path = fileName.substring(fileName.length - 50, fileName.length);
-    $infoArea.text("(...)" + _path.substring(_path.indexOf("/"), _path.length));
+    
+    var fileNameIndex = fileName.lastIndexOf("/") + 1;
+    var file = fileName.substr(fileName.lastIndexOf("/") + 1);
+    var pathname = fileName.substr(0, fileNameIndex);
+    
+    //$infoArea.html("(...)" + _path.substring(_path.indexOf("/"), _path.length));
+    $infoArea.html("<span>(...)/</span>" + "<span class='bold'>"+file+"</span>");
   } else {
-    $infoArea.text(fileName);
+    //$infoArea.html(fileName);
+    var fileNameIndex = fileName.lastIndexOf("/") + 1;
+    var file = fileName.substr(fileName.lastIndexOf("/") + 1);
+    var pathname = fileName.substr(0, fileNameIndex);
+    
+    $infoArea.html("<span>" + pathname + "</span>" + "<span class='bold'>" + file);
   }
 
   if(typeof(listeners.onStatusUpdate) == 'function') {
@@ -211,8 +222,8 @@ $(window).load(function() {
     $('#editArea').css('margin-bottom', 0);
   }
   
-  $('#fileTreeAccordion').height(window.innerHeight - (params.editorOnly ? 20 : 80));
-  $('#editArea').height(window.innerHeight - (params.editorOnly ? 20 : 80));
+  $('#fileTreeAccordion').height(window.innerHeight - (params.editorOnly ? 20 : 100));
+  $('#editArea').height(window.innerHeight - (params.editorOnly ? 20 : 100));
   
   $('#fileTreeAccordion').width(window.innerWidth - (window.innerWidth * 0.75) - 25);
   $('#editArea').width('75%');
@@ -253,7 +264,9 @@ $(window).load(function() {
   /********************
    **** FileTree ******
    ********************/
-
+    // custom confirm/discard dialog
+    var confirmDiscard = new Modal({header: true, content: "You have unsaved changes. </br> Do you wish to save them or proceed without saving?", confirmDialog: true, saveBtn: true, dontSaveBtn: true, cancelBtn: true, closeButton: false, });
+    
   editor.getProviders( function f( providers ){
     if( providers && providers.length > 0 ){
       for( i = 0; i < providers.length; i++ ){
@@ -282,8 +295,9 @@ $(window).load(function() {
         },
         function(file, provider) {
           if(!isDirty
-            || (isDirty && confirm("You have unsaved changes, discard them?"))) {
-
+            || (isDirty && confirmDiscard.open() )) {
+            //|| (isDirty && confirm("You have unsaved changes, discard them?")   )) {
+            
             $(".selectedFile").attr("class", "");
             $("a[rel='" + file + "']").attr("class", "selectedFile");
 
@@ -318,8 +332,8 @@ $(window).load(function() {
 });
 
 $(window).resize(function() {
-  $('#fileTreeAccordion').height(window.innerHeight - (params.editorOnly ? 20 : 80));
-  $('#editArea').height(window.innerHeight - (params.editorOnly ? 20 : 80));
+  $('#fileTreeAccordion').height(window.innerHeight - (params.editorOnly ? 20 : 150));
+  $('#editArea').height(window.innerHeight - (params.editorOnly ? 20 : 150));
 
   $('#fileTreeAccordion').width(250);
   $('#editArea').width(window.innerWidth - 311);
@@ -344,13 +358,16 @@ $(function(){
         $('html').addClass('svg');
     } else $('html').addClass('no-svg');
     
-    var modal = new Modal({
-        content: "<table class='table'>\n  <thead>\n    <tr>\n      <th>Action</th>\n      <th>PC ( Win/Linux )</th>\n      <th>Mac</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Save</td>\n      <td><code>Ctrl + S</code></td>\n      <td> <code>Command + S</code></td>\n    </tr>\n    <tr>\n      <td>Find</td>\n      <td><code>Ctrl + F</code></td>\n      <td><code>Command + F</code></td>\n    </tr>\n    <tr>\n      <td>Find Next</td>\n      <td><code>Ctrl + K</code></td>\n      <td><code>Command + G</code></td>\n    </tr>\n    <tr>\n      <td>Find Previous</td>\n      <td><code>Ctrl + Shift + K</code></td>\n      <td><code>Command + Shift + G</code></td>\n    </tr>\n    <tr>\n  </tbody>\n</table>\n\n full list @ <a href='https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts' target='_blank'>github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts</a href>",
-        maxWidth: 500
+    var shortcutsModal = new Modal({
+        content: "<div class='popup-keys-table'>\n<table class='table'>\n<thead>\n<tr>\n<th>Action</th>\n<th>PC ( Win/Linux )</th>\n<th>Mac</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Save</td>\n<td><code>Ctrl + S</code></td>\n<td> <code>Command + S</code></td>\n</tr>\n<tr>\n<td>Find</td>\n<td><code>Ctrl + F</code></td>\n<td><code>Command + F</code></td>\n</tr>\n<tr>\n<td>Find Next</td>\n<td><code>Ctrl + K</code></td>\n<td><code>Command + G</code></td>\n</tr>\n<tr>\n<td>Find Previous</td>\n<td><code>Ctrl + Shift + K</code></td>\n<td><code>Command + Shift + G</code></td>\n</tr>\n<tr>\n</tbody>\n</table>\n</div>\n<div>\n<span class='popup-keys-label'>For a complete list of shortcuts please refer to this <a href='https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts' target='_blank'>link</a> </span>\n</div>",
+        maxWidth: 500,
+        header: true
     });
     
     $(".info-btn").click(function(){
-        modal.open();
+        shortcutsModal.open({closeButton: true});
     });
+    
+
     
 });
