@@ -8,6 +8,12 @@
 		this.closeButton = null;
 		this.modal = null;
 		this.overlay = null;
+		this.header = null;
+		this.headerIcon = null;
+		this.confirmDialog = null;
+		this.saveBtn = null;
+		this.dontSaveBtn = null;
+		this.cancelBtn = null;
 
 		// Determine proper prefix
 		this.transitionEnd = transitionSelect();
@@ -75,6 +81,48 @@
 
 	}
 
+	Modal.prototype.closeConfirm = function() {
+
+		// Store the value of this
+		var _ = this;
+
+		// Remove the open class name
+		this.modal.className = this.modal.className.replace(" ml-open", "");
+		this.overlay.className = this.overlay.className.replace(" ml-open", "");
+
+		// Listen for CSS transitionEnd event and then remove the nodes from the DOM
+		this.modal.addEventListener(this.transitionEnd, function() {
+			_.modal.parentNode.removeChild(_.modal);
+		});
+		this.overlay.addEventListener(this.transitionEnd, function() {
+			if (_.overlay.parentNode) _.overlay.parentNode.removeChild(_.overlay);
+		});
+		
+		return true;
+
+	}
+
+	Modal.prototype.closeCancel = function() {
+
+		// Store the value of this
+		var _ = this;
+
+		// Remove the open class name
+		this.modal.className = this.modal.className.replace(" ml-open", "");
+		this.overlay.className = this.overlay.className.replace(" ml-open", "");
+
+		// Listen for CSS transitionEnd event and then remove the nodes from the DOM
+		this.modal.addEventListener(this.transitionEnd, function() {
+			_.modal.parentNode.removeChild(_.modal);
+		});
+		this.overlay.addEventListener(this.transitionEnd, function() {
+			if (_.overlay.parentNode) _.overlay.parentNode.removeChild(_.overlay);
+		});
+		
+		return false;
+
+	}
+
 	// Private Methods
 
 	// Utility to extend defaults with user options
@@ -122,6 +170,14 @@
 		this.modal.className = "ml-modal " + this.options.className;
 		this.modal.style.maxWidth = this.options.maxWidth + "px";
 		this.modal.style.minWidth = this.options.minWidth + "px";
+		
+		// If header option is true, add a header div
+        if(this.options.header === true){
+            this.header = document.createElement("div");
+            this.header.className = "ml-header";
+            this.header.innerHTML = "";
+			this.modal.appendChild(this.header);
+        }
 
 		// If closeButton option is true, add a close button
 		if (this.options.closeButton === true) {
@@ -146,7 +202,55 @@
 		contentHolder.className = "ml-content";
 		contentHolder.innerHTML = content;
 		this.modal.appendChild(contentHolder);
+		
+		
+		if (this.options.confirmDialog === true) {
+		    this.confirmDialog = document.createElement("div");
+		    this.confirmDialog.className = "ml-confirm-dialog";
+		    this.confirmDialog.innerHTML = "";
+		    //this.confirmDialog.innerHTML = "<button class='ml-dialog-btn ok btn'>OK</button><button class='ml-dialog-btn cancel btn'>Cancel</button>";
+			this.modal.appendChild(this.confirmDialog);
+		}
 
+        // If headerIcon option is true, add icon to the header div
+        if(this.options.headerIcon === true){
+            this.headerIcon = document.createElement("div");
+            this.headerIcon.className = "ml-header-icon";
+            this.headerIcon.innerHTML = "";
+			this.header.appendChild(this.headerIcon);
+        }
+
+
+        // If dontSaveBtn is true, a cancel btn is added to the confirm box
+		if (this.options.dontSaveBtn === true) {
+		    this.dontSaveBtn = document.createElement("button");
+		    this.dontSaveBtn.className = "ml-dialog-btn no-save btn";
+		    this.dontSaveBtn.innerHTML = "Don't Save";
+			this.confirmDialog.appendChild(this.dontSaveBtn);
+		}
+		
+		// If cancelBtn is true, a confirm btn is added to the confirm box
+		if (this.options.cancelBtn === true) {
+		    this.cancelBtn = document.createElement("button");
+		    this.cancelBtn.className = "ml-dialog-btn cancel btn";
+		    this.cancelBtn.innerHTML = "Cancel";
+			this.confirmDialog.appendChild(this.cancelBtn);
+		}
+		
+		// If saveBtn is true, a confirm btn is added to the confirm box
+		if (this.options.saveBtn === true) {
+		    this.saveBtn = document.createElement("button");
+		    this.saveBtn.className = "ml-dialog-btn save btn";
+		    this.saveBtn.innerHTML = "Save";
+		   
+            // event listener for the popup save btn
+            this.saveBtn.addEventListener("click", popupSave, false);
+		    function popupSave() { save(); }
+		    
+			this.confirmDialog.appendChild(this.saveBtn);
+		}
+		
+		
 		// Append modal to DocumentFragment
 		docFrag.appendChild(this.modal);
 
@@ -163,6 +267,17 @@
 		if (this.overlay) {
 			this.overlay.addEventListener('click', this.close.bind(this));
 		}
+		if (this.saveBtn) {
+			this.saveBtn.addEventListener('click', this.closeConfirm.bind(this));
+		}
+		if (this.cancelBtn) {
+			this.cancelBtn.addEventListener('click', this.closeConfirm.bind(this));
+		}
+		
+		if (this.dontSaveBtn) {
+			this.dontSaveBtn.addEventListener('click', this.closeCancel.bind(this));
+		}
+		
 	}
 
 }());

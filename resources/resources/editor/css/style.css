@@ -89,11 +89,14 @@ body{
     font-size: 13px;
     padding: 5px;
     background-repeat: repeat-x;
+    padding-bottom: 0px;
 }
 
 td{
     vertical-align: middle;
 }
+
+.bold { font-weight: 600;}
 
 body pre {
     border-radius: 0px;
@@ -107,6 +110,7 @@ body pre {
 ::-moz-focus-inner{
     border: 0;
 }
+
 
 .btn-success{
     border: none !important;    
@@ -136,7 +140,8 @@ ul.jqueryFileTree a:hover{
     float: right;
 }
 
-.saveBtn, .btn-success:hover, .btn-success:focus {
+.saveBtn, .btn-success:hover, .btn-success:focus,
+.ml-dialog-btn {
   background: #005CA7;
   font-weight: 400;
   text-shadow: 0px 1px rgba(255, 255, 255, 0.3);
@@ -154,14 +159,15 @@ ul.jqueryFileTree a:hover{
   margin-top: -40px;
 }
 
-.saveBtn:hover{
+.saveBtn:hover, .ml-dialog-btn:hover{
     background: #0072CE;
     -webkit-box-shadow: 0px 3px 5px 0px #0066b9 inset;
     box-shadow: 0px 3px 5px 0px #0066b9 inset;
     margin-top: -40px;
+    color: #FFF;
 }
 
-.saveBtn:active{
+.saveBtn:active, .ml-dialog-btn:active{
     margin-top: -40px;
     box-shadow: 0px 3px 5px 0px #004985 inset;
     background: #005CA7;
@@ -294,6 +300,7 @@ tr.row1{
     margin-bottom: 0px;
     padding-left: 0px;
     font-size: 14px;
+    filter: none;
 }
 
 td.col2 .infoArea{
@@ -454,7 +461,7 @@ span.select2-results li{
     color: #7C7E80;
 }
 
-.info-btn{
+.info-btn, .ml-header-icon{
     width: 25px;
     height: 25px;
     background: url('../../img/info.png') left center no-repeat;
@@ -479,7 +486,9 @@ div.dropdown{
     padding-left: 1px;
 }
 
-.ml-content table th, .ml-content table td {
+.ml-content table th, .ml-content table td, 
+.popup-keys-label, .ml-confirm-dialog,
+.ml-content{
     color: #7C7E80;
 }
 
@@ -494,6 +503,6 @@ li.directory > a{
     color: #7C7E80;
 }
 
-#keysPopup {
-
+.dialog-unsaved{
+    display:none;
 }
