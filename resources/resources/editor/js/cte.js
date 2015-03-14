@@ -267,8 +267,21 @@ $(window).load(function() {
    **** FileTree ******
    ********************/
     // custom confirm/discard dialog
-    var confirmDiscard = new Modal({header: true, content: "You have unsaved changes. </br> Do you wish to save them or proceed without saving?", confirmDialog: true, saveBtn: true, dontSaveBtn: true, cancelBtn: true, closeButton: false, });
-    
+    var confirmDiscard = new Modal({
+      header: true, 
+      content: "You have unsaved changes. </br> Do you wish to save them or proceed without saving?", 
+      confirmDialog: true, 
+      saveBtn: true, 
+      dontSaveBtn: true,
+      cancelBtn: true 
+    });
+
+    var loadAnother = function( f , p ){
+      $(".selectedFile").attr("class", "");
+      $("a[rel='" + f + "']").attr("class", "selectedFile");
+      load("/" + f , p );
+    };
+
   editor.getProviders( function f( providers ){
     if( providers && providers.length > 0 ){
       for( i = 0; i < providers.length; i++ ){
@@ -296,14 +309,19 @@ $(window).load(function() {
           }
         },
         function(file, provider) {
-          if(!isDirty
-            || (isDirty && confirmDiscard.open() )) {
-            //|| (isDirty && confirm("You have unsaved changes, discard them?")   )) {
-            
-            $(".selectedFile").attr("class", "");
-            $("a[rel='" + file + "']").attr("class", "selectedFile");
 
-            load("/" + file, provider);
+          if( isDirty ){
+
+            confirmDiscard.open();
+
+            // 'save' button already has an attached event listener that handles the file saving
+            $('div.ml-confirm-dialog > button.save').click( function ( data, fn ){ loadAnother( file, provider ) });
+
+            $('div.ml-confirm-dialog > button.no-save').click( function ( data, fn ){ loadAnother( file, provider ) });
+
+          } else {
+
+            loadAnother( file, provider )
           }
           
         });
