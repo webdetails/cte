@@ -1,11 +1,10 @@
 <!--===========================================================================
   This is the build file for the Community Text Editor Plugin project.
 
-  This build file will use the common_build.xml file as the default build
-  process and should only override the tasks that need to differ from
-  the common build file.
+  This build file will use the common build files as the default build process
+  and should only override the tasks that need to differ from them.
 
-  See common_build.xml for more details
+  See subfloor-pkg.xml and subfloor.xml for more details
 ============================================================================-->
 <project name="Community Text Editor" basedir="." default="jar"
          xmlns:ivy="antlib:org.apache.ivy.ant">
@@ -15,22 +14,13 @@
     and works with the common_build.xml file.
   </description>
 
-  <!-- Import the common_build.xml file which contains all the default tasks -->
+  <!-- Import the common build file which contains all the default tasks -->
   <import file="build-res/subfloor-pkg.xml" id="subfloor"/>
 
   <!--
-      AS STATED ABOVE, THE ONLY TASKS THAT SHOULD EXIST IN THIS BUILD FILE ARE
-      THE TASKS THAT NEED TO DIFFER FROM THE DEFAULT IMPLEMENTATION OF THE TASKS
-      FOUND IN common_build.xml.
-    -->
-
-  <!--
-    <target name='dist-solution'>
-      <copy todir="${solution.stage.dir}" overwrite='true'>
-        <fileset dir='solution'>
-        <include name=''>
-      </copy>
-    </target>
+    AS STATED ABOVE, THE ONLY TASKS THAT SHOULD EXIST IN THIS BUILD FILE ARE
+    THE TASKS THAT NEED TO DIFFER FROM THE DEFAULT IMPLEMENTATION OF THE TASKS
+    FOUND IN THE COMMON BUILD FILES.
   -->
 
   <property name="plugin.name"
@@ -40,14 +30,6 @@
   <property name="resource.dir"
             value="resources"
             description="Name of the resource directory"/>
-
-  <property name="stage.dir"
-            value="${bin.dir}/stage"
-            description="Name of the resource directory"/>
-
-  <property name="samples.stage.dir"
-            value="${bin.dir}/stage-samples"
-            description="Name of the resource directory" />
 
   <property name="runtimelib.dir"
             value="${basedir}/runtime-lib"
@@ -62,7 +44,7 @@
     <fileset dir="${lib.dir}">
       <include name="**/*.jar" />
     </fileset>
-    <fileset dir="runtime-lib">
+    <fileset dir="${runtimelib.dir}">
       <include name="**/*.jar" />
     </fileset>
   </path>
@@ -104,7 +86,7 @@
       <fileset dir="${dist.dir}">
         <include name="${ivy.artifact.id}-${project.revision}.jar"/>
       </fileset>
-      <fileset dir="runtime-lib">
+      <fileset dir="${runtimelib.dir}">
         <include name="*.jar"/>
       </fileset>
       <fileset dir="${devlib.dir}">
@@ -138,27 +120,6 @@
     <copy tofile="${dist.dir}/${ivy.artifact.id}-${project.revision}.zip" file="${dist.dir}/${plugin.zipfile}"/>
   </target>
 
-  <!--=======================================================================
-              dist-samples
-
-              Creates a distribution of this project's samples
-              ====================================================================-->
-  <target name="dist-samples" depends="init">
-
-    <mkdir dir="${samples.stage.dir}"/>
-
-    <!-- copy over all the xactions within the cdf-samples folder -->
-    <copy todir="${samples.stage.dir}/bi-developers" overwrite="true" >
-      <fileset dir="solution/bi-developers"></fileset>
-    </copy>
-
-    <zip zipfile="${dist.dir}/${plugin.samples.zipfile}"
-         basedir="${samples.stage.dir}"
-         includes="**/*"
-         excludes="**/Thumbs.db"
-        />
-  </target>
-
 
   <!--=======================================================================
               install-plugin
@@ -176,13 +137,6 @@
         <include name="**/*"/>
       </fileset>
     </copy>
-
-    <!-- Copy samples -->
-    <!--copy todir="${plugin.local.install.solutions.dir}/">
-      <fileset dir="${samples.stage.dir}/">
-        <include name="**/*" />
-      </fileset>
-    </copy-->
 
     <get src="http://127.0.0.1:8080/pentaho/Publish?publish=now&amp;class=org.pentaho.platform.plugin.services.pluginmgr.PluginAdapter&amp;userid=${plugin.local.install.user}&amp;password=${plugin.local.install.pass}"
          dest="${stage.dir}/blah.html"/>
@@ -241,7 +195,7 @@
   <!-- Overriding resolve target so we can add resolve-dev -->
   
   <target name="resolve" depends="subfloor.resolve" >
-    <copy todir="${runtimelib.dir}" overwrite='true'>
+    <copy todir="${runtimelib.dir}" overwrite="true">
     	<fileset dir="${lib.dir}">
     		<include name="cpf-*.jar" />
         <include name="jericho-html-3.1.jar" />
@@ -250,10 +204,9 @@
   </target>
 
   <target name="clean" depends="subfloor.clean" >
-    <delete dir="${lib.dir}" />
-    <delete dir="${testlib.dir}" />
-    <delete dir="${runtimelib.dir}" />
-    <mkdir dir="runtime-lib"/>
+    <delete dir="${lib.dir}" verbose="true"/>
+    <delete dir="${testlib.dir}" verbose="true"/>
+    <delete dir="${runtimelib.dir}" verbose="true"/>
   </target>
 
 </project>
