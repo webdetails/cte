@@ -17,21 +17,10 @@
   font-weight: 300;
   src:  local('Open Sans Light'),
         local('OpenSans-Light'),
-        /* EE */
-        url('../../../../system/common-ui/resources/themes/crystal/opensans-light.eot') format('embedded-opentype'),
-        url('../../../../system/common-ui/resources/themes/crystal/opensans-light.woff') format('woff'),
-        url('../../../../system/common-ui/resources/themes/crystal/opensans-light.ttf') format('truetype'),
-        url('../../../../system/common-ui/resources/themes/crystal/opensans-light.svg#OpenSansLight') format('svg'),
-        /* CE */
-        url('../../../../../system/common-ui/resources/themes/crystal/opensans-light.eot') format('embedded-opentype'),
-        url('../../../../../system/common-ui/resources/themes/crystal/opensans-light.woff') format('woff'),
-        url('../../../../../system/common-ui/resources/themes/crystal/opensans-light.ttf') format('truetype'),
-        url('../../../../../system/common-ui/resources/themes/crystal/opensans-light.svg#OpenSansLight') format('svg'),
-        /* Internal git */
-        url('../../../system/common-ui/resources/themes/crystal/opensans-light.eot') format('embedded-opentype'),
-        url('/../../../system/common-ui/resources/themes/crystal/opensans-light.woff') format('woff'),
-        url('../../../system/common-ui/resources/themes/crystal/opensans-light.ttf') format('truetype'),
-        url('../../../system/common-ui/resources/themes/crystal/opensans-light.svg#OpenSansLight') format('svg');
+        url('../../../../common-ui/resources/themes/crystal/opensans-light.eot') format('embedded-opentype'),
+        url('../../../../common-ui/resources/themes/crystal/opensans-light.woff') format('woff'),
+        url('../../../../common-ui/resources/themes/crystal/opensans-light.ttf') format('truetype'),
+        url('../../../../common-ui/resources/themes/crystal/opensans-light.svg#OpenSansLight') format('svg')
 }
 @font-face {
   font-family: 'Open Sans';
@@ -39,21 +28,10 @@
   font-weight: 400;
   src:  local('Open Sans'),
         local('OpenSans'),
-        /* EE */
-        url('../../../../system/common-ui/resources/themes/crystal/opensans-regular.eot') format('embedded-opentype'),
-        url('../../../../system/common-ui/resources/themes/crystal/opensans-regular.woff') format('woff'),
-        url('../../../../system/common-ui/resources/themes/crystal/opensans-regular.ttf') format('truetype'),
-        url('../../../../system/common-ui/resources/themes/crystal/opensans-regular.svg#OpenSansRegular') format('svg'),
-        /* CE */
-        url('../../../../../system/common-ui/resources/themes/crystal/opensans-regular.eot') format('embedded-opentype'),
-        url('../../../../../system/common-ui/resources/themes/crystal/opensans-regular.woff') format('woff'),
-        url('../../../../../system/common-ui/resources/themes/crystal/opensans-regular.ttf') format('truetype'),
-        url('../../../../../system/common-ui/resources/themes/crystal/opensans-regular.svg#OpenSansRegular') format('svg'),
-        /*  Internal git */
-        url('../../../system/common-ui/resources/themes/crystal/opensans-regular.eot') format('embedded-opentype'),
-        url('../../../system/common-ui/resources/themes/crystal/opensans-regular.woff') format('woff'),
-        url('../../../system/common-ui/resources/themes/crystal/opensans-regular.ttf') format('truetype'),
-        url('../../../system/common-ui/resources/themes/crystal/opensans-regular.svg#OpenSansRegular') format('svg');
+        url('../../../../common-ui/resources/themes/crystal/opensans-regular.eot') format('embedded-opentype'),
+        url('../../../../common-ui/resources/themes/crystal/opensans-regular.woff') format('woff'),
+        url('../../../../common-ui/resources/themes/crystal/opensans-regular.ttf') format('truetype'),
+        url('../../../../common-ui/resources/themes/crystal/opensans-regular.svg#OpenSansRegular') format('svg')
 }
 
 @font-face {
@@ -62,21 +40,10 @@
   font-weight: 600;
   src:  local('Open Sans'),
         local('OpenSans'),
-        /* EE */
-        url('../../../../system/common-ui/resources/themes/crystal/opensans-bold.eot') format('embedded-opentype'),
-        url('../../../../system/common-ui/resources/themes/crystal/opensans-bold.woff') format('woff'),
-        url('../../../../system/common-ui/resources/themes/crystal/opensans-bold.ttf') format('truetype'),
-        url('../../../../system/common-ui/resources/themes/crystal/opensans-bold.svg#OpenSansRegular') format('svg'),
-        /* CE */
-        url('../../../../../system/common-ui/resources/themes/crystal/opensans-bold.eot') format('embedded-opentype'),
-        url('../../../../../system/common-ui/resources/themes/crystal/opensans-bold.woff') format('woff'),
-        url('../../../../../system/common-ui/resources/themes/crystal/opensans-bold.ttf') format('truetype'),
-        url('../../../../../system/common-ui/resources/themes/crystal/opensans-bold.svg#OpenSansRegular') format('svg'),
-        /*  Internal git */
-        url('../../../system/common-ui/resources/themes/crystal/opensans-bold.eot') format('embedded-opentype'),
-        url('../../../system/common-ui/resources/themes/crystal/opensans-bold.woff') format('woff'),
-        url('../../../system/common-ui/resources/themes/crystal/opensans-bold.ttf') format('truetype'),
-        url('../../../system/common-ui/resources/themes/crystal/opensans-bold.svg#OpenSansRegular') format('svg');
+        url('../../../../common-ui/resources/themes/crystal/opensans-bold.eot') format('embedded-opentype'),
+        url('../../../../common-ui/resources/themes/crystal/opensans-bold.woff') format('woff'),
+        url('../../../../common-ui/resources/themes/crystal/opensans-bold.ttf') format('truetype'),
+        url('../../../../common-ui/resources/themes/crystal/opensans-bold.svg#OpenSansRegular') format('svg')
 }
 
 body{
