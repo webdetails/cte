@@ -289,7 +289,7 @@ $(window).load(function() {
         var providerName = providers[i].name;
 
         var $divTreePanel = $('<div class="panel panel-default">')
-          .append('<div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#fileTreeAccordion" href="#panel-' + providerId + '" >' + providerName + '</a></h4></div>');
+          .append('<div class="panel-heading" provider-id="' + providerId + '"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#fileTreeAccordion" href="#panel-' + providerId + '" >' + providerName + '</a></h4><h4 class="refresh-provider" provider-id="' + providerId + '" provider-name="' + providerName + '" /></div>');
         var $divTreeCollapsible = $('<div id="panel-' + providerId + '" class="panel-collapse collapse">');
         var $divTree = $('<div id="treeDiv-' + providerId + '"  provider-id="' + providerId + '"provider-name="' + providerName + '" class="urltargetfolderexplorer">');
         
@@ -332,6 +332,45 @@ $(window).load(function() {
         
         $('.panel-title a').addClass('collapsed');
       }
+    }
+  });
+
+  $('#fileTreeAccordion h4.refresh-provider').on( 'click', function(){
+    var providerId = $(this).attr('provider-id');
+    var providerName = $(this).attr('provider-name');
+    if( providerId ){
+      $('div#treeDiv-' + providerId ).fileTree({
+        root: "/",
+        providerId: providerId,
+        providerName: providerName,
+        script: "/pentaho/plugin/cte/api/tree?showHiddenFiles=true&provider=" + providerId,
+        expandSpeed: 500,
+        collapseSpeed: 500,
+        multiFolder: false,
+        folderClick: function(obj, folder) {
+          if($(".selectedFolder").length > 0) {
+            $(".selectedFolder").attr("class", "");
+          }
+          $(obj).attr("class", "selectedFolder");
+        }
+      },
+      function(file, provider) {
+
+          if( isDirty ){
+
+            confirmDiscard.open();
+
+            // 'save' button already has an attached event listener that handles the file saving
+            $('div.ml-confirm-dialog > button.save').click( function ( data, fn ){ loadAnother( file, provider ) });
+
+            $('div.ml-confirm-dialog > button.no-save').click( function ( data, fn ){ loadAnother( file, provider ) });
+
+          } else {
+
+            loadAnother( file, provider )
+          }
+          
+      });
     }
   });
 
