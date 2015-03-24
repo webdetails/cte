@@ -473,3 +473,12 @@ li.directory > a{
 .dialog-unsaved{
     display:none;
 }
+
+.refresh-provider {
+   width: 12px;
+   height: 12px;
+   position: absolute;
+   margin-left: 228px;
+   margin-top: -22px;
+   background: url('http://themes.lpd-themes.com/123shop/wp-content/themes/123shop_preview_1-0_new/lpd-switcher/assets/img/glyphicons_halflings_030_refresh.png') no-repeat;
+}
