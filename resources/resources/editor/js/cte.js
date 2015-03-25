@@ -380,12 +380,29 @@ $(window).load(function() {
     // first, hide all refresh icons
     $('#fileTreeAccordion h4.refresh-provider').each( function(){ $(this).css('display', 'none' ); });  
 
-    // determine if this is an action of a provider that is now being expanded ( i.e *was* collapsed )
+    // determine if this is an action of a provider that is now being expanded
     var providerWasCollapsed = $(this).attr('class') == 'collapsed';
     var refreshIconDisplayVal = providerWasCollapsed ? 'block' : 'none'; // new refresh icon display value
 
     // update this provider's refresh icon display value accordingly
     $(this).closest('div.panel-heading').find('h4.refresh-provider').css('display', refreshIconDisplayVal );
+  });
+
+  $('#providers-collapser-column').on( 'click', function(){
+    
+    // determine the current status of the providerListColumn ( collapsed / expanded )
+    var providersListColumnIsCollapsed = $('td#providers-list-column').css('display') == 'none';
+
+    var providersListColumnNewVal = providersListColumnIsCollapsed ? 'table-cell' /* default */ : 'none';
+    var collapserOldArrow = providersListColumnIsCollapsed ? 'arrow-right.png' /* default */ : 'arrow-left.png';
+    var collapserNewArrow = providersListColumnIsCollapsed ? 'arrow-left.png' /* default */ : 'arrow-right.png';
+    
+    $('tr#header-row td.col1').css('display', providersListColumnNewVal );
+    $('tr#content-row td.col1').css('display', providersListColumnNewVal );
+    
+    var imgSrc = $('tr#content-row img#collapser-img').attr('src' );
+    $('tr#content-row img#collapser-img').attr('src' , imgSrc.replace( collapserOldArrow, collapserNewArrow ) );
+
   });
 
   /**********************************

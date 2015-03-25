@@ -50,11 +50,11 @@
   <body> 
     <table style="width: 100%;">
       <tbody>
-        <tr class="row1">
+        <tr id="header-row" class="row1">
           <td class="col1">
               <div class="info-btn"></div>
           </td>
-          <td class="col2">
+          <td class="col2" colspan="2">
             
             <span id="infoArea" class="well well-sm infoArea" role="alert"></span>
             <!--<span class="file_Path">teste
@@ -99,11 +99,14 @@
             </div>
           </td>
         </tr>
-        <tr class="row2">
-          <td class="col1">
+        <tr id="content-row" class="row2">
+          <td id="providers-list-column" class="col1">
             <div id="fileTreeAccordion" class="panel-group"></div>
           </td>
-          <td class="col2">
+          <td id="providers-collapser-column" class="collapser-column">
+            <img id="collapser-img" src="../img/arrow-left.png"></img>
+          </td>
+          <td id="editor-canvas-column" class="col2">
             <pre id="editArea"></pre>
           </td>
         </tr>
