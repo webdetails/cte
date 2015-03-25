@@ -238,7 +238,7 @@ ul.jqueryFileTree a:hover{
 }
 
 td.col1{
-    padding: 0px 10px 12px 5px;
+    padding: 0px 5px 12px 5px;
     width: 250px;
 }
 
@@ -268,6 +268,7 @@ tr.row1{
     padding-left: 0px;
     font-size: 14px;
     filter: none;
+    margin-left: 15px;
 }
 
 td.col2 .infoArea{
@@ -482,4 +483,16 @@ li.directory > a{
    margin-left: 228px;
    margin-top: -22px;
    background: url('http://themes.lpd-themes.com/123shop/wp-content/themes/123shop_preview_1-0_new/lpd-switcher/assets/img/glyphicons_halflings_030_refresh.png') no-repeat;
+}
+
+td.collapser-column {
+  width: 10px;
+}
+
+tr#content-row td.collapser-column:hover {
+  background-color: #DCDCDC;
+}
+
+td.col2{
+  padding-left: 5px;
 }
