@@ -475,6 +475,7 @@ li.directory > a{
 }
 
 .refresh-provider {
+   display: none;
    width: 12px;
    height: 12px;
    position: absolute;

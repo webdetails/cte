@@ -374,6 +374,20 @@ $(window).load(function() {
     }
   });
 
+
+  $('#fileTreeAccordion h4.panel-title > a').on( 'click', function(){
+    
+    // first, hide all refresh icons
+    $('#fileTreeAccordion h4.refresh-provider').each( function(){ $(this).css('display', 'none' ); });  
+
+    // determine if this is an action of a provider that is now being expanded ( i.e *was* collapsed )
+    var providerWasCollapsed = $(this).attr('class') == 'collapsed';
+    var refreshIconDisplayVal = providerWasCollapsed ? 'block' : 'none'; // new refresh icon display value
+
+    // update this provider's refresh icon display value accordingly
+    $(this).closest('div.panel-heading').find('h4.refresh-provider').css('display', refreshIconDisplayVal );
+  });
+
   /**********************************
    **** editor mode select box ******
    **********************************/
