@@ -99,9 +99,12 @@ public class CteEngine {
     IRWAccess repoAccess = getEnvironment().getPluginRepositoryWriter( null );
     IReadAccess systemAccess = getEnvironment().getPluginSystemReader( null );
 
-    if ( !repoAccess.fileExists( Constants.PLUGIN_WELCOME_FILE ) ) {
+    if ( !repoAccess.fileExists( "." /* base cte dir */ ) ) {
+      repoAccess.createFolder( "." , true /* isHidden */ );
+    }
 
-      if ( systemAccess.fileExists( "resources/" + Constants.PLUGIN_WELCOME_FILE ) ) {
+    if ( !repoAccess.fileExists( Constants.PLUGIN_WELCOME_FILE ) &&
+        systemAccess.fileExists( "resources/" + Constants.PLUGIN_WELCOME_FILE ) ) {
 
         try {
           repoAccess.saveFile( Constants.PLUGIN_WELCOME_FILE,
@@ -110,12 +113,10 @@ public class CteEngine {
         } catch ( IOException e ) {
           logger.error( e.getMessage(), e );
         }
-      }
     }
 
-    if ( !repoAccess.fileExists( Constants.PLUGIN_INVALID_PERMISSIONS_FILE ) ) {
-
-      if ( systemAccess.fileExists( "resources/" + Constants.PLUGIN_INVALID_PERMISSIONS_FILE ) ) {
+    if ( !repoAccess.fileExists( Constants.PLUGIN_INVALID_PERMISSIONS_FILE ) &&
+        systemAccess.fileExists( "resources/" + Constants.PLUGIN_INVALID_PERMISSIONS_FILE )) {
 
         try {
           repoAccess.saveFile( Constants.PLUGIN_INVALID_PERMISSIONS_FILE,
@@ -124,7 +125,6 @@ public class CteEngine {
         } catch ( IOException e ) {
           logger.error( e.getMessage(), e );
         }
-      }
     }
   }
 
