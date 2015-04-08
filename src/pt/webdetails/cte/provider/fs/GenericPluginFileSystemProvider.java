@@ -15,12 +15,12 @@ package pt.webdetails.cte.provider.fs;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pt.webdetails.cpf.Util;
 import pt.webdetails.cpf.exceptions.InitializationException;
 import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cpf.repository.api.IRWAccess;
 import pt.webdetails.cpf.repository.api.IReadAccess;
 import pt.webdetails.cpf.session.IUserSession;
+import pt.webdetails.cte.Utils;
 import pt.webdetails.cte.api.ICteEnvironment;
 import pt.webdetails.cte.api.ICteProvider;
 import pt.webdetails.cte.engine.CteEngine;
@@ -111,13 +111,9 @@ public class GenericPluginFileSystemProvider implements ICteProvider {
   }
 
   @Override public String[] getBlacklistedFolders() {
-
     if ( blacklistedFolders == null ) {
-
-      // use settings.xml blacklisted folders
-      blacklistedFolders = CteEngine.getInstance().getSettings().getBlacklistedFolders().toArray( new String[] { } );
+      blacklistedFolders = Utils.getSettingsXmlBlacklistedFolders();
     }
-
     return blacklistedFolders;
   }
 
@@ -126,14 +122,9 @@ public class GenericPluginFileSystemProvider implements ICteProvider {
   }
 
   @Override public String[] getBlacklistedFileExtensions() {
-
     if ( blacklistedFileExtensions == null ) {
-
-      // use settings.xml blacklisted file extensions
-      blacklistedFileExtensions =
-          CteEngine.getInstance().getSettings().getBlacklistedFileExtensions().toArray( new String[] { } );
+      blacklistedFileExtensions = Utils.getSettingsXmlBlacklistedFileExtensions();
     }
-
     return blacklistedFileExtensions;
   }
 
@@ -156,8 +147,9 @@ public class GenericPluginFileSystemProvider implements ICteProvider {
 
     logger.debug( "GenericPluginFileSystemProvider.canRead(): note that this is an admin-only provider" );
 
-    return getEnvironment().getUserSession().isAdministrator() && !StringUtils.isEmpty( path ) && getReadAccess()
-        .fileExists( path ) && getReadAccess().fetchFile( path ) != null;
+    return getEnvironment().getUserSession().isAdministrator() && !StringUtils.isEmpty( path )
+        && !Utils.isABlacklistedFileExtension( path ) && getReadAccess().fileExists( path )
+        && getReadAccess().fetchFile( path ) != null;
   }
 
   @Override public InputStream getFile( String path ) throws Exception {
@@ -228,7 +220,7 @@ public class GenericPluginFileSystemProvider implements ICteProvider {
 
       for ( IBasicFile file : fileList ) {
 
-        if ( !isInBlacklistedFolder( file.getPath() ) && canRead( file.getPath() ) ) {
+        if ( !Utils.isInBlacklistedFolder( file.getPath() ) && canRead( file.getPath() ) ) {
           filteredFileList.add( file );
         }
       }
@@ -237,21 +229,6 @@ public class GenericPluginFileSystemProvider implements ICteProvider {
     }
 
     return files;
-  }
-
-  private boolean isInBlacklistedFolder( String path ) {
-
-    boolean isInBlacklistedFolder = false;
-
-    if ( !path.startsWith( Util.SEPARATOR ) ) {
-      path = Util.SEPARATOR + path;
-    }
-
-    for ( String blacklistedFolder : getBlacklistedFolders() ) {
-      isInBlacklistedFolder |= path.startsWith( blacklistedFolder );
-    }
-
-    return isInBlacklistedFolder;
   }
 
   private ICteEnvironment getEnvironment() {

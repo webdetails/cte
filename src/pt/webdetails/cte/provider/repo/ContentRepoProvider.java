@@ -20,6 +20,7 @@ import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cpf.repository.api.IUserContentAccess;
 import pt.webdetails.cpf.session.IUserSession;
 import pt.webdetails.cte.Constants;
+import pt.webdetails.cte.Utils;
 import pt.webdetails.cte.api.ICteEnvironment;
 import pt.webdetails.cte.api.ICteProvider;
 import pt.webdetails.cte.engine.CteEngine;
@@ -36,7 +37,8 @@ public class ContentRepoProvider implements ICteProvider {
   private String id;
   private String name;
 
-  private boolean bypassBlacklists = false; // super-admin hidden flag
+  String[] blacklistedFolders;
+  String[] blacklistedFileExtensions;
 
   public ContentRepoProvider() {
   }
@@ -44,7 +46,8 @@ public class ContentRepoProvider implements ICteProvider {
   @Override public boolean canRead( String path ) {
     IUserContentAccess access = getEnvironment().getUserContentAccess( null );
 
-    return !StringUtils.isEmpty( path ) && access.fileExists( path ) && access.hasAccess( path, FileAccess.READ );
+    return !StringUtils.isEmpty( path ) && !Utils.isABlacklistedFileExtension( path ) && access.fileExists( path )
+        && access.hasAccess( path, FileAccess.READ );
   }
 
   @Override public void init( ICteEnvironment environment ) throws InitializationException {
@@ -72,13 +75,17 @@ public class ContentRepoProvider implements ICteProvider {
   }
 
   @Override public String[] getBlacklistedFolders() {
-    // use settings.xml blacklisted folders
-    return CteEngine.getInstance().getSettings().getBlacklistedFolders().toArray( new String[] { } );
+    if( blacklistedFolders == null ) {
+      blacklistedFolders = Utils.getSettingsXmlBlacklistedFolders();
+    }
+    return blacklistedFolders;
   }
 
   @Override public String[] getBlacklistedFileExtensions() {
-    // use settings.xml blacklisted file extensions
-    return CteEngine.getInstance().getSettings().getBlacklistedFileExtensions().toArray( new String[] { } );
+    if( blacklistedFileExtensions == null ) {
+      blacklistedFileExtensions = Utils.getSettingsXmlBlacklistedFileExtensions();
+    }
+    return blacklistedFileExtensions;
   }
 
   @Override public boolean canEdit( String path ) {
@@ -168,24 +175,10 @@ public class ContentRepoProvider implements ICteProvider {
 
     IBasicFile[] files = new IBasicFile[] { };
 
-    GenericFileAndDirFilter fileAndDirFilter = null;
-
-    if ( bypassBlacklists && getEnvironment().getUserSession().isAdministrator() ) {
-
-      // Not to be trifled with
-
-      // this is a super-admin hidden feature, where all blacklists are bypassed; user in session will
-      // have access to system folders and any and all files that may contain sensitive information
-
-      fileAndDirFilter = new GenericFileAndDirFilter( null, null, null, GenericBasicFileFilter.FilterType.FILTER_IN );
-
-    } else {
-
-      // act as a blacklist
-      fileAndDirFilter =
+    // act as a blacklist
+    GenericFileAndDirFilter fileAndDirFilter =
           new GenericFileAndDirFilter( null, getBlacklistedFileExtensions(), getBlacklistedFolders(),
               GenericBasicFileFilter.FilterType.FILTER_OUT );
-    }
 
     IUserContentAccess access = getEnvironment().getUserContentAccess( null );
     List<IBasicFile> fileList = access.listFiles( dir, fileAndDirFilter, 1, true, showHiddenFiles );
@@ -196,7 +189,7 @@ public class ContentRepoProvider implements ICteProvider {
 
       for ( IBasicFile file : fileList ) {
 
-        if ( !isInBlacklistedFolder( file.getPath() ) && canRead( file.getPath() ) ) {
+        if ( !Utils.isInBlacklistedFolder( file.getPath() ) && canRead( file.getPath() ) ) {
           filteredFileList.add( file );
         }
       }
@@ -205,39 +198,6 @@ public class ContentRepoProvider implements ICteProvider {
     }
 
     return files;
-  }
-
-  private boolean isInBlacklistedFolder( String path ) {
-
-    if ( bypassBlacklists && getEnvironment().getUserSession().isAdministrator() ) {
-
-      // Not to be trifled with
-
-      // this is a super-admin hidden feature, where all blacklists are bypassed; user in session will
-      // have access to system folders and any and all files that may contain sensitive information
-
-      return false;
-    }
-
-    boolean isInBlacklistedFolder = false;
-
-    if ( !path.startsWith( Util.SEPARATOR ) ) {
-      path = Util.SEPARATOR + path;
-    }
-
-    for ( String blacklistedFolder : getBlacklistedFolders() ) {
-      isInBlacklistedFolder |= path.startsWith( blacklistedFolder );
-    }
-
-    return isInBlacklistedFolder;
-  }
-
-  public boolean isBypassBlacklists() {
-    return bypassBlacklists;
-  }
-
-  public void setBypassBlacklists( boolean bypassBlacklists ) {
-    this.bypassBlacklists = bypassBlacklists;
   }
 
   private ICteEnvironment getEnvironment() {
