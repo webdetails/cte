@@ -22,6 +22,7 @@ import pt.webdetails.cpf.Util;
 import pt.webdetails.cpf.repository.api.IBasicFile;
 import pt.webdetails.cpf.repository.util.RepositoryHelper;
 import pt.webdetails.cpf.utils.PluginIOUtils;
+import pt.webdetails.cpf.utils.MimeTypes;
 import pt.webdetails.cte.Constants;
 import pt.webdetails.cte.api.ICteEnvironment;
 import pt.webdetails.cte.api.ICteProvider;
@@ -76,6 +77,7 @@ import java.io.InputStream;
 
     try {
 
+      response.setContentType( MimeTypes.HTML );
       InputStream fis = null;
 
       if( !StringUtils.isEmpty( path ) && isValidProvider( provider ) && getProvider( provider ).canRead( sanitize( path ) ) ){
