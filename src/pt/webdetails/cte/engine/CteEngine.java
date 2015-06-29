@@ -14,6 +14,8 @@ package pt.webdetails.cte.engine;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pt.webdetails.cpf.bean.IBeanFactory;
+import pt.webdetails.cpf.bean.AbstractBeanFactory;
 import pt.webdetails.cpf.exceptions.InitializationException;
 import pt.webdetails.cpf.repository.api.IRWAccess;
 import pt.webdetails.cpf.repository.api.IReadAccess;
@@ -37,7 +39,10 @@ public class CteEngine {
 
   private CteEngine() throws InitializationException {
 
-    CoreBeanFactory factory = new CoreBeanFactory( Constants.PLUGIN_ID );
+    IBeanFactory factory = new AbstractBeanFactory(){
+      @Override
+      public String getSpringXMLFilename(){ return "plugin.spring.xml"; }
+    };
 
     this.environment = (ICteEnvironment) factory.getBean( ICteEnvironment.class.getSimpleName() );
 
