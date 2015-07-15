@@ -482,7 +482,11 @@ li.directory > a{
    position: absolute;
    margin-left: 228px;
    margin-top: -22px;
-   background: url('http://themes.lpd-themes.com/123shop/wp-content/themes/123shop_preview_1-0_new/lpd-switcher/assets/img/glyphicons_halflings_030_refresh.png') no-repeat;
+   background: url(../../img/reload-ico.svg) no-repeat;
+}
+
+.no-svg .refresh-provider{
+    background: url(../../img/reload-ico.png) no-repeat; 
 }
 
 td.collapser-column {
