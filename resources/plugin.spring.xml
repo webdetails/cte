@@ -6,7 +6,7 @@
                            http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
                            http://jax-ws.dev.java.net/spring/core http://jax-ws.dev.java.net/spring/core.xsd
                            http://jax-ws.dev.java.net/spring/servlet http://jax-ws.dev.java.net/spring/servlet.xsd
-                           http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
   <context:annotation-config />
   
