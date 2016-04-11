@@ -12,10 +12,8 @@
 */
 package pt.webdetails.cte;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.pentaho.platform.engine.core.system.objfac.spring.Const;
 import pt.webdetails.cpf.SimpleContentGenerator;
 import pt.webdetails.cte.api.ICteEnvironment;
 import pt.webdetails.cte.engine.CteEngine;
