@@ -30,7 +30,15 @@ import pt.webdetails.cte.api.ICteProviderManager;
 import pt.webdetails.cte.engine.CteEngine;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.*;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import java.io.ByteArrayInputStream;
@@ -51,33 +59,37 @@ import java.io.InputStream;
 
 
   @GET @Path( Constants.ENDPOINT_CAN_EDIT + "/{" + PROVIDER + ": [^?]+ }/{ " + PATH + ": [^?]+ }" )
+  @Produces( MimeTypes.PLAIN_TEXT )
   public String canEdit( @PathParam( PROVIDER ) String provider, @PathParam( PATH ) String path ) {
     return Boolean.toString( isValidProvider( provider ) ? getProvider( provider ).canEdit( sanitize( path ) ) : false );
   }
 
   @GET @Path( Constants.ENDPOINT_CAN_EDIT )
+  @Produces( MimeTypes.PLAIN_TEXT )
   public String canEditAlt( @QueryParam( PROVIDER ) String provider, @QueryParam( PATH ) String path ) {
     return canEdit( provider , path );
   }
 
   @GET @Path( Constants.ENDPOINT_CAN_READ + "/{" + PROVIDER + ": [^?]+ }/{ " + PATH + ": [^?]+ }" )
+  @Produces( MimeTypes.PLAIN_TEXT )
   public String canRead( @PathParam( PROVIDER ) String provider, @PathParam( PATH ) String path ) {
     return Boolean.toString( isValidProvider( provider ) ? getProvider( provider ).canRead( sanitize( path ) ) : false );
   }
 
   @GET @Path( Constants.ENDPOINT_CAN_READ )
+  @Produces( MimeTypes.PLAIN_TEXT )
   public String canReadAlt( @QueryParam( PROVIDER ) String provider, @QueryParam( PATH ) String path ) {
     return canRead( provider, path );
   }
 
   @GET @Path( Constants.ENDPOINT_EDITOR + "/{" + PROVIDER + ": [^?]+ }/{ " + PATH + ": [^?]+ }" )
+  @Produces( MimeTypes.HTML )
   public void edit( @PathParam( PROVIDER ) String provider, @PathParam( PATH ) String path,
       @QueryParam( Constants.PARAM_BYPASS_CACHE ) @DefaultValue( "false" ) String bypassCache,
       @Context HttpServletResponse response ) throws WebApplicationException {
 
     try {
 
-      response.setContentType( MimeTypes.HTML );
       InputStream fis = null;
 
       if( !StringUtils.isEmpty( path ) && isValidProvider( provider ) && getProvider( provider ).canRead( sanitize( path ) ) ){
@@ -95,6 +107,7 @@ import java.io.InputStream;
   }
 
   @GET @Path( Constants.ENDPOINT_EDITOR )
+  @Produces( MimeTypes.HTML )
   public void editAlt( @QueryParam( PROVIDER ) String provider, @QueryParam( PATH ) String path,
       @QueryParam( Constants.PARAM_BYPASS_CACHE ) @DefaultValue( "false" ) String bypassCache,
       @Context HttpServletResponse response ) throws WebApplicationException {
@@ -126,6 +139,7 @@ import java.io.InputStream;
   }
 
   @POST @Path( Constants.ENDPOINT_SAVE_FILE + "/{" + PROVIDER + ": [^?]+ }/{ " + PATH + ": [^?]+ }" )
+  @Produces( MimeTypes.PLAIN_TEXT )
   public String saveFile( @PathParam( PROVIDER ) String provider, @PathParam( PATH ) String path,
       @FormParam( Constants.PARAM_DATA ) @DefaultValue( "" ) String data ) throws WebApplicationException {
 
@@ -145,6 +159,7 @@ import java.io.InputStream;
   }
 
   @POST @Path( Constants.ENDPOINT_SAVE_FILE )
+  @Produces( MimeTypes.PLAIN_TEXT )
   public String saveFileAlt( @FormParam( PROVIDER ) String provider, @FormParam( PATH ) String path,
       @FormParam( Constants.PARAM_DATA ) @DefaultValue( "" ) String data ) throws WebApplicationException {
     return saveFile( provider, path, data );
