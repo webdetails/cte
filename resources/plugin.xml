@@ -1,100 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin name="cte" title="Pentaho Community Text Editor">
-	
-	<overlays>
-		<overlay id="startup.cte" resourcebundle="content/cte/resources/lang/messages">
-			<menubar id="toolsmenu">
-	        	<menuitem id="cte" label="${launcher.cte}" command="mantleXulHandler.openUrl('${launcher.cte}','${launcher.cte.tooltip}','api/repos/%3Apublic%3Acte%3Awelcome.txt/cte.edit')"/>
-	      	</menubar>
-	    </overlay>
-	</overlays>
 
+  <overlays>
+    <overlay id="startup.cte" resourcebundle="content/cte/resources/lang/messages">
+      <menubar id="toolsmenu">
+        <menuitem id="cte" label="${launcher.cte}" command="mantleXulHandler.openUrl('${launcher.cte}','${launcher.cte.tooltip}','api/repos/%3Apublic%3Acte%3Awelcome.txt/cte.edit')"/>
+      </menubar>
+    </overlay>
+  </overlays>
 
-	<lifecycle-listener class="pt.webdetails.cte.CteLifecycleListener" />
-	
-	<content-generator class="org.pentaho.cte.CteContentGenerator" />
+  <lifecycle-listener class="pt.webdetails.cte.CteLifecycleListener"/>
+  
+  <content-generator class="org.pentaho.cte.CteContentGenerator"/>
 
-	<content-types>
+  <content-types>
+    <static-paths>
+      <static-path url="/cte/resources" localFolder="resources"/>
+      <static-path url="/cte/tmp" localFolder="tmp"/>
+    </static-paths>
 
-        <static-paths>
-            <static-path url="/cte/resources" localFolder="resources"/>
-            <static-path url="/cte/tmp" localFolder="tmp"/>
-        </static-paths>
-        
-        <content-type type="html" mime-type="text/html">
-        	<title>HTML</title>
-	      	<operations>
-		        <operation>
-		          	<id>EDIT</id>
-		          	<perspective>cte.edit</perspective>
-		        </operation>
-		    </operations>
-    	</content-type>
-    	
-    	<content-type type="xml" mime-type="text/xml">
-        	<title>XML</title>
-	      	<operations>
-		        <operation>
-		          	<id>EDIT</id>
-                	<perspective>cte.edit</perspective>
-		        </operation>
-		    </operations>
-    	</content-type>
+    <content-type type="html" mime-type="text/html">
+      <title>HTML</title>
+      <operations>
+        <operation>
+          <id>EDIT</id>
+          <perspective>cte.edit</perspective>
+        </operation>
+      </operations>
+    </content-type>
 
-    	<content-type type="txt" mime-type="text/plain">
-        	<title>TXT</title>
-	      	<operations>
-		        <operation>
-		          	<id>EDIT</id>
-                	<perspective>cte.edit</perspective>
-		        </operation>
-		    </operations>
-    	</content-type> 
-    	
-    	<content-type type="cdfde" mime-type="application/json">
-        	<title>CDFDE</title>
-	      	<operations>
-		        <operation>
-		          	<id>EDIT</id>
-                	<perspective>cte.edit</perspective>
-		        </operation>
-		    </operations>
-    	</content-type>
-    	
-    	<content-type type="js" mime-type="text/javascript">
-        	<title>JS</title>
-	      	<operations>
-		        <operation>
-		          	<id>EDIT</id>
-                	<perspective>cte.edit</perspective>
-		        </operation>
-		    </operations>
-    	</content-type>
-    	
-    	<content-type type="css" mime-type="text/css">
-        	<title>CSS</title>
-	      	<operations>
-		        <operation>
-		          	<id>EDIT</id>
-                	<perspective>cte.edit</perspective>
-		        </operation>
-		    </operations>
-    	</content-type>
-    	
-    	<content-type type="properties" mime-type="text/plain">
-        	<title>Properties</title>
-	      	<operations>
-		        <operation>
-		          	<id>EDIT</id>
-                	<perspective>cte.edit</perspective>
-		        </operation>
-		    </operations>
-    	</content-type>
+    <content-type type="xml" mime-type="text/xml">
+        <title>XML</title>
+        <operations>
+          <operation>
+            <id>EDIT</id>
+            <perspective>cte.edit</perspective>
+          </operation>
+      </operations>
+    </content-type>
 
-    </content-types>
+    <content-type type="txt" mime-type="text/plain">
+      <title>TXT</title>
+      <operations>
+        <operation>
+          <id>EDIT</id>
+          <perspective>cte.edit</perspective>
+        </operation>
+      </operations>
+    </content-type>
 
+    <content-type type="cdfde" mime-type="application/json">
+      <title>CDFDE</title>
+      <operations>
+        <operation>
+          <id>EDIT</id>
+          <perspective>cte.edit</perspective>
+        </operation>
+      </operations>
+    </content-type>
 
-    
-    <external-resources />
+    <content-type type="js" mime-type="text/javascript">
+      <title>JS</title>
+      <operations>
+        <operation>
+          <id>EDIT</id>
+          <perspective>cte.edit</perspective>
+        </operation>
+      </operations>
+    </content-type>
 
+    <content-type type="css" mime-type="text/css">
+      <title>CSS</title>
+      <operations>
+        <operation>
+          <id>EDIT</id>
+          <perspective>cte.edit</perspective>
+        </operation>
+      </operations>
+    </content-type>
+
+    <content-type type="properties" mime-type="text/plain">
+      <title>Properties</title>
+      <operations>
+        <operation>
+          <id>EDIT</id>
+          <perspective>cte.edit</perspective>
+        </operation>
+      </operations>
+    </content-type>
+  </content-types>
+
+  <external-resources>
+    <file context="requirejs">content/cte/resources/editor/cte-require-js-cfg.js</file>
+  </external-resources>
 </plugin>

@@ -1,117 +1,80 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8"/>
-    <title>Editor</title>
+<head>
+  <meta charset="UTF-8"/>
+  <title>Editor</title>
 
-    <!-- script language="javascript" type="text/javascript" src="webcontext.js?requireJsOnly=true&context=cte"></script -->
+  <script language="javascript" type="text/javascript" src="webcontext.js?requireJsOnly=true&context=cte"></script>
 
-    <!--link rel="stylesheet" href="js/lib/bootstrap-select/css/bootstrap.css" type="text/css"-->
-    <link rel="stylesheet" href="js/lib/bootstrap/css/bootstrap.css" type="text/css">
-    <link rel="stylesheet" href="js/lib/bootstrap/css/bootstrap-theme.css" type="text/css">
+  <!-- TODO load CSS using css! (random loading order might break the styling) -->
+  <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css" type="text/css">
+  <link rel="stylesheet" href="lib/bootstrap/css/bootstrap-theme.min.css" type="text/css">
 
-    <link rel="stylesheet" href="js/fileTree/css/jqueryFileTree.css" type="text/css">
+  <!-- link rel="stylesheet" href="fileTree/css/jqueryFileTree.css" type="text/css">
+  <link rel="stylesheet" href="cte.css" type="text/css">
+  <link rel="stylesheet" href="ml-modal/css/ml-modal.css" type="text/css">
+  <link rel="stylesheet" href="select2/select2.min.css" type="text/css" -->
 
-    <link rel="stylesheet" href="css/style.css" type="text/css">
-    <link rel="stylesheet" href="css/ml-modal.css" type="text/css">
-
-    <script language="javascript" type="text/javascript" src="js/lib/jquery.js"></script>
-    <script language="javascript" type="text/javascript" src="js/lib/bootstrap/js/bootstrap.js"></script>
-    <script language="javascript" type="text/javascript" src="js/fileTree/js/jqueryFileTree.js"></script>
-    <script language="javascript" type="text/javascript" src="js/aceWrapper.js"></script>
-    <script language="javascript" type="text/javascript" src="js/lib/ace/src/ace.js"></script>
-
-    <script language="javascript" type="text/javascript" src="js/lib/ace/src/mode-coffee.js"></script>
-    <script language="javascript" type="text/javascript" src="js/lib/ace/src/mode-css.js"></script>
-    <script language="javascript" type="text/javascript" src="js/lib/ace/src/mode-html.js"></script>
-    <script language="javascript" type="text/javascript" src="js/lib/ace/src/mode-javascript.js"></script>
-    <script language="javascript" type="text/javascript" src="js/lib/ace/src/mode-json.js"></script>
-    <script language="javascript" type="text/javascript" src="js/lib/ace/src/mode-jsp.js"></script>
-    <script language="javascript" type="text/javascript" src="js/lib/ace/src/mode-less.js"></script>
-    <script language="javascript" type="text/javascript" src="js/lib/ace/src/mode-pgsql.js"></script>
-    <script language="javascript" type="text/javascript" src="js/lib/ace/src/mode-properties.js"></script>
-    <script language="javascript" type="text/javascript" src="js/lib/ace/src/mode-sql.js"></script>
-    <script language="javascript" type="text/javascript" src="js/lib/ace/src/mode-svg.js"></script>
-    <script language="javascript" type="text/javascript" src="js/lib/ace/src/mode-text.js"></script>
-    <script language="javascript" type="text/javascript" src="js/lib/ace/src/mode-xml.js"></script>
-    <script language="javascript" type="text/javascript" src="js/lib/ace/src/mode-xquery.js"></script>
-
-    <script language="javascript" type="text/javascript" src="js/lib/ace/src/theme-textmate.js"></script>
-
-    <script language="javascript" type="text/javascript" src="js/cte.js"></script>
-    
-    
-    <link href="css/select2.min.css" rel="stylesheet" />
-    <script src="js/lib/select2.min.js"></script>
-    
-    <script language="javascript" type="text/javascript" src="js/lib/ml-modal.js"></script>
-
-  </head>
-  <body> 
-    <table style="width: 100%;">
-      <tbody>
-        <tr id="header-row" class="row1">
-          <td class="col1">
-              <div class="info-btn"></div>
-          </td>
-          <td class="col2" colspan="2">
-            
-            <span id="infoArea" class="well well-sm infoArea" role="alert"></span>
-            <!--<span class="file_Path">teste
-            	<span class="file_Name">testebold</span>
-            </span>-->
-
-            <div id="btnArea" class="btnArea">
-              <!--button id="saveBtn" onclick ="save()" style=""> Save </button-->
-              <!--span id="infoArea" style="min-width: 200px;"></span-->
-              <!--<span id="infoArea" class="alert alert-sm alert-success" role="alert">*</span>-->
-              
-            
-              <!--<span id="infoAreaWarnings" class="infoAreaWarnings">*</span>-->
-            <div class="dropdown">
-                <div class="syntaxLabel">
-                    <span>Syntax mode:</span>
-                </div>
-                <div class="syntaxSelector">
-                    <select id="modes" class="modes">
-                        <option value="" selected="selected">(auto detect)</option>
-                        <option value="coffee">Coffee</option>
-                        <option value="css">CSS</option>
-                        <option value="html">HTML</option>
-                        <option value="javascript">JavaScript</option>
-                        <option value="json">JSON</option>
-                        <option value="jsp">JSP</option>
-                        <option value="less">Less</option>
-                        <option value="pgsql">PGSQL</option>
-                        <option value="properties">Properties</option>
-                        <option value="sql">SQL</option>
-                        <option value="svg">SVG</option>
-                        <option value="text">Text</option>
-                        <option value="xml">XML</option>
-                        <option value="xquery">XQuery</option>
-                    </select>
-                </div>
-            </div>
-            <div class="save">
-                <button type="button" id="saveBtn" class="saveBtn btn btn-sm disabled" onclick ="save()"> Save </button>  
-            </div>
-            
-            </div>
-          </td>
-        </tr>
-        <tr id="content-row" class="row2">
-          <td id="providers-list-column" class="col1">
-            <div id="fileTreeAccordion" class="panel-group"></div>
-          </td>
-          <td id="providers-collapser-column" class="collapser-column">
-            <img id="collapser-img" src="../img/arrow-left.png"></img>
-          </td>
-          <td id="editor-canvas-column" class="col2">
-            <pre id="editArea"></pre>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    
-  </body>
+  <script language="javascript" type="text/javascript">
+    (function(root) {
+      require(['cte/cte'], function(cte) {
+        root.cte = cte;
+      });
+    })(window);
+  </script>
+</head>
+<body>
+<div class="clearfix">
+  <div class="header-row">
+    <div class="left-col">
+      <div class="info-btn"></div>
+    </div>
+    <div class="right-col">
+      <span id="infoArea" class="well well-sm infoArea" role="alert"></span>
+      <div id="btnArea" class="btnArea">
+        <div class="dropdown">
+          <div class="syntaxLabel">
+            <span>Syntax mode:</span>
+          </div>
+          <div class="syntaxSelector">
+            <select id="modes" class="modes">
+              <option value="" selected="selected">(auto detect)</option>
+              <option value="coffee">Coffee</option>
+              <option value="css">CSS</option>
+              <option value="html">HTML</option>
+              <option value="javascript">JavaScript</option>
+              <option value="json">JSON</option>
+              <option value="jsp">JSP</option>
+              <option value="less">Less</option>
+              <option value="pgsql">PGSQL</option>
+              <option value="properties">Properties</option>
+              <option value="sql">SQL</option>
+              <option value="svg">SVG</option>
+              <option value="text">Text</option>
+              <option value="xml">XML</option>
+              <option value="xquery">XQuery</option>
+            </select>
+          </div>
+        </div>
+        <div class="save">
+          <button type="button" id="saveBtn" class="saveBtn btn btn-sm disabled" onclick ="cte.save()"> Save </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="content-row">
+    <div class="left-col collapsible">
+      <div id="fileTreeAccordion" class="panel-group"></div>
+    </div>
+    <div class="collapser-col">
+      <img id="collapser-img" src="../img/arrow-left.png"></img>
+    </div>
+    <div class="right-col">
+      <div class="editor-col">
+        <pre id="editArea"></pre>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
 </html>
