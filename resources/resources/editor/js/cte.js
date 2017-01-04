@@ -49,6 +49,11 @@ var load = function(filename, provider) {
       notify('File ' + loadedFileName + ' loaded.');
 
       updateStatus();
+
+      if (window.history.pushState) {
+       window.history.pushState( "", "" , "" + window.location.origin + window.location.pathname 
+        + "?path=" + loadedFileName + "&provider=" + loadedFileProvider );
+      }
     },
     function(response) {
       if(response) {
