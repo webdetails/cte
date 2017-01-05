@@ -1,5 +1,5 @@
-bin
-dist
-lib
-runtime-lib
-test-lib
+/bin
+/dist
+/lib
+/runtime-lib
+/test-lib
