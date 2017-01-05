@@ -51,8 +51,7 @@ var load = function(filename, provider) {
       updateStatus();
 
       if (window.history.pushState) {
-       window.history.pushState( "", "" , "" + window.location.origin + window.location.pathname 
-        + "?path=" + loadedFileName + "&provider=" + loadedFileProvider );
+       window.history.pushState( "", "" , "" + buildUrl( loadedFileName, loadedFileProvider, true ) );
       }
     },
     function(response) {
@@ -176,6 +175,21 @@ var updateStatus = function() {
     listeners.onStatusUpdate(isDirty);
   }
 };
+
+var buildUrl = function( filePath, fileProvider, encode ) {
+  var url = window.location.origin + window.location.pathname;
+
+  if( filePath ) {
+    url += "?path=" + ( encode ? encodeURIComponent( filePath ) : filePath );
+  
+    // no sense in having a provider param if we don't have a file param
+    if( fileProvider ) {
+      url += "&provider=" + ( encode ? encodeURIComponent( fileProvider ) : fileProvider ); 
+    }
+  } 
+
+  return url;
+}
 
 var setDirty = function(dirty) {
   var wasDirty = isDirty;
