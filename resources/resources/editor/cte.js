@@ -175,24 +175,21 @@ define([
 
     //$infoArea.text(_fileName);
     if(_fileName.length > 50) {
-      var _path = _fileName.substring(_fileName.length - 50, _fileName.length);
 
-      var _fileNameIndex = _fileName.lastIndexOf("/") + 1;
-      var file = _fileName.substr(_fileName.lastIndexOf("/") + 1);
-      var pathname = _fileName.substr(0, _fileNameIndex);
-
-      //$infoArea.html("(...)" + _path.substring(_path.indexOf("/"), _path.length));
-      $infoArea.html("<span>(...)/</span>" + "<span class='bold'>"+file+"</span>");
+      $infoArea.html("<span>(...)/</span>"
+        + "<span class='bold'>" + _fileName.substr(_fileName.lastIndexOf("/") + 1) + "</span>");
     } else {
-      //$infoArea.html(_fileName);
       var _fileNameIndex = _fileName.lastIndexOf("/") + 1;
-      var file = _fileName.substr(_fileName.lastIndexOf("/") + 1);
-      var pathname = _fileName.substr(0, _fileNameIndex);
 
-      $infoArea.html("<span>" + pathname + "</span>" + "<span class='bold'>" + file);
+      $infoArea.html(
+        // path
+        "<span>" + _fileName.substr(0, _fileNameIndex) + "</span>"
+        // file name
+        + "<span class='bold'>" + _fileName.substr(_fileNameIndex) + "</span>");
     }
+    $infoArea.prop("title", _fileName);
 
-    if(typeof(_listeners.onStatusUpdate) === 'function') {
+    if(typeof(_listeners.onStatusUpdate) === "function") {
       _listeners.onStatusUpdate(_dirty);
     }
   }
