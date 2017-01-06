@@ -39,7 +39,7 @@ define([
     onStatusUpdate: null,
     onSave: null,
     notify: function(msg, type) {
-      console && console.log(type + " : " + msg); 
+      console && console.log(type + " : " + msg);
     }
   };
 
@@ -199,12 +199,12 @@ define([
 
     if(filePath) {
       url += "?path=" + (encode ? encodeURIComponent(filePath) : filePath);
-    
+
       // no sense in having a provider param if we don't have a path param
       if(fileProvider) {
-        url += "&provider=" + (encode ? encodeURIComponent(fileProvider) : fileProvider); 
+        url += "&provider=" + (encode ? encodeURIComponent(fileProvider) : fileProvider);
       }
-    } 
+    }
 
     return url;
   }
@@ -482,24 +482,27 @@ define([
     $(".collapser-col").css("background-color", "#DCDCDC");
 
     $(document).mousemove(function(e) {
-      $('div.left-col.collapsible').css("width", ((e.pageX / window.innerWidth) * 100) + "%").css("width", "-=13px");
+      var _maxWidth = window.innerWidth - 70;
+      var _val = (e.pageX  > _maxWidth)
+        ? (_maxWidth / window.innerWidth) * 100
+        : (e.pageX / window.innerWidth) * 100;
+      $('div.left-col.collapsible').css("width", _val + "%").css("width", "-=13px");
     });
   });
 
   $(document).mouseup(function(e) {
     if(dragging) {
-      $('div.left-col.collapsible').css("width", ((e.pageX / window.innerWidth) * 100) + "%").css("width", "-=13px");
+      var _maxWidth = window.innerWidth - 70;
+      var _val = (e.pageX  > _maxWidth)
+        ? (_maxWidth / window.innerWidth) * 100
+        : (e.pageX / window.innerWidth) * 100;
+      $('div.left-col.collapsible').css("width", _val + "%").css("width", "-=13px");
 
       $(document).unbind('mousemove');
       dragging = false;
 
       $(".collapser-col").css("background-color", "");
     }
-  });
-
-
-  $(function() {
-    $(".modes").select2({width: '120px'});
   });
 
 
