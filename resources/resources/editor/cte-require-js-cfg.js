@@ -64,13 +64,13 @@
   requireCfg.map['cte']['jquery'] = 'cte/lib/jquery';
 
   //bootstrap 3.3.7
-  requirePaths['cte/lib/bootstrap'] = prefix + '/lib/Bootstrap/js/bootstrap.min';
+  requirePaths['cte/lib/bootstrap'] = prefix + '/lib/bootstrap/js/bootstrap.min';
   amdShim['cte/lib/bootstrap'] = {
     exports: 'jQuery',
     deps: {
       'cte/lib/jquery': 'jQuery'
-      //'css!cte/lib/Bootstrap/css/bootstrap.min.css': '',
-      //'css!cte/lib/Bootstrap/css/bootstrap-theme.min.css': ''
+      //'css!cte/lib/bootstrap/css/bootstrap.min.css': '',
+      //'css!cte/lib/bootstrap/css/bootstrap-theme.min.css': ''
     }
   };
 
