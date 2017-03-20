@@ -47,7 +47,7 @@
 
   //RequireJS css! loader plugin 0.1.8
   requirePaths['cte/lib/require-css/css'] = prefix + '/lib/require-css/css.min';
-  requireCfg.map['*']['css'] = 'cte/lib/require-css/css';
+  requireCfg.map['cte']['css'] = 'cte/lib/require-css/css';
 
   // RequireJS amd! loader plugin. Wraps non-AMD scripts as AMD modules on the fly,
   // to be used when a shim isn't enough (see plugin prescript and postscript).
